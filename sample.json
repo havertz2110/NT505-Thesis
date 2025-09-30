@@ -1,0 +1,496 @@
+{
+  "program_level": {
+    "level": "program",
+    "includes": {
+      "critical_includes": [],
+      "system_includes": [],
+      "custom_includes": [
+        "CUSTOM_INCLUDE",
+        "CUSTOM_INCLUDE",
+        "CUSTOM_INCLUDE"
+      ]
+    },
+    "global_variables": [
+      "Variable(name='data', var_type='char *', scope='global', line_declared=31)",
+      "Variable(name='wsaData', var_type='WSADATA', scope='global', line_declared=35)",
+      "Variable(name='wsaDataInit', var_type='BOOL', scope='global', line_declared=36)",
+      "Variable(name='listenSocket', var_type='SOCKET', scope='global', line_declared=37)",
+      "Variable(name='acceptSocket', var_type='SOCKET', scope='global', line_declared=38)",
+      "Variable(name='recvResult', var_type='int', scope='global', line_declared=40)",
+      "Variable(name='data', var_type='char *', scope='global', line_declared=118)",
+      "Variable(name='0', var_type='return', scope='global', line_declared=160)"
+    ],
+    "functions": [
+      "Function(name='CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad', return_type='void', parameters=[], body_start=30, body_end=108, is_library=False)",
+      "Function(name='goodG2B', return_type='static void', parameters=[], body_start=117, body_end=128, is_library=False)",
+      "Function(name='CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good', return_type='void', parameters=[], body_start=132, body_end=133, is_library=False)",
+      "Function(name='main', return_type='int', parameters=[Variable(name='argc', var_type='int', scope='parameter', line_declared=146), Variable(name='argv[]', var_type='char *', scope='parameter', line_declared=146)], body_start=147, body_end=160, is_library=False)"
+    ],
+    "modules": [
+      {
+        "name": "sockaddr_in",
+        "lines": [
+          "        struct sockaddr_in service;",
+          "        int recvResult;",
+          "        do",
+          "        {",
+          "            if (WSAStartup(MAKEWORD(2,2), &wsaData) != NO_ERROR)",
+          "            {",
+          "                break;",
+          "            }",
+          "            wsaDataInit = 1;",
+          "            listenSocket = socket(PF_INET, SOCK_STREAM, 0);",
+          "            if (listenSocket == INVALID_SOCKET)",
+          "            {",
+          "                break;",
+          "            }",
+          "            memset(&service, 0, sizeof(service));",
+          "            service.sin_family = AF_INET;",
+          "            service.sin_addr.s_addr = INADDR_ANY;",
+          "            service.sin_port = htons(LISTEN_PORT);",
+          "            if (SOCKET_ERROR == bind(listenSocket, (struct sockaddr*)&service, sizeof(service)))",
+          "            {",
+          "                break;",
+          "            }",
+          "            if (SOCKET_ERROR == listen(listenSocket, LISTEN_BACKLOG))",
+          "            {",
+          "                break;",
+          "            }",
+          "            acceptSocket = accept(listenSocket, NULL, NULL);",
+          "            if (acceptSocket == INVALID_SOCKET)",
+          "            {",
+          "                break;",
+          "            }",
+          "            /* INCIDENTAL CWE 188 - reliance on data memory layout",
+          "             * recv and friends return \"number of bytes\" received",
+          "             * char's on our system, however, may not be \"octets\" (8-bit",
+          "             * bytes) but could be just about anything.  Also,",
+          "             * even if the external environment is ASCII or UTF8,",
+          "             * the ANSI/ISO C standard does not dictate that the",
+          "             * character set used by the actual language or character",
+          "             * constants matches.",
+          "             *",
+          "             * In practice none of these are usually issues...",
+          "             */",
+          "            /* FLAW: read the new hostname from a network socket */",
+          "            recvResult = recv(acceptSocket, data, 100 - 1, 0);",
+          "            if (recvResult == SOCKET_ERROR || recvResult == 0)",
+          "            {",
+          "                break;",
+          "            }",
+          "            data[recvResult] = '\\0';",
+          "        }"
+        ],
+        "start_line": 39,
+        "end_line": 88,
+        "type": "struct_module"
+      }
+    ],
+    "total_lines": 164,
+    "complexity_score": 0
+  },
+  "function_level": [
+    {
+      "function_name": "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad",
+      "normalized_name": "VOID_FUNC",
+      "return_type": "void",
+      "parameter_count": 0,
+      "complex_sentence_count": 11,
+      "simple_sentence_count": 43
+    },
+    {
+      "function_name": "goodG2B",
+      "normalized_name": "CUSTOM_FUNC",
+      "return_type": "static void",
+      "parameter_count": 0,
+      "complex_sentence_count": 1,
+      "simple_sentence_count": 3
+    },
+    {
+      "function_name": "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good",
+      "normalized_name": "VOID_FUNC",
+      "return_type": "void",
+      "parameter_count": 0,
+      "complex_sentence_count": 0,
+      "simple_sentence_count": 1
+    },
+    {
+      "function_name": "main",
+      "normalized_name": "INT_FUNC",
+      "return_type": "int",
+      "parameter_count": 2,
+      "complex_sentence_count": 0,
+      "simple_sentence_count": 9
+    }
+  ],
+  "complex_sentences": [
+    {
+      "type": "conditional_block",
+      "statements": [
+        "{"
+      ],
+      "line_range": "42-43",
+      "context": {
+        "condition": "WSAStartup(MAKEWORD(2,2",
+        "then_branch": [
+          "{"
+        ],
+        "else_branch": null,
+        "complexity_score": 0.3
+      }
+    },
+    {
+      "type": "conditional_block",
+      "statements": [
+        "{"
+      ],
+      "line_range": "48-49",
+      "context": {
+        "condition": "listenSocket == INVALID_SOCKET",
+        "then_branch": [
+          "{"
+        ],
+        "else_branch": null,
+        "complexity_score": 0.3
+      }
+    },
+    {
+      "type": "conditional_block",
+      "statements": [
+        "{"
+      ],
+      "line_range": "56-57",
+      "context": {
+        "condition": "SOCKET_ERROR == bind(listenSocket, (struct sockaddr*",
+        "then_branch": [
+          "{"
+        ],
+        "else_branch": null,
+        "complexity_score": 0.3
+      }
+    },
+    {
+      "type": "conditional_block",
+      "statements": [
+        "{"
+      ],
+      "line_range": "60-61",
+      "context": {
+        "condition": "SOCKET_ERROR == listen(listenSocket, LISTEN_BACKLOG",
+        "then_branch": [
+          "{"
+        ],
+        "else_branch": null,
+        "complexity_score": 0.3
+      }
+    },
+    {
+      "type": "conditional_block",
+      "statements": [
+        "{"
+      ],
+      "line_range": "65-66",
+      "context": {
+        "condition": "acceptSocket == INVALID_SOCKET",
+        "then_branch": [
+          "{"
+        ],
+        "else_branch": null,
+        "complexity_score": 0.3
+      }
+    },
+    {
+      "type": "conditional_block",
+      "statements": [
+        "{"
+      ],
+      "line_range": "82-83",
+      "context": {
+        "condition": "recvResult == SOCKET_ERROR || recvResult == 0",
+        "then_branch": [
+          "{"
+        ],
+        "else_branch": null,
+        "complexity_score": 0.3
+      }
+    },
+    {
+      "type": "loop_block",
+      "statements": [
+        "if (acceptSocket != INVALID_SOCKET)"
+      ],
+      "line_range": "88-89",
+      "context": {
+        "loop_type": "while",
+        "condition": "0",
+        "complexity_score": 0.5
+      }
+    },
+    {
+      "type": "conditional_block",
+      "statements": [
+        "{"
+      ],
+      "line_range": "89-90",
+      "context": {
+        "condition": "acceptSocket != INVALID_SOCKET",
+        "then_branch": [
+          "{"
+        ],
+        "else_branch": null,
+        "complexity_score": 0.3
+      }
+    },
+    {
+      "type": "conditional_block",
+      "statements": [
+        "{"
+      ],
+      "line_range": "93-94",
+      "context": {
+        "condition": "listenSocket != INVALID_SOCKET",
+        "then_branch": [
+          "{"
+        ],
+        "else_branch": null,
+        "complexity_score": 0.3
+      }
+    },
+    {
+      "type": "conditional_block",
+      "statements": [
+        "{"
+      ],
+      "line_range": "97-98",
+      "context": {
+        "condition": "wsaDataInit",
+        "then_branch": [
+          "{"
+        ],
+        "else_branch": null,
+        "complexity_score": 0.3
+      }
+    },
+    {
+      "type": "conditional_block",
+      "statements": [
+        "{"
+      ],
+      "line_range": "103-104",
+      "context": {
+        "condition": "!SetComputerNameA(data",
+        "then_branch": [
+          "{"
+        ],
+        "else_branch": null,
+        "complexity_score": 0.3
+      }
+    },
+    {
+      "type": "vulnerable_operation",
+      "statements": [
+        "char dataBuffer[100] = \"\";",
+        "data = dataBuffer;",
+        "/* FIX: get the hostname from a string literal */",
+        "strcpy(data, \"hostname\");",
+        "/* POTENTIAL FLAW: set the hostname to data obtained from a potentially external source */",
+        "if (!SetComputerNameA(data))",
+        "{"
+      ],
+      "line_range": "118-124",
+      "context": {
+        "focus_line": "strcpy(data, \"hostname\");",
+        "preceding_context": [
+          "char dataBuffer[100] = \"\";",
+          "data = dataBuffer;",
+          "/* FIX: get the hostname from a string literal */"
+        ],
+        "following_context": [
+          "/* POTENTIAL FLAW: set the hostname to data obtained from a potentially external source */",
+          "if (!SetComputerNameA(data))",
+          "{"
+        ]
+      }
+    }
+  ],
+  "simple_sentences": [
+    "char * data;",
+    "char dataBuffer[100] = \"\";",
+    "data = dataBuffer;",
+    "WSADATA wsaData;",
+    "BOOL wsaDataInit = FALSE;",
+    "SOCKET listenSocket = INVALID_SOCKET;",
+    "SOCKET acceptSocket = INVALID_SOCKET;",
+    "struct sockaddr_in service;",
+    "int recvResult;",
+    "do",
+    "break;",
+    "wsaDataInit = 1;",
+    "listenSocket = socket(PF_INET, SOCK_STREAM, 0);",
+    "break;",
+    "memset(&service, 0, sizeof(service));",
+    "service.sin_family = AF_INET;",
+    "service.sin_addr.s_addr = INADDR_ANY;",
+    "service.sin_port = htons(LISTEN_PORT);",
+    "break;",
+    "break;",
+    "acceptSocket = accept(listenSocket, NULL, NULL);",
+    "break;",
+    "/* INCIDENTAL CWE 188 - reliance on data memory layout",
+    "* recv and friends return \"number of bytes\" received",
+    "* char's on our system, however, may not be \"octets\" (8-bit",
+    "* bytes) but could be just about anything.  Also,",
+    "* even if the external environment is ASCII or UTF8,",
+    "* the ANSI/ISO C standard does not dictate that the",
+    "* character set used by the actual language or character",
+    "* constants matches.",
+    "*",
+    "* In practice none of these are usually issues...",
+    "*/",
+    "/* FLAW: read the new hostname from a network socket */",
+    "recvResult = recv(acceptSocket, data, 100 - 1, 0);",
+    "break;",
+    "data[recvResult] = '\\0';",
+    "closesocket(acceptSocket);",
+    "closesocket(listenSocket);",
+    "WSACleanup();",
+    "/* POTENTIAL FLAW: set the hostname to data obtained from a potentially external source */",
+    "printLine(\"Failure setting computer name\");",
+    "exit(1);",
+    "char * data;",
+    "printLine(\"Failure setting computer name\");",
+    "exit(1);",
+    "goodG2B();",
+    "/* seed randomness */",
+    "srand( (unsigned)time(NULL) );",
+    "printLine(\"Calling good()...\");",
+    "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good();",
+    "printLine(\"Finished good()\");",
+    "printLine(\"Calling bad()...\");",
+    "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad();",
+    "printLine(\"Finished bad()\");",
+    "return 0;"
+  ],
+  "tokens": [
+    {
+      "value": "{",
+      "type": "punctuation",
+      "original": "{",
+      "line": 1
+    },
+    {
+      "value": "{",
+      "type": "punctuation",
+      "original": "{",
+      "line": 2
+    },
+    {
+      "value": "{",
+      "type": "punctuation",
+      "original": "{",
+      "line": 3
+    },
+    {
+      "value": "{",
+      "type": "punctuation",
+      "original": "{",
+      "line": 4
+    },
+    {
+      "value": "{",
+      "type": "punctuation",
+      "original": "{",
+      "line": 5
+    },
+    {
+      "value": "{",
+      "type": "punctuation",
+      "original": "{",
+      "line": 6
+    },
+    {
+      "value": "if",
+      "type": "keyword",
+      "original": "if",
+      "line": 7
+    },
+    {
+      "value": "(",
+      "type": "punctuation",
+      "original": "(",
+      "line": 7
+    },
+    {
+      "value": "INT_FUNC",
+      "type": "user_function",
+      "original": "acceptSocket",
+      "line": 7
+    },
+    {
+      "value": "!",
+      "type": "operator",
+      "original": "!",
+      "line": 7
+    },
+    {
+      "value": "=",
+      "type": "operator",
+      "original": "=",
+      "line": 7
+    },
+    {
+      "value": "INT_FUNC",
+      "type": "user_function",
+      "original": "INVALID_SOCKET",
+      "line": 7
+    },
+    {
+      "value": ")",
+      "type": "punctuation",
+      "original": ")",
+      "line": 7
+    },
+    {
+      "value": "{",
+      "type": "punctuation",
+      "original": "{",
+      "line": 8
+    },
+    {
+      "value": "{",
+      "type": "punctuation",
+      "original": "{",
+      "line": 9
+    },
+    {
+      "value": "{",
+      "type": "punctuation",
+      "original": "{",
+      "line": 10
+    },
+    {
+      "value": "{",
+      "type": "punctuation",
+      "original": "{",
+      "line": 11
+    },
+    {
+      "value": "char",
+      "type": "keyword",
+      "original": "char",
+      "line": 12
+    },
+    {
+      "value": "*",
+      "type": "operator",
+      "original": "*",
+      "line": 12
+    },
+    {
+      "value": "INT_FUNC",
+      "type": "user_function",
+      "original": "data",
+      "line": 12
+    }
+  ]
+}

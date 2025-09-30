@@ -60,7 +60,6 @@ class ComplexSentence:
     start_line: int
     end_line: int
     context: Dict[str, Any]
-    vulnerability_score: float = 0.0
 
 class CVulnerabilityFramework:
     def __init__(self):
@@ -503,25 +502,18 @@ class CVulnerabilityFramework:
             if lines[i].strip():
                 following_context.append(lines[i].strip())
         
-        # Analyze vulnerability type
-        vuln_type = self._classify_vulnerability_type(vulnerable_line)
-        risk_level = self._assess_risk_level(vulnerable_line, preceding_context, following_context)
-        
         all_statements = preceding_context + [vulnerable_line] + following_context
-        
+
         return ComplexSentence(
             sentence_type=ComplexSentenceType.VULNERABLE_OPERATION,
             statements=all_statements,
             start_line=line_num - len(preceding_context),
             end_line=line_num + len(following_context),
             context={
-                'vulnerable_statement': vulnerable_line,
+                'focus_line': vulnerable_line,
                 'preceding_context': preceding_context,
-                'following_context': following_context,
-                'vulnerability_type': vuln_type,
-                'risk_level': risk_level
-            },
-            vulnerability_score=risk_level
+                'following_context': following_context
+            }
         )
 
     def normalize_tokens(self, statements: List[str]) -> List[Token]:
@@ -648,38 +640,6 @@ class CVulnerabilityFramework:
         else:
             return f'LOCAL_VAR_{base}'
 
-    def analyze_vulnerability_context(self, complex_sentence: ComplexSentence) -> Dict[str, Any]:
-        """Analyze vulnerability context cho complex sentence"""
-        if complex_sentence.sentence_type != ComplexSentenceType.VULNERABLE_OPERATION:
-            return {}
-        
-        vulnerable_stmt = complex_sentence.context['vulnerable_statement']
-        
-        # Identify vulnerable function
-        vuln_func = None
-        for func in self.vulnerable_functions:
-            if func in vulnerable_stmt:
-                vuln_func = func
-                break
-        
-        if not vuln_func:
-            return {}
-        
-        analysis = {
-            'vulnerable_function': vuln_func,
-            'vulnerability_pattern': self._identify_vulnerability_pattern(vulnerable_stmt),
-            'data_dependencies': self._analyze_data_dependencies(complex_sentence),
-            'control_dependencies': self._analyze_control_dependencies(complex_sentence),
-            'resource_lifecycle': self._track_resource_usage(complex_sentence),
-            'risk_assessment': {
-                'severity': complex_sentence.vulnerability_score,
-                'exploitability': self._assess_exploitability(complex_sentence),
-                'impact': self._assess_impact(complex_sentence)
-            }
-        }
-        
-        return analysis
-
     # Helper methods
     def _is_function_declaration(self, line: str) -> bool:
         """Check if line is a function declaration"""
@@ -745,34 +705,6 @@ class CVulnerabilityFramework:
                 return True
         return False
 
-    def _classify_vulnerability_type(self, statement: str) -> str:
-        """Classify vulnerability type based on statement"""
-        if any(func in statement for func in ['strcpy', 'strcat', 'sprintf']):
-            return 'buffer_overflow'
-        elif any(func in statement for func in ['scanf', 'gets']):
-            return 'input_validation'
-        elif any(op in statement for op in ['+', '*', '<<']):
-            return 'integer_overflow'
-        return 'unknown'
-
-    def _assess_risk_level(self, stmt: str, preceding: List[str], following: List[str]) -> float:
-        """Assess risk level of vulnerable operation"""
-        risk_score = 0.5  # Base risk
-        
-        # High risk functions
-        if any(func in stmt for func in ['strcpy', 'gets', 'sprintf']):
-            risk_score += 0.3
-        
-        # Check for validation in preceding context
-        has_validation = any(
-            'if' in line and ('NULL' in line or '>' in line or '<' in line)
-            for line in preceding
-        )
-        if not has_validation:
-            risk_score += 0.2
-        
-        return min(1.0, risk_score)
-
     def _tokenize_statement(self, statement: str) -> List[str]:
         """Tokenize a C statement"""
         # Simple tokenization - more sophisticated parser would be better
@@ -834,102 +766,6 @@ class CVulnerabilityFramework:
         # In real implementation, this would maintain symbol table
         return {'type': 'int', 'scope': 'local'}
 
-    def _identify_vulnerability_pattern(self, statement: str) -> str:
-        """Identify specific vulnerability pattern"""
-        patterns = {
-            'buffer_overflow': ['strcpy', 'strcat', 'sprintf', 'gets'],
-            'format_string': ['printf', 'sprintf', 'fprintf'],
-            'integer_overflow': ['+', '*', '<<'],
-            'null_dereference': ['->', '*']
-        }
-        
-        for pattern_name, keywords in patterns.items():
-            if any(keyword in statement for keyword in keywords):
-                return pattern_name
-        
-        return 'unknown'
-
-    def _analyze_data_dependencies(self, sentence: ComplexSentence) -> List[str]:
-        """Analyze data flow dependencies"""
-        dependencies = []
-        
-        for stmt in sentence.statements:
-            # Extract variables being used
-            variables = re.findall(r'\b[a-zA-Z_]\w*\b', stmt)
-            dependencies.extend(variables)
-        
-        return list(set(dependencies))  # Remove duplicates
-
-    def _analyze_control_dependencies(self, sentence: ComplexSentence) -> Dict[str, Any]:
-        """Analyze control flow dependencies"""
-        control_deps = {
-            'conditions': [],
-            'loops': [],
-            'branches': []
-        }
-        
-        for stmt in sentence.statements:
-            if 'if' in stmt:
-                condition = re.search(r'if\s*\(([^)]+)\)', stmt)
-                if condition:
-                    control_deps['conditions'].append(condition.group(1))
-            elif any(loop in stmt for loop in ['for', 'while']):
-                control_deps['loops'].append(stmt)
-            elif any(branch in stmt for branch in ['return', 'break', 'continue']):
-                control_deps['branches'].append(stmt)
-        
-        return control_deps
-
-    def _track_resource_usage(self, sentence: ComplexSentence) -> Dict[str, List[str]]:
-        """Track resource allocation and deallocation"""
-        resources = {
-            'allocations': [],
-            'deallocations': [],
-            'file_operations': []
-        }
-        
-        for stmt in sentence.statements:
-            if any(alloc in stmt for alloc in ['malloc', 'calloc', 'alloca']):
-                resources['allocations'].append(stmt)
-            elif 'free' in stmt:
-                resources['deallocations'].append(stmt)
-            elif any(file_op in stmt for file_op in ['fopen', 'fclose']):
-                resources['file_operations'].append(stmt)
-        
-        return resources
-
-    def _assess_exploitability(self, sentence: ComplexSentence) -> float:
-        """Assess how easily exploitable the vulnerability is"""
-        exploitability = 0.5
-        
-        vuln_stmt = sentence.context.get('vulnerable_statement', '')
-        
-        # High exploitability functions
-        if any(func in vuln_stmt for func in ['gets', 'strcpy', 'sprintf']):
-            exploitability += 0.3
-        
-        # Check for user input
-        preceding = sentence.context.get('preceding_context', [])
-        if any(input_func in ' '.join(preceding) for input_func in ['scanf', 'gets', 'fgets']):
-            exploitability += 0.2
-        
-        return min(1.0, exploitability)
-
-    def _assess_impact(self, sentence: ComplexSentence) -> float:
-        """Assess potential impact of the vulnerability"""
-        impact = 0.5
-        
-        # Memory corruption has high impact
-        if sentence.context.get('vulnerability_type') == 'buffer_overflow':
-            impact += 0.3
-        
-        # Privileged operations increase impact
-        statements = ' '.join(sentence.statements)
-        if any(priv in statements for priv in ['system', 'exec', 'setuid']):
-            impact += 0.2
-        
-        return min(1.0, impact)
-
     def generate_hierarchical_representation(self, source_code: str) -> Dict[str, Any]:
         """
         Main method to generate complete hierarchical representation
@@ -983,11 +819,6 @@ class CVulnerabilityFramework:
             hierarchical_repr['simple_sentences'].extend(simple_sentences)
             hierarchical_repr['tokens'].extend(tokens)
         
-        # Vulnerability analysis
-        hierarchical_repr['vulnerability_analysis'] = self._perform_vulnerability_analysis(
-            hierarchical_repr['complex_sentences']
-        )
-        
         return hierarchical_repr
 
     def _extract_simple_sentences(self, function: Function, source_lines: List[str], 
@@ -1015,58 +846,18 @@ class CVulnerabilityFramework:
         
         return simple_sentences
 
-    def _perform_vulnerability_analysis(self, complex_sentences: List[ComplexSentence]) -> Dict[str, Any]:
-        """Perform comprehensive vulnerability analysis"""
-        analysis = {
-            'total_vulnerabilities': 0,
-            'vulnerability_types': {},
-            'risk_distribution': {'low': 0, 'medium': 0, 'high': 0},
-            'detailed_findings': []
-        }
-        
-        for sentence in complex_sentences:
-            if sentence.sentence_type == ComplexSentenceType.VULNERABLE_OPERATION:
-                analysis['total_vulnerabilities'] += 1
-                
-                vuln_context = self.analyze_vulnerability_context(sentence)
-                if vuln_context:
-                    vuln_type = vuln_context.get('vulnerability_pattern', 'unknown')
-                    analysis['vulnerability_types'][vuln_type] = \
-                        analysis['vulnerability_types'].get(vuln_type, 0) + 1
-                    
-                    # Risk categorization
-                    risk_score = sentence.vulnerability_score
-                    if risk_score < 0.4:
-                        analysis['risk_distribution']['low'] += 1
-                    elif risk_score < 0.7:
-                        analysis['risk_distribution']['medium'] += 1
-                    else:
-                        analysis['risk_distribution']['high'] += 1
-                    
-                    analysis['detailed_findings'].append({
-                        'line_range': f"{sentence.start_line}-{sentence.end_line}",
-                        'vulnerability_type': vuln_type,
-                        'risk_score': risk_score,
-                        'vulnerable_statement': sentence.context.get('vulnerable_statement'),
-                        'context_analysis': vuln_context
-                    })
-        
-        return analysis
-
     def export_analysis_report(self, hierarchical_repr: Dict[str, Any]) -> str:
-        """Export comprehensive analysis report"""
+        """Export a concise textual summary of the slicing result."""
         report = []
         
-        # Program Level Summary
         program = hierarchical_repr['program_level']
-        report.append("=== PROGRAM LEVEL ANALYSIS ===")
+        report.append("=== PROGRAM LEVEL SUMMARY ===")
         report.append(f"Total Lines: {program['total_lines']}")
         report.append(f"Functions: {len(program['functions'])}")
         report.append(f"Critical Includes: {program['includes']['critical_includes']}")
         report.append("")
         
-        # Function Level Summary
-        report.append("=== FUNCTION LEVEL ANALYSIS ===")
+        report.append("=== FUNCTION LEVEL SUMMARY ===")
         for func_analysis in hierarchical_repr['function_level']:
             func = func_analysis['function_info']
             report.append(f"Function: {func.name} -> {func_analysis['normalized_name']}")
@@ -1074,24 +865,6 @@ class CVulnerabilityFramework:
             report.append(f"  Complex Sentences: {len(func_analysis['complex_sentences'])}")
             report.append(f"  Simple Sentences: {len(func_analysis['simple_sentences'])}")
             report.append("")
-        
-        # Vulnerability Analysis
-        vuln_analysis = hierarchical_repr['vulnerability_analysis']
-        report.append("=== VULNERABILITY ANALYSIS ===")
-        report.append(f"Total Vulnerabilities Found: {vuln_analysis['total_vulnerabilities']}")
-        report.append(f"Risk Distribution: {vuln_analysis['risk_distribution']}")
-        report.append(f"Vulnerability Types: {vuln_analysis['vulnerability_types']}")
-        report.append("")
-        
-        # Detailed Findings
-        if vuln_analysis['detailed_findings']:
-            report.append("=== DETAILED VULNERABILITY FINDINGS ===")
-            for finding in vuln_analysis['detailed_findings']:
-                report.append(f"Lines {finding['line_range']}: {finding['vulnerability_type'].upper()}")
-                report.append(f"  Risk Score: {finding['risk_score']:.2f}")
-                report.append(f"  Statement: {finding['vulnerable_statement']}")
-                report.append("")
-        
         return '\n'.join(report)
 
 
@@ -1099,7 +872,7 @@ def main():
     """Analyze a C source file specified by the user (defaults to sample.c)."""
 
     parser = argparse.ArgumentParser(
-        description="Analyze a C source file for potential vulnerabilities."
+        description="Generate a hierarchical code slice for a C source file."
     )
     parser.add_argument(
         "input_file",
@@ -1139,7 +912,7 @@ def main():
 
     framework = CVulnerabilityFramework()
 
-    print("🔍 Analyzing C code for vulnerabilities...")
+    print("🔍 Performing hierarchical code slicing...")
     print(f"Source file: {source_path}")
     print("=" * 50)
 
@@ -1147,8 +920,6 @@ def main():
 
     report = framework.export_analysis_report(analysis)
     print(report)
-
-    print("=== DETAILED HIERARCHICAL STRUCTURE (JSON) ===")
 
     serializable_analysis = {}
     for key, value in analysis.items():
@@ -1158,8 +929,7 @@ def main():
                     'type': cs.sentence_type.value,
                     'statements': cs.statements,
                     'line_range': f"{cs.start_line}-{cs.end_line}",
-                    'context': cs.context,
-                    'vulnerability_score': cs.vulnerability_score
+                    'context': cs.context
                 }
                 for cs in value
             ]
@@ -1189,7 +959,10 @@ def main():
         else:
             serializable_analysis[key] = value
 
-    print(json.dumps(serializable_analysis, indent=2, default=str))
+    output_path = source_path.with_suffix('.json')
+    output_path.write_text(json.dumps(serializable_analysis, indent=2, default=str), encoding="utf-8")
+
+    print(f"📝 Slicing result saved to {output_path}")
 
 
 if __name__ == "__main__":
