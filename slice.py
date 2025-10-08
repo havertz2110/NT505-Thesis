@@ -13,6 +13,8 @@ from enum import Enum
 import json
 import sys
 from pathlib import Path
+from datetime import datetime
+from collections import defaultdict
 
 class TokenType(Enum):
     LIBRARY_FUNCTION = "library_function"
@@ -61,8 +63,114 @@ class ComplexSentence:
     end_line: int
     context: Dict[str, Any]
 
+class TokenRegistry:
+    """
+    Centralized token registry for deduplication and reusability
+    Manages unique tokens across multiple source files
+    """
+    def __init__(self, registry_path: Path = None):
+        self.registry_path = registry_path or Path("token.json")
+        self.token_to_id: Dict[Tuple[str, str], str] = {}  # (value, type) -> token_id
+        self.id_to_token: Dict[str, Dict[str, str]] = {}   # token_id -> {value, type, original}
+        self.next_id = 1
+        self.statistics = defaultdict(int)
+
+        # Load existing registry if available
+        if self.registry_path.exists():
+            self._load_registry()
+
+    def _load_registry(self):
+        """Load existing token registry from file"""
+        try:
+            data = json.loads(self.registry_path.read_text(encoding='utf-8'))
+
+            for token_id, token_info in data.get('token_registry', {}).items():
+                self.id_to_token[token_id] = token_info
+                key = (token_info['value'], token_info['type'])
+                self.token_to_id[key] = token_id
+
+                # Update next_id
+                id_num = int(token_id[1:])  # Extract number from "T001"
+                if id_num >= self.next_id:
+                    self.next_id = id_num + 1
+
+            self.statistics = defaultdict(int, data.get('statistics', {}).get('by_type', {}))
+        except Exception as e:
+            print(f"Warning: Could not load token registry: {e}")
+            # Start fresh if load fails
+            pass
+
+    def register_token(self, token: Token) -> str:
+        """
+        Register a token and return its unique ID
+        If token already exists, return existing ID
+        """
+        key = (token.value, token.token_type.value)
+
+        if key in self.token_to_id:
+            return self.token_to_id[key]
+
+        # Create new token ID
+        token_id = f"T{self.next_id:04d}"  # Format: T0001, T0002, ...
+        self.next_id += 1
+
+        # Store token
+        self.id_to_token[token_id] = {
+            'value': token.value,
+            'type': token.token_type.value,
+            'original': token.original
+        }
+        self.token_to_id[key] = token_id
+        self.statistics[token.token_type.value] += 1
+
+        return token_id
+
+    def save_registry(self):
+        """Save token registry to file"""
+        registry_data = {
+            'version': '1.0',
+            'last_updated': datetime.now().isoformat(),
+            'token_registry': self.id_to_token,
+            'statistics': {
+                'total_tokens': len(self.id_to_token),
+                'unique_tokens': len(self.token_to_id),
+                'by_type': dict(self.statistics)
+            }
+        }
+
+        self.registry_path.write_text(
+            json.dumps(registry_data, indent=2, ensure_ascii=False),
+            encoding='utf-8'
+        )
+
+    def get_token_info(self, token_id: str) -> Optional[Dict[str, str]]:
+        """Get token information by ID"""
+        return self.id_to_token.get(token_id)
+
+    def merge_from_file(self, other_registry_path: Path):
+        """Merge tokens from another registry file"""
+        if not other_registry_path.exists():
+            return
+
+        try:
+            other_data = json.loads(other_registry_path.read_text(encoding='utf-8'))
+            for token_id, token_info in other_data.get('token_registry', {}).items():
+                key = (token_info['value'], token_info['type'])
+
+                # Only add if not already present
+                if key not in self.token_to_id:
+                    new_token_id = f"T{self.next_id:04d}"
+                    self.next_id += 1
+
+                    self.id_to_token[new_token_id] = token_info
+                    self.token_to_id[key] = new_token_id
+                    self.statistics[token_info['type']] += 1
+        except Exception as e:
+            print(f"Warning: Could not merge registry: {e}")
+
 class CVulnerabilityFramework:
-    def __init__(self):
+    def __init__(self, token_registry: TokenRegistry = None):
+        self.token_registry = token_registry or TokenRegistry()
         self.library_functions = {
             # Memory management
             'malloc', 'free', 'calloc', 'realloc',
@@ -165,7 +273,6 @@ class CVulnerabilityFramework:
             'functions': functions,
             'modules': self._extract_modules(lines),
             'total_lines': len(lines),
-            'complexity_score': 0
         }
 
         return program_structure
@@ -584,8 +691,7 @@ class CVulnerabilityFramework:
                     'loop_type': 'for',
                     'init': init_clause,
                     'condition': condition_clause,
-                    'increment': increment_clause,
-                    'complexity_score': len(body_statements) * 0.5
+                    'increment': increment_clause
                 }
             )
 
@@ -606,8 +712,7 @@ class CVulnerabilityFramework:
                 end_line=line_num + (body_end - start_idx),
                 context={
                     'loop_type': 'while',
-                    'condition': condition,
-                    'complexity_score': len(body_statements) * 0.5
+                    'condition': condition
                 }
             )
 
@@ -657,8 +762,7 @@ class CVulnerabilityFramework:
             context={
                 'condition': condition,
                 'then_branch': then_statements,
-                'else_branch': else_body if else_body else None,
-                'complexity_score': (len(then_statements) + len(else_body)) * 0.3
+                'else_branch': else_body if else_body else None
             }
         )
 
@@ -983,61 +1087,165 @@ class CVulnerabilityFramework:
         """Lookup variable metadata from current symbol table"""
         return symbol_table.get(var_name, {'type': 'generic', 'scope': 'local'})
 
+    def _map_functions_to_modules(self, modules: List[Dict[str, Any]],
+                                  functions: List[Function]) -> Dict[str, List[Function]]:
+        """Map functions to their corresponding modules based on line ranges"""
+        module_functions_map: Dict[str, List[Function]] = {module['name']: [] for module in modules}
+
+        for function in functions:
+            assigned = False
+            for module in modules:
+                # Check if function is within module's line range
+                if (function.body_start >= module['start_line'] - 1 and
+                    function.body_end <= module['end_line']):
+                    module_functions_map[module['name']].append(function)
+                    assigned = True
+                    break
+
+            # If not assigned to any module, it will be handled as orphan function
+            if not assigned:
+                pass  # Will be collected later as orphan
+
+        return module_functions_map
+
+    def _analyze_function_nested(self, function: Function, lines: List[str]) -> Dict[str, Any]:
+        """
+        Analyze a single function and return nested structure
+        L3: Function → L4: Statement Blocks → L5: Tokens
+        """
+        symbol_table = self._build_symbol_table(function, lines)
+
+        # L3: Function Level
+        func_repr = {
+            'level': 'L3_FUNCTION',
+            'name': function.name,
+            'normalized_name': self._normalize_user_function(function.name, function.return_type),
+            'return_type': function.return_type,
+            'parameters': [
+                {
+                    'original_name': param.name,
+                    'normalized_name': self._normalize_variable(param.name, param.var_type, param.scope),
+                    'type': param.var_type,
+                    'scope': param.scope
+                }
+                for param in function.parameters
+            ],
+            'body_start': function.body_start,
+            'body_end': function.body_end,
+            'statement_blocks': []  # L4 will be nested here
+        }
+
+        # L4: Statement Block Level (Complex Sentences)
+        complex_sentences = self.extract_complex_sentences(function, lines)
+
+        for cs in complex_sentences:
+            cs_repr = {
+                'level': 'L4_COMPLEX_SENTENCE',
+                'type': cs.sentence_type.value,
+                'start_line': cs.start_line,
+                'end_line': cs.end_line,
+                'context': cs.context,
+                'statements': cs.statements,
+                'tokens': []  # L5 will be nested here
+            }
+
+            # L5: Tokenize this complex sentence and register tokens
+            cs_tokens = self.normalize_tokens(cs.statements, symbol_table)
+            cs_repr['tokens'] = [
+                self.token_registry.register_token(token)
+                for token in cs_tokens
+            ]
+
+            func_repr['statement_blocks'].append(cs_repr)
+
+        # L4: Statement Block Level (Simple Sentences)
+        simple_sentences = self._extract_simple_sentences(function, lines, complex_sentences)
+
+        for simple_stmt in simple_sentences:
+            simple_repr = {
+                'level': 'L4_SIMPLE_SENTENCE',
+                'type': 'simple_statement',
+                'statement': simple_stmt,
+                'tokens': []  # L5 will be nested here
+            }
+
+            # L5: Tokenize this simple sentence and register tokens
+            simple_tokens = self.normalize_tokens([simple_stmt], symbol_table)
+            simple_repr['tokens'] = [
+                self.token_registry.register_token(token)
+                for token in simple_tokens
+            ]
+
+            func_repr['statement_blocks'].append(simple_repr)
+
+        return func_repr
+
     def generate_hierarchical_representation(self, source_code: str) -> Dict[str, Any]:
         """
-        Main method to generate complete hierarchical representation
+        Main method to generate complete nested hierarchical representation
+        L1: Program → L2: Modules → L3: Functions → L4: Statement Blocks → L5: Tokens
         """
-        # Phase 1: Program Level
-        program_structure = self.parse_program(source_code)
-        
         lines = source_code.splitlines()
-        
-        # Phase 2: Function Level processing
+
+        # Phase 1: Program Level (L1)
+        program_structure = self.parse_program(source_code)
+
+        # L1: Program Level - Top level structure
         hierarchical_repr = {
-            'program_level': program_structure,
-            'function_level': [],
-            'complex_sentences': [],
-            'simple_sentences': [],
-            'tokens': []
+            'level': 'L1_PROGRAM',
+            'total_lines': program_structure['total_lines'],
+            'includes': program_structure['includes'],
+            'global_variables': program_structure['global_variables'],
+            'modules': []  # L2 will be nested here
         }
-        
-        for function in program_structure['functions']:
-            func_analysis = {
-                'function_info': function,
-                'normalized_name': self._normalize_user_function(function.name, function.return_type),
-                'normalized_params': [
-                    self._normalize_variable(param.name, param.var_type, param.scope)
-                    for param in function.parameters
-                ]
+
+        # Build module-function mapping
+        module_functions_map = self._map_functions_to_modules(
+            program_structure['modules'],
+            program_structure['functions']
+        )
+
+        # L2: Module Level (nested in Program)
+        for module in program_structure['modules']:
+            module_repr = {
+                'level': 'L2_MODULE',
+                'name': module['name'],
+                'type': module['type'],
+                'start_line': module['start_line'],
+                'end_line': module['end_line'],
+                'functions': []  # L3 will be nested here
             }
-            
-            # Phase 3: Extract complex sentences
-            complex_sentences = self.extract_complex_sentences(function, lines)
-            
-            # Phase 4: Extract simple sentences (remaining statements)
-            simple_sentences = self._extract_simple_sentences(function, lines, complex_sentences)
-            
-            symbol_table = self._build_symbol_table(function, lines)
-            
-            # Phase 5: Token normalization
-            all_statements = []
-            for cs in complex_sentences:
-                all_statements.extend(cs.statements)
-            all_statements.extend(simple_sentences)
-            
-            tokens = self.normalize_tokens(all_statements, symbol_table)
-            
-            func_analysis.update({
-                'complex_sentences': complex_sentences,
-                'simple_sentences': simple_sentences,
-                'tokens': tokens
-            })
-            
-            hierarchical_repr['function_level'].append(func_analysis)
-            hierarchical_repr['complex_sentences'].extend(complex_sentences)
-            hierarchical_repr['simple_sentences'].extend(simple_sentences)
-            hierarchical_repr['tokens'].extend(tokens)
-        
+
+            # Get functions belonging to this module
+            module_functions = module_functions_map.get(module['name'], [])
+
+            # L3: Function Level (nested in Module)
+            for function in module_functions:
+                func_repr = self._analyze_function_nested(function, lines)
+                module_repr['functions'].append(func_repr)
+
+            hierarchical_repr['modules'].append(module_repr)
+
+        # Handle functions not belonging to any module (global functions)
+        orphan_functions = [f for f in program_structure['functions']
+                           if f not in [func for funcs in module_functions_map.values() for func in funcs]]
+
+        if orphan_functions:
+            global_module = {
+                'level': 'L2_MODULE',
+                'name': 'GLOBAL_SCOPE',
+                'type': 'implicit_module',
+                'start_line': 1,
+                'end_line': program_structure['total_lines'],
+                'functions': []
+            }
+
+            for function in orphan_functions:
+                func_repr = self._analyze_function_nested(function, lines)
+                global_module['functions'].append(func_repr)
+
+            hierarchical_repr['modules'].append(global_module)
+
         return hierarchical_repr
 
     def _extract_simple_sentences(self, function: Function, source_lines: List[str], 
@@ -1066,24 +1274,81 @@ class CVulnerabilityFramework:
         return simple_sentences
 
     def export_analysis_report(self, hierarchical_repr: Dict[str, Any]) -> str:
-        """Export a concise textual summary of the slicing result."""
+        """Export a concise textual summary of the nested hierarchical slicing result."""
         report = []
-        
-        program = hierarchical_repr['program_level']
-        report.append("=== PROGRAM LEVEL SUMMARY ===")
-        report.append(f"Total Lines: {program['total_lines']}")
-        report.append(f"Functions: {len(program['functions'])}")
-        report.append(f"Critical Includes: {program['includes']['critical_includes']}")
+
+        # L1: Program Level
+        report.append("=" * 70)
+        report.append("L1: PROGRAM LEVEL")
+        report.append("=" * 70)
+        report.append(f"Total Lines: {hierarchical_repr['total_lines']}")
+        report.append(f"Critical Includes: {hierarchical_repr['includes']['critical_includes']}")
+        report.append(f"System Includes: {hierarchical_repr['includes']['system_includes']}")
+        report.append(f"Global Variables: {len(hierarchical_repr['global_variables'])}")
+        report.append(f"Modules: {len(hierarchical_repr['modules'])}")
         report.append("")
-        
-        report.append("=== FUNCTION LEVEL SUMMARY ===")
-        for func_analysis in hierarchical_repr['function_level']:
-            func = func_analysis['function_info']
-            report.append(f"Function: {func.name} -> {func_analysis['normalized_name']}")
-            report.append(f"  Parameters: {len(func.parameters)}")
-            report.append(f"  Complex Sentences: {len(func_analysis['complex_sentences'])}")
-            report.append(f"  Simple Sentences: {len(func_analysis['simple_sentences'])}")
+
+        # L2: Module Level
+        for module in hierarchical_repr['modules']:
+            report.append("  " + "-" * 66)
+            report.append(f"  L2: MODULE - {module['name']}")
+            report.append("  " + "-" * 66)
+            report.append(f"  Type: {module['type']}")
+            report.append(f"  Lines: {module['start_line']}-{module['end_line']}")
+            report.append(f"  Functions: {len(module['functions'])}")
             report.append("")
+
+            # L3: Function Level
+            for function in module['functions']:
+                report.append(f"    L3: FUNCTION - {function['name']}")
+                report.append(f"        Normalized: {function['normalized_name']}")
+                report.append(f"        Return Type: {function['return_type']}")
+                report.append(f"        Parameters: {len(function['parameters'])}")
+
+                if function['parameters']:
+                    for param in function['parameters']:
+                        report.append(f"          - {param['original_name']} ({param['type']}) -> {param['normalized_name']}")
+
+                report.append(f"        Statement Blocks: {len(function['statement_blocks'])}")
+
+                # L4: Statement Block Level
+                complex_count = sum(1 for sb in function['statement_blocks']
+                                   if sb['level'] == 'L4_COMPLEX_SENTENCE')
+                simple_count = sum(1 for sb in function['statement_blocks']
+                                  if sb['level'] == 'L4_SIMPLE_SENTENCE')
+
+                report.append(f"          Complex Sentences: {complex_count}")
+                report.append(f"          Simple Sentences: {simple_count}")
+
+                # Show example of first complex sentence
+                for sb in function['statement_blocks']:
+                    if sb['level'] == 'L4_COMPLEX_SENTENCE':
+                        report.append(f"          Example Complex: {sb['type']} (lines {sb['start_line']}-{sb['end_line']})")
+                        report.append(f"            Token IDs: {len(sb['tokens'])} tokens")
+                        if sb['tokens']:
+                            report.append(f"            Sample: {sb['tokens'][:5]}...")
+                        break
+
+                report.append("")
+
+        report.append("=" * 70)
+        report.append("SUMMARY STATISTICS")
+        report.append("=" * 70)
+
+        total_functions = sum(len(m['functions']) for m in hierarchical_repr['modules'])
+        total_stmt_blocks = sum(len(f['statement_blocks'])
+                               for m in hierarchical_repr['modules']
+                               for f in m['functions'])
+        total_tokens = sum(len(sb['tokens'])
+                          for m in hierarchical_repr['modules']
+                          for f in m['functions']
+                          for sb in f['statement_blocks'])
+
+        report.append(f"Total Modules: {len(hierarchical_repr['modules'])}")
+        report.append(f"Total Functions: {total_functions}")
+        report.append(f"Total Statement Blocks: {total_stmt_blocks}")
+        report.append(f"Total Tokens: {total_tokens}")
+
         return '\n'.join(report)
 
 
@@ -1114,24 +1379,26 @@ def main():
 
     source_path = next((path for path in candidate_paths if path.is_file()), None)
     if source_path is None:
-        print(f"❌ Unable to locate C source file '{args.input_file}'.", file=sys.stderr)
+        print(f"Unable to locate C source file '{args.input_file}'.", file=sys.stderr)
         for path in candidate_paths:
-            print(f"  ✘ {path}", file=sys.stderr)
+            print(f"  X {path}", file=sys.stderr)
         sys.exit(1)
 
     try:
         sample_code = source_path.read_text(encoding="utf-8", errors="ignore")
     except OSError as exc:
-        print(f"❌ Failed to read '{source_path}': {exc}", file=sys.stderr)
+        print(f"Failed to read '{source_path}': {exc}", file=sys.stderr)
         sys.exit(1)
 
     if not sample_code.strip():
-        print(f"⚠️ The source file '{source_path}' is empty.", file=sys.stderr)
+        print(f"Warning: The source file '{source_path}' is empty.", file=sys.stderr)
         sys.exit(1)
 
-    framework = CVulnerabilityFramework()
+    # Initialize framework with token registry
+    token_registry = TokenRegistry(Path("token.json"))
+    framework = CVulnerabilityFramework(token_registry)
 
-    print("🔍 Performing hierarchical code slicing...")
+    print("Performing hierarchical code slicing...")
     print(f"Source file: {source_path}")
     print("=" * 50)
 
@@ -1140,48 +1407,33 @@ def main():
     report = framework.export_analysis_report(analysis)
     print(report)
 
-    serializable_analysis = {}
-    for key, value in analysis.items():
-        if key == 'complex_sentences':
-            serializable_analysis[key] = [
-                {
-                    'type': cs.sentence_type.value,
-                    'statements': cs.statements,
-                    'line_range': f"{cs.start_line}-{cs.end_line}",
-                    'context': cs.context
-                }
-                for cs in value
-            ]
-        elif key == 'tokens':
-            preview_count = max(0, args.token_preview)
-            serializable_analysis[key] = [
-                {
-                    'value': token.value,
-                    'type': token.token_type.value,
-                    'original': token.original,
-                    'line': token.line_number
-                }
-                for token in (value[:preview_count] if preview_count else [])
-            ]
-        elif key == 'function_level':
-            serializable_analysis[key] = [
-                {
-                    'function_name': fa['function_info'].name,
-                    'normalized_name': fa['normalized_name'],
-                    'return_type': fa['function_info'].return_type,
-                    'parameter_count': len(fa['function_info'].parameters),
-                    'complex_sentence_count': len(fa['complex_sentences']),
-                    'simple_sentence_count': len(fa['simple_sentences'])
-                }
-                for fa in value
-            ]
+    # The analysis is already in serializable format (nested structure)
+    # Just need to convert any remaining enum or dataclass objects
+    def make_serializable(obj):
+        """Recursively convert objects to JSON-serializable format"""
+        if isinstance(obj, dict):
+            return {k: make_serializable(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [make_serializable(item) for item in obj]
+        elif hasattr(obj, '__dict__'):
+            return make_serializable(obj.__dict__)
+        elif isinstance(obj, Enum):
+            return obj.value
         else:
-            serializable_analysis[key] = value
+            return obj
 
+    serializable_analysis = make_serializable(analysis)
+
+    # Save main analysis JSON
     output_path = source_path.with_suffix('.json')
     output_path.write_text(json.dumps(serializable_analysis, indent=2, default=str), encoding="utf-8")
+    print(f"Slicing result saved to {output_path}")
 
-    print(f"📝 Slicing result saved to {output_path}")
+    # Save token registry
+    token_registry.save_registry()
+    print(f"Token registry saved to {token_registry.registry_path}")
+    print(f"  Total unique tokens: {token_registry.statistics.get('total', len(token_registry.id_to_token))}")
+    print(f"  Token types: {dict(token_registry.statistics)}")
 
 
 if __name__ == "__main__":
