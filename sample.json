@@ -46,26 +46,26 @@
                 "break;"
               ],
               "tokens": [
-                "T0001",
-                "T0002",
-                "T0003",
-                "T0002",
-                "T0003",
-                "T0002",
-                "T0004",
-                "T0005",
-                "T0004",
-                "T0006",
-                "T0005",
-                "T0007",
-                "T0008",
-                "T0006",
-                "T0009",
-                "T0010",
-                "T0008",
-                "T0006",
-                "T0011",
-                "T0012"
+                "if",
+                "(",
+                "WSAStartup",
+                "(",
+                "MAKEWORD",
+                "(",
+                "2",
+                ",",
+                "2",
+                ")",
+                ",",
+                "&",
+                "wsaData",
+                ")",
+                "!",
+                "=",
+                "NO_ERROR",
+                ")",
+                "break",
+                ";"
               ]
             },
             {
@@ -85,15 +85,15 @@
                 "break;"
               ],
               "tokens": [
-                "T0001",
-                "T0002",
-                "T0008",
-                "T0010",
-                "T0010",
-                "T0008",
-                "T0006",
-                "T0011",
-                "T0012"
+                "if",
+                "(",
+                "listenSocket",
+                "=",
+                "=",
+                "INVALID_SOCKET",
+                ")",
+                "break",
+                ";"
               ]
             },
             {
@@ -113,31 +113,31 @@
                 "break;"
               ],
               "tokens": [
-                "T0001",
-                "T0002",
-                "T0008",
-                "T0010",
-                "T0010",
-                "T0003",
-                "T0002",
-                "T0008",
-                "T0005",
-                "T0002",
-                "T0013",
-                "T0008",
-                "T0014",
-                "T0006",
-                "T0007",
-                "T0015",
-                "T0005",
-                "T0016",
-                "T0002",
-                "T0015",
-                "T0006",
-                "T0006",
-                "T0006",
-                "T0011",
-                "T0012"
+                "if",
+                "(",
+                "SOCKET_ERROR",
+                "=",
+                "=",
+                "bind",
+                "(",
+                "listenSocket",
+                ",",
+                "(",
+                "struct",
+                "sockaddr",
+                "*",
+                ")",
+                "&",
+                "service",
+                ",",
+                "sizeof",
+                "(",
+                "service",
+                ")",
+                ")",
+                ")",
+                "break",
+                ";"
               ]
             },
             {
@@ -157,20 +157,20 @@
                 "break;"
               ],
               "tokens": [
-                "T0001",
-                "T0002",
-                "T0008",
-                "T0010",
-                "T0010",
-                "T0003",
-                "T0002",
-                "T0008",
-                "T0005",
-                "T0008",
-                "T0006",
-                "T0006",
-                "T0011",
-                "T0012"
+                "if",
+                "(",
+                "SOCKET_ERROR",
+                "=",
+                "=",
+                "listen",
+                "(",
+                "listenSocket",
+                ",",
+                "LISTEN_BACKLOG",
+                ")",
+                ")",
+                "break",
+                ";"
               ]
             },
             {
@@ -190,15 +190,15 @@
                 "break;"
               ],
               "tokens": [
-                "T0001",
-                "T0002",
-                "T0008",
-                "T0010",
-                "T0010",
-                "T0008",
-                "T0006",
-                "T0011",
-                "T0012"
+                "if",
+                "(",
+                "acceptSocket",
+                "=",
+                "=",
+                "INVALID_SOCKET",
+                ")",
+                "break",
+                ";"
               ]
             },
             {
@@ -218,21 +218,21 @@
                 "break;"
               ],
               "tokens": [
-                "T0001",
-                "T0002",
-                "T0017",
-                "T0010",
-                "T0010",
-                "T0008",
-                "T0018",
-                "T0018",
-                "T0017",
-                "T0010",
-                "T0010",
-                "T0019",
-                "T0006",
-                "T0011",
-                "T0012"
+                "if",
+                "(",
+                "recvResult",
+                "=",
+                "=",
+                "SOCKET_ERROR",
+                "|",
+                "|",
+                "recvResult",
+                "=",
+                "=",
+                "0",
+                ")",
+                "break",
+                ";"
               ]
             },
             {
@@ -249,18 +249,18 @@
                 "if (acceptSocket != INVALID_SOCKET)"
               ],
               "tokens": [
-                "T0020",
-                "T0002",
-                "T0019",
-                "T0006",
-                "T0012",
-                "T0001",
-                "T0002",
-                "T0008",
-                "T0009",
-                "T0010",
-                "T0008",
-                "T0006"
+                "while",
+                "(",
+                "0",
+                ")",
+                ";",
+                "if",
+                "(",
+                "acceptSocket",
+                "!",
+                "=",
+                "INVALID_SOCKET",
+                ")"
               ]
             },
             {
@@ -280,18 +280,18 @@
                 "closesocket(acceptSocket);"
               ],
               "tokens": [
-                "T0001",
-                "T0002",
-                "T0008",
-                "T0009",
-                "T0010",
-                "T0008",
-                "T0006",
-                "T0003",
-                "T0002",
-                "T0008",
-                "T0006",
-                "T0012"
+                "if",
+                "(",
+                "acceptSocket",
+                "!",
+                "=",
+                "INVALID_SOCKET",
+                ")",
+                "closesocket",
+                "(",
+                "acceptSocket",
+                ")",
+                ";"
               ]
             },
             {
@@ -311,18 +311,18 @@
                 "closesocket(listenSocket);"
               ],
               "tokens": [
-                "T0001",
-                "T0002",
-                "T0008",
-                "T0009",
-                "T0010",
-                "T0008",
-                "T0006",
-                "T0003",
-                "T0002",
-                "T0008",
-                "T0006",
-                "T0012"
+                "if",
+                "(",
+                "listenSocket",
+                "!",
+                "=",
+                "INVALID_SOCKET",
+                ")",
+                "closesocket",
+                "(",
+                "listenSocket",
+                ")",
+                ";"
               ]
             },
             {
@@ -342,14 +342,14 @@
                 "WSACleanup();"
               ],
               "tokens": [
-                "T0001",
-                "T0002",
-                "T0021",
-                "T0006",
-                "T0003",
-                "T0002",
-                "T0006",
-                "T0012"
+                "if",
+                "(",
+                "wsaDataInit",
+                ")",
+                "WSACleanup",
+                "(",
+                ")",
+                ";"
               ]
             },
             {
@@ -371,24 +371,24 @@
                 "exit(1);"
               ],
               "tokens": [
-                "T0001",
-                "T0002",
-                "T0009",
-                "T0003",
-                "T0002",
-                "T0022",
-                "T0006",
-                "T0006",
-                "T0003",
-                "T0002",
-                "T0023",
-                "T0006",
-                "T0012",
-                "T0003",
-                "T0002",
-                "T0024",
-                "T0006",
-                "T0012"
+                "if",
+                "(",
+                "!",
+                "SetComputerNameA",
+                "(",
+                "data",
+                ")",
+                ")",
+                "printLine",
+                "(",
+                "\"Failure setting computer name\"",
+                ")",
+                ";",
+                "exit",
+                "(",
+                "1",
+                ")",
+                ";"
               ]
             },
             {
@@ -396,10 +396,10 @@
               "type": "simple_statement",
               "statement": "char * data;",
               "tokens": [
-                "T0025",
-                "T0014",
-                "T0022",
-                "T0012"
+                "char",
+                "*",
+                "data",
+                ";"
               ]
             },
             {
@@ -407,14 +407,14 @@
               "type": "simple_statement",
               "statement": "char dataBuffer[100] = \"\";",
               "tokens": [
-                "T0025",
-                "T0008",
-                "T0026",
-                "T0004",
-                "T0027",
-                "T0010",
-                "T0023",
-                "T0012"
+                "char",
+                "dataBuffer",
+                "[",
+                "100",
+                "]",
+                "=",
+                "\"\"",
+                ";"
               ]
             },
             {
@@ -422,10 +422,10 @@
               "type": "simple_statement",
               "statement": "data = dataBuffer;",
               "tokens": [
-                "T0022",
-                "T0010",
-                "T0008",
-                "T0012"
+                "data",
+                "=",
+                "dataBuffer",
+                ";"
               ]
             },
             {
@@ -433,9 +433,9 @@
               "type": "simple_statement",
               "statement": "WSADATA wsaData;",
               "tokens": [
-                "T0008",
-                "T0008",
-                "T0012"
+                "WSADATA",
+                "wsaData",
+                ";"
               ]
             },
             {
@@ -443,11 +443,11 @@
               "type": "simple_statement",
               "statement": "BOOL wsaDataInit = FALSE;",
               "tokens": [
-                "T0008",
-                "T0021",
-                "T0010",
-                "T0008",
-                "T0012"
+                "BOOL",
+                "wsaDataInit",
+                "=",
+                "FALSE",
+                ";"
               ]
             },
             {
@@ -455,11 +455,11 @@
               "type": "simple_statement",
               "statement": "SOCKET listenSocket = INVALID_SOCKET;",
               "tokens": [
-                "T0008",
-                "T0008",
-                "T0010",
-                "T0008",
-                "T0012"
+                "SOCKET",
+                "listenSocket",
+                "=",
+                "INVALID_SOCKET",
+                ";"
               ]
             },
             {
@@ -467,11 +467,11 @@
               "type": "simple_statement",
               "statement": "SOCKET acceptSocket = INVALID_SOCKET;",
               "tokens": [
-                "T0008",
-                "T0008",
-                "T0010",
-                "T0008",
-                "T0012"
+                "SOCKET",
+                "acceptSocket",
+                "=",
+                "INVALID_SOCKET",
+                ";"
               ]
             },
             {
@@ -479,10 +479,10 @@
               "type": "simple_statement",
               "statement": "struct sockaddr_in service;",
               "tokens": [
-                "T0013",
-                "T0008",
-                "T0015",
-                "T0012"
+                "struct",
+                "sockaddr_in",
+                "service",
+                ";"
               ]
             },
             {
@@ -490,9 +490,9 @@
               "type": "simple_statement",
               "statement": "int recvResult;",
               "tokens": [
-                "T0028",
-                "T0017",
-                "T0012"
+                "int",
+                "recvResult",
+                ";"
               ]
             },
             {
@@ -500,7 +500,7 @@
               "type": "simple_statement",
               "statement": "do",
               "tokens": [
-                "T0029"
+                "do"
               ]
             },
             {
@@ -508,10 +508,10 @@
               "type": "simple_statement",
               "statement": "wsaDataInit = 1;",
               "tokens": [
-                "T0021",
-                "T0010",
-                "T0024",
-                "T0012"
+                "wsaDataInit",
+                "=",
+                "1",
+                ";"
               ]
             },
             {
@@ -519,17 +519,17 @@
               "type": "simple_statement",
               "statement": "listenSocket = socket(PF_INET, SOCK_STREAM, 0);",
               "tokens": [
-                "T0008",
-                "T0010",
-                "T0003",
-                "T0002",
-                "T0008",
-                "T0005",
-                "T0008",
-                "T0005",
-                "T0019",
-                "T0006",
-                "T0012"
+                "listenSocket",
+                "=",
+                "socket",
+                "(",
+                "PF_INET",
+                ",",
+                "SOCK_STREAM",
+                ",",
+                "0",
+                ")",
+                ";"
               ]
             },
             {
@@ -537,19 +537,19 @@
               "type": "simple_statement",
               "statement": "memset(&service, 0, sizeof(service));",
               "tokens": [
-                "T0030",
-                "T0002",
-                "T0007",
-                "T0015",
-                "T0005",
-                "T0019",
-                "T0005",
-                "T0016",
-                "T0002",
-                "T0015",
-                "T0006",
-                "T0006",
-                "T0012"
+                "memset",
+                "(",
+                "&",
+                "service",
+                ",",
+                "0",
+                ",",
+                "sizeof",
+                "(",
+                "service",
+                ")",
+                ")",
+                ";"
               ]
             },
             {
@@ -557,12 +557,12 @@
               "type": "simple_statement",
               "statement": "service.sin_family = AF_INET;",
               "tokens": [
-                "T0015",
-                "T0031",
-                "T0008",
-                "T0010",
-                "T0008",
-                "T0012"
+                "service",
+                ".",
+                "sin_family",
+                "=",
+                "AF_INET",
+                ";"
               ]
             },
             {
@@ -570,14 +570,14 @@
               "type": "simple_statement",
               "statement": "service.sin_addr.s_addr = INADDR_ANY;",
               "tokens": [
-                "T0015",
-                "T0031",
-                "T0008",
-                "T0031",
-                "T0008",
-                "T0010",
-                "T0008",
-                "T0012"
+                "service",
+                ".",
+                "sin_addr",
+                ".",
+                "s_addr",
+                "=",
+                "INADDR_ANY",
+                ";"
               ]
             },
             {
@@ -585,15 +585,15 @@
               "type": "simple_statement",
               "statement": "service.sin_port = htons(LISTEN_PORT);",
               "tokens": [
-                "T0015",
-                "T0031",
-                "T0008",
-                "T0010",
-                "T0003",
-                "T0002",
-                "T0008",
-                "T0006",
-                "T0012"
+                "service",
+                ".",
+                "sin_port",
+                "=",
+                "htons",
+                "(",
+                "LISTEN_PORT",
+                ")",
+                ";"
               ]
             },
             {
@@ -601,17 +601,17 @@
               "type": "simple_statement",
               "statement": "acceptSocket = accept(listenSocket, NULL, NULL);",
               "tokens": [
-                "T0008",
-                "T0010",
-                "T0003",
-                "T0002",
-                "T0008",
-                "T0005",
-                "T0032",
-                "T0005",
-                "T0032",
-                "T0006",
-                "T0012"
+                "acceptSocket",
+                "=",
+                "accept",
+                "(",
+                "listenSocket",
+                ",",
+                "NULL",
+                ",",
+                "NULL",
+                ")",
+                ";"
               ]
             },
             {
@@ -619,17 +619,17 @@
               "type": "simple_statement",
               "statement": "/* INCIDENTAL CWE 188 - reliance on data memory layout",
               "tokens": [
-                "T0033",
-                "T0014",
-                "T0008",
-                "T0008",
-                "T0004",
-                "T0034",
-                "T0008",
-                "T0008",
-                "T0022",
-                "T0008",
-                "T0008"
+                "/",
+                "*",
+                "INCIDENTAL",
+                "CWE",
+                "188",
+                "-",
+                "reliance",
+                "on",
+                "data",
+                "memory",
+                "layout"
               ]
             },
             {
@@ -637,17 +637,17 @@
               "type": "simple_statement",
               "statement": "* recv and friends return \"number of bytes\" received",
               "tokens": [
-                "T0014",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0035",
-                "T0023",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0023",
-                "T0008"
+                "*",
+                "recv",
+                "and",
+                "friends",
+                "return",
+                "\"",
+                "number",
+                "of",
+                "bytes",
+                "\"",
+                "received"
               ]
             },
             {
@@ -655,26 +655,26 @@
               "type": "simple_statement",
               "statement": "* char's on our system, however, may not be \"octets\" (8-bit",
               "tokens": [
-                "T0014",
-                "T0025",
-                "T0036",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0005",
-                "T0008",
-                "T0005",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0023",
-                "T0008",
-                "T0023",
-                "T0002",
-                "T0004",
-                "T0034",
-                "T0008"
+                "*",
+                "char",
+                "'",
+                "s",
+                "on",
+                "our",
+                "system",
+                ",",
+                "however",
+                ",",
+                "may",
+                "not",
+                "be",
+                "\"",
+                "octets",
+                "\"",
+                "(",
+                "8",
+                "-",
+                "bit"
               ]
             },
             {
@@ -682,18 +682,18 @@
               "type": "simple_statement",
               "statement": "* bytes) but could be just about anything.  Also,",
               "tokens": [
-                "T0014",
-                "T0008",
-                "T0006",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0031",
-                "T0008",
-                "T0005"
+                "*",
+                "bytes",
+                ")",
+                "but",
+                "could",
+                "be",
+                "just",
+                "about",
+                "anything",
+                ".",
+                "Also",
+                ","
               ]
             },
             {
@@ -701,17 +701,17 @@
               "type": "simple_statement",
               "statement": "* even if the external environment is ASCII or UTF8,",
               "tokens": [
-                "T0014",
-                "T0008",
-                "T0001",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0005"
+                "*",
+                "even",
+                "if",
+                "the",
+                "external",
+                "environment",
+                "is",
+                "ASCII",
+                "or",
+                "UTF8",
+                ","
               ]
             },
             {
@@ -719,18 +719,18 @@
               "type": "simple_statement",
               "statement": "* the ANSI/ISO C standard does not dictate that the",
               "tokens": [
-                "T0014",
-                "T0008",
-                "T0008",
-                "T0033",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008"
+                "*",
+                "the",
+                "ANSI",
+                "/",
+                "ISO",
+                "C",
+                "standard",
+                "does",
+                "not",
+                "dictate",
+                "that",
+                "the"
               ]
             },
             {
@@ -738,16 +738,16 @@
               "type": "simple_statement",
               "statement": "* character set used by the actual language or character",
               "tokens": [
-                "T0014",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008"
+                "*",
+                "character",
+                "set",
+                "used",
+                "by",
+                "the",
+                "actual",
+                "language",
+                "or",
+                "character"
               ]
             },
             {
@@ -755,10 +755,10 @@
               "type": "simple_statement",
               "statement": "* constants matches.",
               "tokens": [
-                "T0014",
-                "T0008",
-                "T0008",
-                "T0031"
+                "*",
+                "constants",
+                "matches",
+                "."
               ]
             },
             {
@@ -766,7 +766,7 @@
               "type": "simple_statement",
               "statement": "*",
               "tokens": [
-                "T0014"
+                "*"
               ]
             },
             {
@@ -774,18 +774,18 @@
               "type": "simple_statement",
               "statement": "* In practice none of these are usually issues...",
               "tokens": [
-                "T0014",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0031",
-                "T0031",
-                "T0031"
+                "*",
+                "In",
+                "practice",
+                "none",
+                "of",
+                "these",
+                "are",
+                "usually",
+                "issues",
+                ".",
+                ".",
+                "."
               ]
             },
             {
@@ -793,8 +793,8 @@
               "type": "simple_statement",
               "statement": "*/",
               "tokens": [
-                "T0014",
-                "T0033"
+                "*",
+                "/"
               ]
             },
             {
@@ -802,20 +802,20 @@
               "type": "simple_statement",
               "statement": "/* FLAW: read the new hostname from a network socket */",
               "tokens": [
-                "T0033",
-                "T0014",
-                "T0008",
-                "T0037",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0014",
-                "T0033"
+                "/",
+                "*",
+                "FLAW",
+                ":",
+                "read",
+                "the",
+                "new",
+                "hostname",
+                "from",
+                "a",
+                "network",
+                "socket",
+                "*",
+                "/"
               ]
             },
             {
@@ -823,21 +823,21 @@
               "type": "simple_statement",
               "statement": "recvResult = recv(acceptSocket, data, 100 - 1, 0);",
               "tokens": [
-                "T0017",
-                "T0010",
-                "T0003",
-                "T0002",
-                "T0008",
-                "T0005",
-                "T0022",
-                "T0005",
-                "T0004",
-                "T0034",
-                "T0024",
-                "T0005",
-                "T0019",
-                "T0006",
-                "T0012"
+                "recvResult",
+                "=",
+                "recv",
+                "(",
+                "acceptSocket",
+                ",",
+                "data",
+                ",",
+                "100",
+                "-",
+                "1",
+                ",",
+                "0",
+                ")",
+                ";"
               ]
             },
             {
@@ -845,16 +845,16 @@
               "type": "simple_statement",
               "statement": "data[recvResult] = '\\0';",
               "tokens": [
-                "T0022",
-                "T0026",
-                "T0017",
-                "T0027",
-                "T0010",
-                "T0036",
-                "T0038",
-                "T0019",
-                "T0036",
-                "T0012"
+                "data",
+                "[",
+                "recvResult",
+                "]",
+                "=",
+                "'",
+                "\\",
+                "0",
+                "'",
+                ";"
               ]
             },
             {
@@ -862,25 +862,35 @@
               "type": "simple_statement",
               "statement": "/* POTENTIAL FLAW: set the hostname to data obtained from a potentially external source */",
               "tokens": [
-                "T0033",
-                "T0014",
-                "T0008",
-                "T0008",
-                "T0037",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0022",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0014",
-                "T0033"
+                "/",
+                "*",
+                "POTENTIAL",
+                "FLAW",
+                ":",
+                "set",
+                "the",
+                "hostname",
+                "to",
+                "data",
+                "obtained",
+                "from",
+                "a",
+                "potentially",
+                "external",
+                "source",
+                "*",
+                "/"
               ]
+            }
+          ],
+          "pattern": [
+            {
+              "pattern": "cwe15",
+              "value": "recvResult = recv(acceptSocket, data, 100 - 1, 0);"
+            },
+            {
+              "pattern": "cwe15",
+              "value": "if (!SetComputerNameA(data))"
             }
           ]
         },
@@ -919,64 +929,64 @@
                 "if (!SetComputerNameA(data))"
               ],
               "tokens": [
-                "T0025",
-                "T0008",
-                "T0026",
-                "T0004",
-                "T0027",
-                "T0010",
-                "T0023",
-                "T0012",
-                "T0022",
-                "T0010",
-                "T0008",
-                "T0012",
-                "T0033",
-                "T0014",
-                "T0008",
-                "T0037",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0014",
-                "T0033",
-                "T0039",
-                "T0002",
-                "T0022",
-                "T0005",
-                "T0023",
-                "T0006",
-                "T0012",
-                "T0033",
-                "T0014",
-                "T0008",
-                "T0008",
-                "T0037",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0022",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0008",
-                "T0014",
-                "T0033",
-                "T0001",
-                "T0002",
-                "T0009",
-                "T0003",
-                "T0002",
-                "T0022",
-                "T0006",
-                "T0006"
+                "char",
+                "dataBuffer",
+                "[",
+                "100",
+                "]",
+                "=",
+                "\"\"",
+                ";",
+                "data",
+                "=",
+                "dataBuffer",
+                ";",
+                "/",
+                "*",
+                "FIX",
+                ":",
+                "get",
+                "the",
+                "hostname",
+                "from",
+                "a",
+                "string",
+                "literal",
+                "*",
+                "/",
+                "strcpy",
+                "(",
+                "data",
+                ",",
+                "\"hostname\"",
+                ")",
+                ";",
+                "/",
+                "*",
+                "POTENTIAL",
+                "FLAW",
+                ":",
+                "set",
+                "the",
+                "hostname",
+                "to",
+                "data",
+                "obtained",
+                "from",
+                "a",
+                "potentially",
+                "external",
+                "source",
+                "*",
+                "/",
+                "if",
+                "(",
+                "!",
+                "SetComputerNameA",
+                "(",
+                "data",
+                ")",
+                ")"
               ]
             },
             {
@@ -998,24 +1008,24 @@
                 "exit(1);"
               ],
               "tokens": [
-                "T0001",
-                "T0002",
-                "T0009",
-                "T0003",
-                "T0002",
-                "T0022",
-                "T0006",
-                "T0006",
-                "T0003",
-                "T0002",
-                "T0023",
-                "T0006",
-                "T0012",
-                "T0003",
-                "T0002",
-                "T0024",
-                "T0006",
-                "T0012"
+                "if",
+                "(",
+                "!",
+                "SetComputerNameA",
+                "(",
+                "data",
+                ")",
+                ")",
+                "printLine",
+                "(",
+                "\"Failure setting computer name\"",
+                ")",
+                ";",
+                "exit",
+                "(",
+                "1",
+                ")",
+                ";"
               ]
             },
             {
@@ -1023,10 +1033,10 @@
               "type": "simple_statement",
               "statement": "char * data;",
               "tokens": [
-                "T0025",
-                "T0014",
-                "T0022",
-                "T0012"
+                "char",
+                "*",
+                "data",
+                ";"
               ]
             }
           ]
@@ -1045,10 +1055,10 @@
               "type": "simple_statement",
               "statement": "goodG2B();",
               "tokens": [
-                "T0040",
-                "T0002",
-                "T0006",
-                "T0012"
+                "goodG2B",
+                "(",
+                ")",
+                ";"
               ]
             }
           ]
@@ -1080,12 +1090,12 @@
               "type": "simple_statement",
               "statement": "/* seed randomness */",
               "tokens": [
-                "T0033",
-                "T0014",
-                "T0008",
-                "T0008",
-                "T0014",
-                "T0033"
+                "/",
+                "*",
+                "seed",
+                "randomness",
+                "*",
+                "/"
               ]
             },
             {
@@ -1093,17 +1103,17 @@
               "type": "simple_statement",
               "statement": "srand( (unsigned)time(NULL) );",
               "tokens": [
-                "T0003",
-                "T0002",
-                "T0002",
-                "T0041",
-                "T0006",
-                "T0003",
-                "T0002",
-                "T0032",
-                "T0006",
-                "T0006",
-                "T0012"
+                "srand",
+                "(",
+                "(",
+                "unsigned",
+                ")",
+                "time",
+                "(",
+                "NULL",
+                ")",
+                ")",
+                ";"
               ]
             },
             {
@@ -1111,19 +1121,19 @@
               "type": "simple_statement",
               "statement": "printLine(\"Calling good()...\");",
               "tokens": [
-                "T0003",
-                "T0002",
-                "T0023",
-                "T0008",
-                "T0003",
-                "T0002",
-                "T0006",
-                "T0031",
-                "T0031",
-                "T0031",
-                "T0023",
-                "T0006",
-                "T0012"
+                "printLine",
+                "(",
+                "\"",
+                "Calling",
+                "good",
+                "(",
+                ")",
+                ".",
+                ".",
+                ".",
+                "\"",
+                ")",
+                ";"
               ]
             },
             {
@@ -1131,10 +1141,10 @@
               "type": "simple_statement",
               "statement": "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good();",
               "tokens": [
-                "T0040",
-                "T0002",
-                "T0006",
-                "T0012"
+                "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good",
+                "(",
+                ")",
+                ";"
               ]
             },
             {
@@ -1142,16 +1152,16 @@
               "type": "simple_statement",
               "statement": "printLine(\"Finished good()\");",
               "tokens": [
-                "T0003",
-                "T0002",
-                "T0023",
-                "T0008",
-                "T0003",
-                "T0002",
-                "T0006",
-                "T0023",
-                "T0006",
-                "T0012"
+                "printLine",
+                "(",
+                "\"",
+                "Finished",
+                "good",
+                "(",
+                ")",
+                "\"",
+                ")",
+                ";"
               ]
             },
             {
@@ -1159,19 +1169,19 @@
               "type": "simple_statement",
               "statement": "printLine(\"Calling bad()...\");",
               "tokens": [
-                "T0003",
-                "T0002",
-                "T0023",
-                "T0008",
-                "T0003",
-                "T0002",
-                "T0006",
-                "T0031",
-                "T0031",
-                "T0031",
-                "T0023",
-                "T0006",
-                "T0012"
+                "printLine",
+                "(",
+                "\"",
+                "Calling",
+                "bad",
+                "(",
+                ")",
+                ".",
+                ".",
+                ".",
+                "\"",
+                ")",
+                ";"
               ]
             },
             {
@@ -1179,10 +1189,10 @@
               "type": "simple_statement",
               "statement": "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad();",
               "tokens": [
-                "T0040",
-                "T0002",
-                "T0006",
-                "T0012"
+                "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad",
+                "(",
+                ")",
+                ";"
               ]
             },
             {
@@ -1190,16 +1200,16 @@
               "type": "simple_statement",
               "statement": "printLine(\"Finished bad()\");",
               "tokens": [
-                "T0003",
-                "T0002",
-                "T0023",
-                "T0008",
-                "T0003",
-                "T0002",
-                "T0006",
-                "T0023",
-                "T0006",
-                "T0012"
+                "printLine",
+                "(",
+                "\"",
+                "Finished",
+                "bad",
+                "(",
+                ")",
+                "\"",
+                ")",
+                ";"
               ]
             },
             {
@@ -1207,9 +1217,9 @@
               "type": "simple_statement",
               "statement": "return 0;",
               "tokens": [
-                "T0035",
-                "T0019",
-                "T0012"
+                "return",
+                "0",
+                ";"
               ]
             }
           ]

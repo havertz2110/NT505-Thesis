@@ -79,20 +79,32 @@ class TokenRegistry:
         if self.registry_path.exists():
             self._load_registry()
 
+    @staticmethod
+    def _normalize_token_id(token_id: str) -> str:
+        """Normalize persisted token IDs to sequential integers starting from 1."""
+        stripped = token_id.lstrip("T")
+        if stripped.isdigit():
+            return str(int(stripped))
+        if token_id.isdigit():
+            return str(int(token_id))
+        return token_id
+
     def _load_registry(self):
         """Load existing token registry from file"""
         try:
             data = json.loads(self.registry_path.read_text(encoding='utf-8'))
 
             for token_id, token_info in data.get('token_registry', {}).items():
-                self.id_to_token[token_id] = token_info
+                normalized_id = self._normalize_token_id(token_id)
+                self.id_to_token[normalized_id] = token_info
                 key = (token_info['value'], token_info['type'])
-                self.token_to_id[key] = token_id
+                self.token_to_id[key] = normalized_id
 
                 # Update next_id
-                id_num = int(token_id[1:])  # Extract number from "T001"
-                if id_num >= self.next_id:
-                    self.next_id = id_num + 1
+                if normalized_id.isdigit():
+                    id_num = int(normalized_id)
+                    if id_num >= self.next_id:
+                        self.next_id = id_num + 1
 
             self.statistics = defaultdict(int, data.get('statistics', {}).get('by_type', {}))
         except Exception as e:
@@ -111,7 +123,7 @@ class TokenRegistry:
             return self.token_to_id[key]
 
         # Create new token ID
-        token_id = f"T{self.next_id:04d}"  # Format: T0001, T0002, ...
+        token_id = str(self.next_id)  # Sequential IDs starting from 1
         self.next_id += 1
 
         # Store token
@@ -159,7 +171,7 @@ class TokenRegistry:
 
                 # Only add if not already present
                 if key not in self.token_to_id:
-                    new_token_id = f"T{self.next_id:04d}"
+                    new_token_id = str(self.next_id)
                     self.next_id += 1
 
                     self.id_to_token[new_token_id] = token_info
@@ -1151,8 +1163,10 @@ class CVulnerabilityFramework:
 
             # L5: Tokenize this complex sentence and register tokens
             cs_tokens = self.normalize_tokens(cs.statements, symbol_table)
-            cs_repr['tokens'] = [
+            for token in cs_tokens:
                 self.token_registry.register_token(token)
+            cs_repr['tokens'] = [
+                token.original if token.original is not None else token.value
                 for token in cs_tokens
             ]
 
@@ -1171,12 +1185,18 @@ class CVulnerabilityFramework:
 
             # L5: Tokenize this simple sentence and register tokens
             simple_tokens = self.normalize_tokens([simple_stmt], symbol_table)
-            simple_repr['tokens'] = [
+            for token in simple_tokens:
                 self.token_registry.register_token(token)
+            simple_repr['tokens'] = [
+                token.original if token.original is not None else token.value
                 for token in simple_tokens
             ]
 
             func_repr['statement_blocks'].append(simple_repr)
+
+        pattern_matches = self._extract_flaw_patterns(function, lines)
+        if pattern_matches:
+            func_repr['pattern'] = pattern_matches
 
         return func_repr
 
@@ -1247,6 +1267,49 @@ class CVulnerabilityFramework:
             hierarchical_repr['modules'].append(global_module)
 
         return hierarchical_repr
+
+    def _derive_cwe_pattern_label(self, function_name: str) -> Optional[str]:
+        """Extract CWE identifier from function name."""
+        match = re.search(r'(CWE\d+)', function_name, re.IGNORECASE)
+        if match:
+            return match.group(1).lower()
+        return None
+
+    def _extract_flaw_patterns(self, function: Function, source_lines: List[str]) -> List[Dict[str, str]]:
+        """Identify vulnerable pattern lines following comments that mention FLAW."""
+        func_lines = source_lines[function.body_start:function.body_end]
+        pattern_label = self._derive_cwe_pattern_label(function.name)
+        if pattern_label is None:
+            return []
+        pattern_hits: List[Dict[str, str]] = []
+        seen_values: Set[str] = set()
+
+        for index, raw_line in enumerate(func_lines):
+            if 'flaw' not in raw_line.lower():
+                continue
+
+            subsequent_line = ""
+            for follow_line in func_lines[index + 1:]:
+                stripped = follow_line.strip()
+                if not stripped:
+                    continue
+                if stripped.lower().startswith('/*') and 'flaw' in stripped.lower():
+                    # Skip chained comments still describing the flaw
+                    continue
+                if stripped.startswith('/*') or stripped.startswith('//'):
+                    # Skip other comments
+                    continue
+                subsequent_line = stripped
+                break
+
+            if subsequent_line and subsequent_line not in seen_values:
+                seen_values.add(subsequent_line)
+                pattern_hits.append({
+                    'pattern': pattern_label,
+                    'value': subsequent_line
+                })
+
+        return pattern_hits
 
     def _extract_simple_sentences(self, function: Function, source_lines: List[str], 
                                  complex_sentences: List[ComplexSentence]) -> List[str]:
