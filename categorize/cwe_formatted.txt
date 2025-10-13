@@ -1,0 +1,229 @@
+A01:2021 - Broken Access Control - (1345)
+-CWE-22: Base Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')
+-CWE-23: Base Relative Path Traversal
+-CWE-35: Variant Path Traversal: '.../...//'
+-CWE-59: Base Improper Link Resolution Before File Access ('Link Following')
+-CWE-200: Class Exposure of Sensitive Information to an Unauthorized Actor
+-CWE-201: Base Insertion of Sensitive Information Into Sent Data
+-CWE-219: Variant Storage of File with Sensitive Data Under Web Root
+-CWE-264: Category Permissions, Privileges, and Access Controls
+-CWE-275: Category Permission Issues
+-CWE-276: Base Incorrect Default Permissions
+-CWE-284: Pillar Improper Access Control
+-CWE-285: Class Improper Authorization
+-CWE-352: Composite Cross-Site Request Forgery (CSRF)
+-CWE-359: Base Exposure of Private Personal Information to an Unauthorized Actor
+-CWE-377: Class Insecure Temporary File
+-CWE-402: Class Transmission of Private Resources into a New Sphere ('Resource Leak')
+-CWE-425: Base Direct Request ('Forced Browsing')
+-CWE-441: Class Unintended Proxy or Intermediary ('Confused Deputy')
+-CWE-497: Base Exposure of Sensitive System Information to an Unauthorized Control Sphere
+-CWE-538: Base Insertion of Sensitive Information into Externally-Accessible File or Directory
+-CWE-540: Base Inclusion of Sensitive Information in Source Code
+-CWE-548: Variant Exposure of Information Through Directory Listing
+-CWE-552: Base Files or Directories Accessible to External Parties
+-CWE-566: Variant Authorization Bypass Through User-Controlled SQL Primary Key
+-CWE-601: Base URL Redirection to Untrusted Site ('Open Redirect')
+-CWE-639: Base Authorization Bypass Through User-Controlled Key
+-CWE-651: Variant Exposure of WSDL File Containing Sensitive Information
+-CWE-668: Class Exposure of Resource to Wrong Sphere
+-CWE-706: Class Use of Incorrectly-Resolved Name or Reference
+-CWE-862: Class Missing Authorization
+-CWE-863: Class Incorrect Authorization
+-CWE-913: Class Improper Control of Dynamically-Managed Code Resources
+-CWE-922: Class Insecure Storage of Sensitive Information
+-CWE-1275: Variant Sensitive Cookie with Improper SameSite Attribute
+
+
+
+
+ +  A02:2021 - Cryptographic Failures - (1346)
+-CWE-261: Base Weak Encoding for Password
+-CWE-296: Base Improper Following of a Certificate's Chain of Trust
+-CWE-310: Category Cryptographic Issues
+-CWE-319: Base Cleartext Transmission of Sensitive Information
+-CWE-321: Variant Use of Hard-coded Cryptographic Key
+-CWE-322: Base Key Exchange without Entity Authentication
+-CWE-323: Base Reusing a Nonce, Key Pair in Encryption
+-CWE-324: Base Use of a Key Past its Expiration Date
+-CWE-325: Base Missing Cryptographic Step
+-CWE-326: Class Inadequate Encryption Strength
+-CWE-327: Class Use of a Broken or Risky Cryptographic Algorithm
+-CWE-328: Base Use of Weak Hash
+-CWE-329: Variant Generation of Predictable IV with CBC Mode
+-CWE-330: Class Use of Insufficiently Random Values
+-CWE-331: Base Insufficient Entropy
+-CWE-335: Base Incorrect Usage of Seeds in Pseudo-Random Number Generator (PRNG)
+-CWE-336: Variant Same Seed in Pseudo-Random Number Generator (PRNG)
+-CWE-337: Variant Predictable Seed in Pseudo-Random Number Generator (PRNG)
+-CWE-338: Base Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)
+-CWE-340: Class Generation of Predictable Numbers or Identifiers
+-CWE-347: Base Improper Verification of Cryptographic Signature
+-CWE-523: Base Unprotected Transport of Credentials
+-CWE-720: Category OWASP Top Ten 2007 Category A9 - Insecure Communications
+-CWE-757: Base Selection of Less-Secure Algorithm During Negotiation ('Algorithm Downgrade')
+-CWE-759: Variant Use of a One-Way Hash without a Salt
+-CWE-760: Variant Use of a One-Way Hash with a Predictable Salt
+-CWE-780: Variant Use of RSA Algorithm without OAEP
+-CWE-818: Category OWASP Top Ten 2010 Category A9 - Insufficient Transport Layer Protection
+-CWE-916: Base Use of Password Hash With Insufficient Computational Effort
+
+
+
+ 
+ +  A03:2021 - Injection - (1347)
+-CWE-20: Class Improper Input Validation
+-CWE-74: Class Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')
+-CWE-75: Class Failure to Sanitize Special Elements into a Different Plane (Special Element Injection)
+-CWE-77: Class Improper Neutralization of Special Elements used in a Command ('Command Injection')
+-CWE-78: Base Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')
+-CWE-79: Base Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')
+-CWE-80: Variant Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)
+-CWE-83: Variant Improper Neutralization of Script in Attributes in a Web Page
+-CWE-87: Variant Improper Neutralization of Alternate XSS Syntax
+-CWE-88: Base Improper Neutralization of Argument Delimiters in a Command ('Argument Injection')
+-CWE-89: Base Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')
+-CWE-90: Base Improper Neutralization of Special Elements used in an LDAP Query ('LDAP Injection')
+-CWE-91: Base XML Injection (aka Blind XPath Injection)
+-CWE-93: Base Improper Neutralization of CRLF Sequences ('CRLF Injection')
+-CWE-94: Base Improper Control of Generation of Code ('Code Injection')
+-CWE-95: Variant Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')
+-CWE-96: Base Improper Neutralization of Directives in Statically Saved Code ('Static Code Injection')
+-CWE-97: Variant Improper Neutralization of Server-Side Includes (SSI) Within a Web Page
+-CWE-98: Variant Improper Control of Filename for Include/Require Statement in PHP Program ('PHP Remote File Inclusion')
+-CWE-99: Class Improper Control of Resource Identifiers ('Resource Injection')
+-CWE-113: Variant Improper Neutralization of CRLF Sequences in HTTP Headers ('HTTP Request/Response Splitting')
+-CWE-116: Class Improper Encoding or Escaping of Output
+-CWE-138: Class Improper Neutralization of Special Elements
+-CWE-184: Base Incomplete List of Disallowed Inputs
+-CWE-470: Base Use of Externally-Controlled Input to Select Classes or Code ('Unsafe Reflection')
+-CWE-471: Base Modification of Assumed-Immutable Data (MAID)
+-CWE-564: Variant SQL Injection: Hibernate
+-CWE-610: Class Externally Controlled Reference to a Resource in Another Sphere
+-CWE-643: Base Improper Neutralization of Data within XPath Expressions ('XPath Injection')
+-CWE-644: Variant Improper Neutralization of HTTP Headers for Scripting Syntax
+-CWE-652: Base Improper Neutralization of Data within XQuery Expressions ('XQuery Injection')
+-CWE-917: Base Improper Neutralization of Special Elements used in an Expression Language Statement ('Expression Language Injection')
+
+
+
+
+ +  A04:2021 - Insecure Design - (1348)
+-CWE-73: Base External Control of File Name or Path
+-CWE-183: Base Permissive List of Allowed Inputs
+-CWE-209: Base Generation of Error Message Containing Sensitive Information
+-CWE-213: Base Exposure of Sensitive Information Due to Incompatible Policies
+-CWE-235: Variant Improper Handling of Extra Parameters
+-CWE-256: Base Plaintext Storage of a Password
+-CWE-257: Base Storing Passwords in a Recoverable Format
+-CWE-266: Base Incorrect Privilege Assignment
+-CWE-269: Class Improper Privilege Management
+-CWE-280: Base Improper Handling of Insufficient Permissions or Privileges
+-CWE-311: Class Missing Encryption of Sensitive Data
+-CWE-312: Base Cleartext Storage of Sensitive Information
+-CWE-313: Variant Cleartext Storage in a File or on Disk
+-CWE-316: Variant Cleartext Storage of Sensitive Information in Memory
+-CWE-419: Base Unprotected Primary Channel
+-CWE-430: Base Deployment of Wrong Handler
+-CWE-434: Base Unrestricted Upload of File with Dangerous Type
+-CWE-444: Base Inconsistent Interpretation of HTTP Requests ('HTTP Request/Response Smuggling')
+-CWE-451: Class User Interface (UI) Misrepresentation of Critical Information
+-CWE-472: Base External Control of Assumed-Immutable Web Parameter
+-CWE-501: Base Trust Boundary Violation
+-CWE-522: Class Insufficiently Protected Credentials
+-CWE-525: Variant Use of Web Browser Cache Containing Sensitive Information
+-CWE-539: Variant Use of Persistent Cookies Containing Sensitive Information
+-CWE-579: Variant J2EE Bad Practices: Non-serializable Object Stored in Session
+-CWE-598: Variant Use of GET Request Method With Sensitive Query Strings
+-CWE-602: Class Client-Side Enforcement of Server-Side Security
+-CWE-642: Class External Control of Critical State Data
+-CWE-646: Variant Reliance on File Name or Extension of Externally-Supplied File
+-CWE-650: Variant Trusting HTTP Permission Methods on the Server Side
+-CWE-653: Class Improper Isolation or Compartmentalization
+-CWE-656: Class Reliance on Security Through Obscurity
+-CWE-657: Class Violation of Secure Design Principles
+-CWE-799: Class Improper Control of Interaction Frequency
+-CWE-807: Base Reliance on Untrusted Inputs in a Security Decision
+-CWE-840: Category Business Logic Errors
+-CWE-841: Base Improper Enforcement of Behavioral Workflow
+-CWE-927: Variant Use of Implicit Intent for Sensitive Communication
+-CWE-1021: Base Improper Restriction of Rendered UI Layers or Frames
+-CWE-1173: Base Improper Use of Validation Framework
+
+
+
+ +  A05:2021 - Security Misconfiguration - (1349)
+-CWE-2: Category 7PK - Environment
+-CWE-11: Variant ASP.NET Misconfiguration: Creating Debug Binary
+-CWE-13: Variant ASP.NET Misconfiguration: Password in Configuration File
+-CWE-15: Base External Control of System or Configuration Setting
+-CWE-16: Category Configuration
+-CWE-260: Base Password in Configuration File
+-CWE-315: Variant Cleartext Storage of Sensitive Information in a Cookie
+-CWE-520: Variant .NET Misconfiguration: Use of Impersonation
+-CWE-526: Variant Cleartext Storage of Sensitive Information in an Environment Variable
+-CWE-537: Variant Java Runtime Error Message Containing Sensitive Information
+-CWE-541: Variant Inclusion of Sensitive Information in an Include File
+-CWE-547: Base Use of Hard-coded, Security-relevant Constants
+-CWE-611: Base Improper Restriction of XML External Entity Reference
+-CWE-614: Variant Sensitive Cookie in HTTPS Session Without 'Secure' Attribute
+-CWE-756: Base Missing Custom Error Page
+-CWE-776: Base Improper Restriction of Recursive Entity References in DTDs ('XML Entity Expansion')
+-CWE-942: Variant Permissive Cross-domain Security Policy with Untrusted Domains
+-CWE-1004: Variant Sensitive Cookie Without 'HttpOnly' Flag
+-CWE-1032: Category OWASP Top Ten 2017 Category A6 - Security Misconfiguration
+-CWE-1174: Variant ASP.NET Misconfiguration: Improper Model Validation
+
+
+ +  A06:2021 - Vulnerable and Outdated Components - (1352)
+-CWE-937: Category OWASP Top Ten 2013 Category A9 - Using Components with Known Vulnerabilities
+-CWE-1035: Category OWASP Top Ten 2017 Category A9 - Using Components with Known Vulnerabilities
+-CWE-1104: Base Use of Unmaintained Third Party Components
+
+ 
+ +  A07:2021 - Identification and Authentication Failures - (1353)
+-CWE-255: Category Credentials Management Errors
+-CWE-259: Variant Use of Hard-coded Password
+-CWE-287: Class Improper Authentication
+-CWE-288: Base Authentication Bypass Using an Alternate Path or Channel
+-CWE-290: Base Authentication Bypass by Spoofing
+-CWE-294: Base Authentication Bypass by Capture-replay
+-CWE-295: Base Improper Certificate Validation
+-CWE-297: Variant Improper Validation of Certificate with Host Mismatch
+-CWE-300: Class Channel Accessible by Non-Endpoint
+-CWE-302: Base Authentication Bypass by Assumed-Immutable Data
+-CWE-304: Base Missing Critical Step in Authentication
+-CWE-306: Base Missing Authentication for Critical Function
+-CWE-307: Base Improper Restriction of Excessive Authentication Attempts
+-CWE-346: Class Origin Validation Error
+-CWE-384: Composite Session Fixation
+-CWE-521: Base Weak Password Requirements
+-CWE-613: Base Insufficient Session Expiration
+-CWE-620: Base Unverified Password Change
+-CWE-640: Base Weak Password Recovery Mechanism for Forgotten Password
+-CWE-798: Base Use of Hard-coded Credentials
+-CWE-940: Base Improper Verification of Source of a Communication Channel
+-CWE-1216: Category Lockout Mechanism Errors
+
+
+ +  A08:2021 - Software and Data Integrity Failures - (1354)
+-CWE-345: Class Insufficient Verification of Data Authenticity
+-CWE-353: Base Missing Support for Integrity Check
+-CWE-426: Base Untrusted Search Path
+-CWE-494: Base Download of Code Without Integrity Check
+-CWE-502: Base Deserialization of Untrusted Data
+-CWE-565: Base Reliance on Cookies without Validation and Integrity Checking
+-CWE-784: Variant Reliance on Cookies without Validation and Integrity Checking in a Security Decision
+-CWE-829: Base Inclusion of Functionality from Untrusted Control Sphere
+-CWE-830: Variant Inclusion of Web Functionality from an Untrusted Source
+-CWE-915: Base Improperly Controlled Modification of Dynamically-Determined Object Attributes
+
+ +  A09:2021 - Security Logging and Monitoring Failures - (1355)
+-CWE-117: Base Improper Output Neutralization for Logs
+-CWE-223: Base Omission of Security-relevant Information
+-CWE-532: Base Insertion of Sensitive Information into Log File
+-CWE-778: Base Insufficient Logging
+
+
+ +  A10:2021 - Server-Side Request Forgery (SSRF) - (1356)
+-CWE-918: Base Server-Side Request Forgery (SSRF)

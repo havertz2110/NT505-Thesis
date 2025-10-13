@@ -16,7 +16,7 @@ Thiếu framework thống nhất cho việc normalize variables và functions
 
 ## 2. Framework Cấu Trúc Hierarchical
 
-### 2.1 Program Level (Cuốn Sách)
+### 2.0 Program Level (Cuốn Sách)
 **Định nghĩa**: Toàn bộ file .c hoặc project hoàn chỉnh
 
 ```c
@@ -45,7 +45,7 @@ program_priority = {
 }
 ```
 
-### 2.2 Class/Module Level (Chương)
+### 2.1 function global Level (Chương)
 **Định nghĩa**: Nhóm struct + các functions liên quan
 
 ```c
@@ -66,7 +66,7 @@ int user_authenticate(User* user, const char* pass);
 - Trong C: struct + operations hoặc file-based modules
 -  Giúp maintain được logical grouping và cohesion của code, điều mà rất quan trọng để hiểu context của vulnerability.
 
-### 2.3 Function Level (Đoạn Văn)
+### 2.2 Function local Level (Đoạn Văn)
 **Định nghĩa**: Một function hoàn chỉnh với signature và body
 
 ```c

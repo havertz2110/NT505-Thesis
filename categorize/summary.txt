@@ -1,0 +1,14 @@
+OWASP Top 10 2021 Categorization Summary
+================================================================================
+
+A01: 3 testcases
+A02: 7 testcases
+A03: 2 testcases
+A04: 1 testcases
+A05: 2 testcases
+A07: 2 testcases
+A08: 1 testcases
+A09: 1 testcases
+
+Uncategorized: 99 testcases
+Total: 1 testcases

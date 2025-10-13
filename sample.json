@@ -1,6 +1,6 @@
 {
   "level": "L1_PROGRAM",
-  "total_lines": 163,
+  "total_lines": 167,
   "includes": {
     "critical_includes": [],
     "system_includes": [
@@ -18,7 +18,7 @@
       "name": "GLOBAL_SCOPE",
       "type": "implicit_module",
       "start_line": 1,
-      "end_line": 163,
+      "end_line": 167,
       "functions": [
         {
           "level": "L3_FUNCTION",
@@ -27,13 +27,13 @@
           "return_type": "void",
           "parameters": [],
           "body_start": 30,
-          "body_end": 108,
+          "body_end": 112,
           "statement_blocks": [
             {
               "level": "L4_COMPLEX_SENTENCE",
               "type": "conditional_block",
-              "start_line": 42,
-              "end_line": 45,
+              "start_line": 46,
+              "end_line": 49,
               "context": {
                 "condition": "WSAStartup(MAKEWORD(2,2",
                 "then_branch": [
@@ -71,8 +71,8 @@
             {
               "level": "L4_COMPLEX_SENTENCE",
               "type": "conditional_block",
-              "start_line": 48,
-              "end_line": 51,
+              "start_line": 52,
+              "end_line": 55,
               "context": {
                 "condition": "listenSocket == INVALID_SOCKET",
                 "then_branch": [
@@ -99,8 +99,8 @@
             {
               "level": "L4_COMPLEX_SENTENCE",
               "type": "conditional_block",
-              "start_line": 56,
-              "end_line": 59,
+              "start_line": 60,
+              "end_line": 63,
               "context": {
                 "condition": "SOCKET_ERROR == bind(listenSocket, (struct sockaddr*",
                 "then_branch": [
@@ -143,8 +143,8 @@
             {
               "level": "L4_COMPLEX_SENTENCE",
               "type": "conditional_block",
-              "start_line": 60,
-              "end_line": 63,
+              "start_line": 64,
+              "end_line": 67,
               "context": {
                 "condition": "SOCKET_ERROR == listen(listenSocket, LISTEN_BACKLOG",
                 "then_branch": [
@@ -176,8 +176,8 @@
             {
               "level": "L4_COMPLEX_SENTENCE",
               "type": "conditional_block",
-              "start_line": 65,
-              "end_line": 68,
+              "start_line": 69,
+              "end_line": 72,
               "context": {
                 "condition": "acceptSocket == INVALID_SOCKET",
                 "then_branch": [
@@ -204,8 +204,8 @@
             {
               "level": "L4_COMPLEX_SENTENCE",
               "type": "conditional_block",
-              "start_line": 82,
-              "end_line": 85,
+              "start_line": 86,
+              "end_line": 89,
               "context": {
                 "condition": "recvResult == SOCKET_ERROR || recvResult == 0",
                 "then_branch": [
@@ -238,8 +238,8 @@
             {
               "level": "L4_COMPLEX_SENTENCE",
               "type": "loop_block",
-              "start_line": 88,
-              "end_line": 89,
+              "start_line": 92,
+              "end_line": 93,
               "context": {
                 "loop_type": "while",
                 "condition": "0"
@@ -266,8 +266,8 @@
             {
               "level": "L4_COMPLEX_SENTENCE",
               "type": "conditional_block",
-              "start_line": 89,
-              "end_line": 92,
+              "start_line": 93,
+              "end_line": 96,
               "context": {
                 "condition": "acceptSocket != INVALID_SOCKET",
                 "then_branch": [
@@ -297,8 +297,8 @@
             {
               "level": "L4_COMPLEX_SENTENCE",
               "type": "conditional_block",
-              "start_line": 93,
-              "end_line": 96,
+              "start_line": 97,
+              "end_line": 100,
               "context": {
                 "condition": "listenSocket != INVALID_SOCKET",
                 "then_branch": [
@@ -328,8 +328,8 @@
             {
               "level": "L4_COMPLEX_SENTENCE",
               "type": "conditional_block",
-              "start_line": 97,
-              "end_line": 100,
+              "start_line": 101,
+              "end_line": 104,
               "context": {
                 "condition": "wsaDataInit",
                 "then_branch": [
@@ -355,8 +355,8 @@
             {
               "level": "L4_COMPLEX_SENTENCE",
               "type": "conditional_block",
-              "start_line": 103,
-              "end_line": 107,
+              "start_line": 107,
+              "end_line": 111,
               "context": {
                 "condition": "!SetComputerNameA(data",
                 "then_branch": [
@@ -389,6 +389,57 @@
                 "1",
                 ")",
                 ";"
+              ]
+            },
+            {
+              "level": "L4_SIMPLE_SENTENCE",
+              "type": "simple_statement",
+              "statement": "l0 la may cai ifndef, include..",
+              "tokens": [
+                "l0",
+                "la",
+                "may",
+                "cai",
+                "ifndef",
+                ",",
+                "include",
+                ".",
+                "."
+              ]
+            },
+            {
+              "level": "L4_SIMPLE_SENTENCE",
+              "type": "simple_statement",
+              "statement": "l1 laf cai hafm",
+              "tokens": [
+                "l1",
+                "laf",
+                "cai",
+                "hafm"
+              ]
+            },
+            {
+              "level": "L4_SIMPLE_SENTENCE",
+              "type": "simple_statement",
+              "statement": "l2",
+              "tokens": [
+                "l2"
+              ]
+            },
+            {
+              "level": "L4_SIMPLE_SENTENCE",
+              "type": "simple_statement",
+              "statement": "l3 la logivc, nhu do while, loop",
+              "tokens": [
+                "l3",
+                "la",
+                "logivc",
+                ",",
+                "nhu",
+                "do",
+                "while",
+                ",",
+                "loop"
               ]
             },
             {
@@ -900,14 +951,14 @@
           "normalized_name": "VOID_FUNC",
           "return_type": "static void",
           "parameters": [],
-          "body_start": 117,
-          "body_end": 128,
+          "body_start": 121,
+          "body_end": 132,
           "statement_blocks": [
             {
               "level": "L4_COMPLEX_SENTENCE",
               "type": "vulnerable_operation",
-              "start_line": 118,
-              "end_line": 123,
+              "start_line": 122,
+              "end_line": 127,
               "context": {
                 "focus_line": "strcpy(data, \"hostname\");",
                 "preceding_context": [
@@ -992,8 +1043,8 @@
             {
               "level": "L4_COMPLEX_SENTENCE",
               "type": "conditional_block",
-              "start_line": 123,
-              "end_line": 127,
+              "start_line": 127,
+              "end_line": 131,
               "context": {
                 "condition": "!SetComputerNameA(data",
                 "then_branch": [
@@ -1047,8 +1098,8 @@
           "normalized_name": "VOID_FUNC",
           "return_type": "void",
           "parameters": [],
-          "body_start": 132,
-          "body_end": 133,
+          "body_start": 136,
+          "body_end": 137,
           "statement_blocks": [
             {
               "level": "L4_SIMPLE_SENTENCE",
@@ -1082,8 +1133,8 @@
               "scope": "parameter"
             }
           ],
-          "body_start": 147,
-          "body_end": 160,
+          "body_start": 151,
+          "body_end": 164,
           "statement_blocks": [
             {
               "level": "L4_SIMPLE_SENTENCE",

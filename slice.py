@@ -14,7 +14,7 @@ import json
 import sys
 from pathlib import Path
 from datetime import datetime
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 class TokenType(Enum):
     LIBRARY_FUNCTION = "library_function"
@@ -69,7 +69,7 @@ class TokenRegistry:
     Manages unique tokens across multiple source files
     """
     def __init__(self, registry_path: Path = None):
-        self.registry_path = registry_path or Path("token.json")
+        self.registry_path = registry_path or Path("vocabs.json")
         self.token_to_id: Dict[Tuple[str, str], str] = {}  # (value, type) -> token_id
         self.id_to_token: Dict[str, Dict[str, str]] = {}   # token_id -> {value, type, original}
         self.next_id = 1
@@ -1311,6 +1311,36 @@ class CVulnerabilityFramework:
 
         return pattern_hits
 
+    def _iter_tokens_from_repr(self, node: Any):
+        """Yield tokens from the hierarchical representation in encounter order."""
+        if isinstance(node, dict):
+            tokens_list = node.get('tokens')
+            if isinstance(tokens_list, list):
+                for token in tokens_list:
+                    if isinstance(token, str):
+                        yield token
+            for key, value in node.items():
+                if key == 'tokens':
+                    continue
+                yield from self._iter_tokens_from_repr(value)
+        elif isinstance(node, list):
+            for item in node:
+                yield from self._iter_tokens_from_repr(item)
+
+    def generate_vocabulary(self, hierarchical_repr: Dict[str, Any], max_tokens: int = 250) -> OrderedDict[str, int]:
+        """
+        Build a token vocabulary from the hierarchical representation.
+        Tokens are assigned incremental IDs based on first appearance order.
+        """
+        vocabulary = OrderedDict()
+        for token in self._iter_tokens_from_repr(hierarchical_repr):
+            mapped_token = 'm!' if token == '!' else token
+            if mapped_token not in vocabulary:
+                vocabulary[mapped_token] = len(vocabulary) + 1
+                if len(vocabulary) >= max_tokens:
+                    break
+        return vocabulary
+
     def _extract_simple_sentences(self, function: Function, source_lines: List[str], 
                                  complex_sentences: List[ComplexSentence]) -> List[str]:
         """Extract simple statements not part of complex sentences"""
@@ -1497,6 +1527,12 @@ def main():
     print(f"Token registry saved to {token_registry.registry_path}")
     print(f"  Total unique tokens: {token_registry.statistics.get('total', len(token_registry.id_to_token))}")
     print(f"  Token types: {dict(token_registry.statistics)}")
+
+    # Save vocabulary mapping
+    vocabulary = framework.generate_vocabulary(serializable_analysis, max_tokens=250)
+    vocab_path = Path("vocabs.json")
+    vocab_path.write_text(json.dumps(vocabulary, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"Vocabulary saved to {vocab_path} ({len(vocabulary)} tokens)")
 
 
 if __name__ == "__main__":

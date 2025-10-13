@@ -1,3 +1,5 @@
+# note ngày 11/10/2025
+
 1. l0 với l1 -l2-l3.. phải lồng vơí nhau
 
 2. xem pattern của các loại lỗi
@@ -8,4 +10,6 @@ map pattern theo L3 hoặc L2
 cái L5 sau sẽ thành token.json, sửa lại 1 chút 
 
 3. làm theo top down, để biết cái nào cần giữ-cái nào cần bỏ
+
+
 
