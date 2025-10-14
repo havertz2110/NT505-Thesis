@@ -13,3 +13,7 @@ cái L5 sau sẽ thành token.json, sửa lại 1 chút
 
 
 
+    l0 la may cai ifndef, include..
+    l1 laf cai hafm
+    l2
+    l3 la logivc, nhu do while, loop

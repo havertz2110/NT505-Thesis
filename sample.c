@@ -28,10 +28,6 @@ Template File: sources-sink-01.tmpl.c
 
 void CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad()
 {
-    l0 la may cai ifndef, include..
-    l1 laf cai hafm
-    l2
-    l3 la logivc, nhu do while, loop
     char * data;
     char dataBuffer[100] = "";
     data = dataBuffer;
