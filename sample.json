@@ -1,1281 +1,2515 @@
-{
-  "level": "L1_PROGRAM",
-  "total_lines": 167,
-  "includes": {
-    "critical_includes": [],
-    "system_includes": [
-      "winsock2.h",
-      "windows.h"
-    ],
-    "custom_includes": [
-      "CUSTOM_INCLUDE_STD_TESTCASE_H"
-    ]
-  },
-  "global_variables": [],
-  "modules": [
-    {
-      "level": "L2_MODULE",
-      "name": "GLOBAL_SCOPE",
-      "type": "implicit_module",
-      "start_line": 1,
-      "end_line": 167,
-      "functions": [
-        {
-          "level": "L3_FUNCTION",
-          "name": "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad",
-          "normalized_name": "VOID_FUNC",
-          "return_type": "void",
-          "parameters": [],
-          "body_start": 30,
-          "body_end": 112,
-          "statement_blocks": [
-            {
-              "level": "L4_COMPLEX_SENTENCE",
-              "type": "conditional_block",
-              "start_line": 46,
-              "end_line": 49,
-              "context": {
-                "condition": "WSAStartup(MAKEWORD(2,2",
-                "then_branch": [
+[
+  {
+    "level": "L1_PROGRAM",
+    "total_lines": 167,
+    "includes": {
+      "critical_includes": [],
+      "system_includes": [
+        "winsock2.h",
+        "windows.h"
+      ],
+      "custom_includes": [
+        "CUSTOM_INCLUDE_STD_TESTCASE_H"
+      ]
+    },
+    "global_variables": [],
+    "modules": [
+      {
+        "level": "L2_MODULE",
+        "name": "GLOBAL_SCOPE",
+        "type": "implicit_module",
+        "start_line": 1,
+        "end_line": 167,
+        "functions": [
+          {
+            "level": "L3_FUNCTION",
+            "name": "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad",
+            "normalized_name": "VOID_FUNC",
+            "return_type": "void",
+            "parameters": [],
+            "body_start": 30,
+            "body_end": 112,
+            "statement_blocks": [
+              {
+                "level": "L4_COMPLEX_SENTENCE",
+                "type": "conditional_block",
+                "start_line": 46,
+                "end_line": 49,
+                "context": {
+                  "condition": "WSAStartup(MAKEWORD(2,2",
+                  "then_branch": [
+                    "break;"
+                  ],
+                  "else_branch": null
+                },
+                "statements": [
+                  "if (WSAStartup(MAKEWORD(2,2), &wsaData) != NO_ERROR)",
                   "break;"
                 ],
-                "else_branch": null
-              },
-              "statements": [
-                "if (WSAStartup(MAKEWORD(2,2), &wsaData) != NO_ERROR)",
-                "break;"
-              ],
-              "tokens": [
-                "if",
-                "(",
-                "WSAStartup",
-                "(",
-                "MAKEWORD",
-                "(",
-                "2",
-                ",",
-                "2",
-                ")",
-                ",",
-                "&",
-                "wsaData",
-                ")",
-                "!",
-                "=",
-                "NO_ERROR",
-                ")",
-                "break",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_COMPLEX_SENTENCE",
-              "type": "conditional_block",
-              "start_line": 52,
-              "end_line": 55,
-              "context": {
-                "condition": "listenSocket == INVALID_SOCKET",
-                "then_branch": [
-                  "break;"
-                ],
-                "else_branch": null
-              },
-              "statements": [
-                "if (listenSocket == INVALID_SOCKET)",
-                "break;"
-              ],
-              "tokens": [
-                "if",
-                "(",
-                "listenSocket",
-                "=",
-                "=",
-                "INVALID_SOCKET",
-                ")",
-                "break",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_COMPLEX_SENTENCE",
-              "type": "conditional_block",
-              "start_line": 60,
-              "end_line": 63,
-              "context": {
-                "condition": "SOCKET_ERROR == bind(listenSocket, (struct sockaddr*",
-                "then_branch": [
-                  "break;"
-                ],
-                "else_branch": null
-              },
-              "statements": [
-                "if (SOCKET_ERROR == bind(listenSocket, (struct sockaddr*)&service, sizeof(service)))",
-                "break;"
-              ],
-              "tokens": [
-                "if",
-                "(",
-                "SOCKET_ERROR",
-                "=",
-                "=",
-                "bind",
-                "(",
-                "listenSocket",
-                ",",
-                "(",
-                "struct",
-                "sockaddr",
-                "*",
-                ")",
-                "&",
-                "service",
-                ",",
-                "sizeof",
-                "(",
-                "service",
-                ")",
-                ")",
-                ")",
-                "break",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_COMPLEX_SENTENCE",
-              "type": "conditional_block",
-              "start_line": 64,
-              "end_line": 67,
-              "context": {
-                "condition": "SOCKET_ERROR == listen(listenSocket, LISTEN_BACKLOG",
-                "then_branch": [
-                  "break;"
-                ],
-                "else_branch": null
-              },
-              "statements": [
-                "if (SOCKET_ERROR == listen(listenSocket, LISTEN_BACKLOG))",
-                "break;"
-              ],
-              "tokens": [
-                "if",
-                "(",
-                "SOCKET_ERROR",
-                "=",
-                "=",
-                "listen",
-                "(",
-                "listenSocket",
-                ",",
-                "LISTEN_BACKLOG",
-                ")",
-                ")",
-                "break",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_COMPLEX_SENTENCE",
-              "type": "conditional_block",
-              "start_line": 69,
-              "end_line": 72,
-              "context": {
-                "condition": "acceptSocket == INVALID_SOCKET",
-                "then_branch": [
-                  "break;"
-                ],
-                "else_branch": null
-              },
-              "statements": [
-                "if (acceptSocket == INVALID_SOCKET)",
-                "break;"
-              ],
-              "tokens": [
-                "if",
-                "(",
-                "acceptSocket",
-                "=",
-                "=",
-                "INVALID_SOCKET",
-                ")",
-                "break",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_COMPLEX_SENTENCE",
-              "type": "conditional_block",
-              "start_line": 86,
-              "end_line": 89,
-              "context": {
-                "condition": "recvResult == SOCKET_ERROR || recvResult == 0",
-                "then_branch": [
-                  "break;"
-                ],
-                "else_branch": null
-              },
-              "statements": [
-                "if (recvResult == SOCKET_ERROR || recvResult == 0)",
-                "break;"
-              ],
-              "tokens": [
-                "if",
-                "(",
-                "recvResult",
-                "=",
-                "=",
-                "SOCKET_ERROR",
-                "|",
-                "|",
-                "recvResult",
-                "=",
-                "=",
-                "0",
-                ")",
-                "break",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_COMPLEX_SENTENCE",
-              "type": "loop_block",
-              "start_line": 92,
-              "end_line": 93,
-              "context": {
-                "loop_type": "while",
-                "condition": "0"
-              },
-              "statements": [
-                "while (0);",
-                "if (acceptSocket != INVALID_SOCKET)"
-              ],
-              "tokens": [
-                "while",
-                "(",
-                "0",
-                ")",
-                ";",
-                "if",
-                "(",
-                "acceptSocket",
-                "!",
-                "=",
-                "INVALID_SOCKET",
-                ")"
-              ]
-            },
-            {
-              "level": "L4_COMPLEX_SENTENCE",
-              "type": "conditional_block",
-              "start_line": 93,
-              "end_line": 96,
-              "context": {
-                "condition": "acceptSocket != INVALID_SOCKET",
-                "then_branch": [
-                  "closesocket(acceptSocket);"
-                ],
-                "else_branch": null
-              },
-              "statements": [
-                "if (acceptSocket != INVALID_SOCKET)",
-                "closesocket(acceptSocket);"
-              ],
-              "tokens": [
-                "if",
-                "(",
-                "acceptSocket",
-                "!",
-                "=",
-                "INVALID_SOCKET",
-                ")",
-                "closesocket",
-                "(",
-                "acceptSocket",
-                ")",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_COMPLEX_SENTENCE",
-              "type": "conditional_block",
-              "start_line": 97,
-              "end_line": 100,
-              "context": {
-                "condition": "listenSocket != INVALID_SOCKET",
-                "then_branch": [
-                  "closesocket(listenSocket);"
-                ],
-                "else_branch": null
-              },
-              "statements": [
-                "if (listenSocket != INVALID_SOCKET)",
-                "closesocket(listenSocket);"
-              ],
-              "tokens": [
-                "if",
-                "(",
-                "listenSocket",
-                "!",
-                "=",
-                "INVALID_SOCKET",
-                ")",
-                "closesocket",
-                "(",
-                "listenSocket",
-                ")",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_COMPLEX_SENTENCE",
-              "type": "conditional_block",
-              "start_line": 101,
-              "end_line": 104,
-              "context": {
-                "condition": "wsaDataInit",
-                "then_branch": [
-                  "WSACleanup();"
-                ],
-                "else_branch": null
-              },
-              "statements": [
-                "if (wsaDataInit)",
-                "WSACleanup();"
-              ],
-              "tokens": [
-                "if",
-                "(",
-                "wsaDataInit",
-                ")",
-                "WSACleanup",
-                "(",
-                ")",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_COMPLEX_SENTENCE",
-              "type": "conditional_block",
-              "start_line": 107,
-              "end_line": 111,
-              "context": {
-                "condition": "!SetComputerNameA(data",
-                "then_branch": [
-                  "printLine(\"Failure setting computer name\");",
-                  "exit(1);"
-                ],
-                "else_branch": null
-              },
-              "statements": [
-                "if (!SetComputerNameA(data))",
-                "printLine(\"Failure setting computer name\");",
-                "exit(1);"
-              ],
-              "tokens": [
-                "if",
-                "(",
-                "!",
-                "SetComputerNameA",
-                "(",
-                "data",
-                ")",
-                ")",
-                "printLine",
-                "(",
-                "\"Failure setting computer name\"",
-                ")",
-                ";",
-                "exit",
-                "(",
-                "1",
-                ")",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "l0 la may cai ifndef, include..",
-              "tokens": [
-                "l0",
-                "la",
-                "may",
-                "cai",
-                "ifndef",
-                ",",
-                "include",
-                ".",
-                "."
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "l1 laf cai hafm",
-              "tokens": [
-                "l1",
-                "laf",
-                "cai",
-                "hafm"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "l2",
-              "tokens": [
-                "l2"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "l3 la logivc, nhu do while, loop",
-              "tokens": [
-                "l3",
-                "la",
-                "logivc",
-                ",",
-                "nhu",
-                "do",
-                "while",
-                ",",
-                "loop"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "char * data;",
-              "tokens": [
-                "char",
-                "*",
-                "data",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "char dataBuffer[100] = \"\";",
-              "tokens": [
-                "char",
-                "dataBuffer",
-                "[",
-                "100",
-                "]",
-                "=",
-                "\"\"",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "data = dataBuffer;",
-              "tokens": [
-                "data",
-                "=",
-                "dataBuffer",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "WSADATA wsaData;",
-              "tokens": [
-                "WSADATA",
-                "wsaData",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "BOOL wsaDataInit = FALSE;",
-              "tokens": [
-                "BOOL",
-                "wsaDataInit",
-                "=",
-                "FALSE",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "SOCKET listenSocket = INVALID_SOCKET;",
-              "tokens": [
-                "SOCKET",
-                "listenSocket",
-                "=",
-                "INVALID_SOCKET",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "SOCKET acceptSocket = INVALID_SOCKET;",
-              "tokens": [
-                "SOCKET",
-                "acceptSocket",
-                "=",
-                "INVALID_SOCKET",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "struct sockaddr_in service;",
-              "tokens": [
-                "struct",
-                "sockaddr_in",
-                "service",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "int recvResult;",
-              "tokens": [
-                "int",
-                "recvResult",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "do",
-              "tokens": [
-                "do"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "wsaDataInit = 1;",
-              "tokens": [
-                "wsaDataInit",
-                "=",
-                "1",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "listenSocket = socket(PF_INET, SOCK_STREAM, 0);",
-              "tokens": [
-                "listenSocket",
-                "=",
-                "socket",
-                "(",
-                "PF_INET",
-                ",",
-                "SOCK_STREAM",
-                ",",
-                "0",
-                ")",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "memset(&service, 0, sizeof(service));",
-              "tokens": [
-                "memset",
-                "(",
-                "&",
-                "service",
-                ",",
-                "0",
-                ",",
-                "sizeof",
-                "(",
-                "service",
-                ")",
-                ")",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "service.sin_family = AF_INET;",
-              "tokens": [
-                "service",
-                ".",
-                "sin_family",
-                "=",
-                "AF_INET",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "service.sin_addr.s_addr = INADDR_ANY;",
-              "tokens": [
-                "service",
-                ".",
-                "sin_addr",
-                ".",
-                "s_addr",
-                "=",
-                "INADDR_ANY",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "service.sin_port = htons(LISTEN_PORT);",
-              "tokens": [
-                "service",
-                ".",
-                "sin_port",
-                "=",
-                "htons",
-                "(",
-                "LISTEN_PORT",
-                ")",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "acceptSocket = accept(listenSocket, NULL, NULL);",
-              "tokens": [
-                "acceptSocket",
-                "=",
-                "accept",
-                "(",
-                "listenSocket",
-                ",",
-                "NULL",
-                ",",
-                "NULL",
-                ")",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "/* INCIDENTAL CWE 188 - reliance on data memory layout",
-              "tokens": [
-                "/",
-                "*",
-                "INCIDENTAL",
-                "CWE",
-                "188",
-                "-",
-                "reliance",
-                "on",
-                "data",
-                "memory",
-                "layout"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "* recv and friends return \"number of bytes\" received",
-              "tokens": [
-                "*",
-                "recv",
-                "and",
-                "friends",
-                "return",
-                "\"",
-                "number",
-                "of",
-                "bytes",
-                "\"",
-                "received"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "* char's on our system, however, may not be \"octets\" (8-bit",
-              "tokens": [
-                "*",
-                "char",
-                "'",
-                "s",
-                "on",
-                "our",
-                "system",
-                ",",
-                "however",
-                ",",
-                "may",
-                "not",
-                "be",
-                "\"",
-                "octets",
-                "\"",
-                "(",
-                "8",
-                "-",
-                "bit"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "* bytes) but could be just about anything.  Also,",
-              "tokens": [
-                "*",
-                "bytes",
-                ")",
-                "but",
-                "could",
-                "be",
-                "just",
-                "about",
-                "anything",
-                ".",
-                "Also",
-                ","
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "* even if the external environment is ASCII or UTF8,",
-              "tokens": [
-                "*",
-                "even",
-                "if",
-                "the",
-                "external",
-                "environment",
-                "is",
-                "ASCII",
-                "or",
-                "UTF8",
-                ","
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "* the ANSI/ISO C standard does not dictate that the",
-              "tokens": [
-                "*",
-                "the",
-                "ANSI",
-                "/",
-                "ISO",
-                "C",
-                "standard",
-                "does",
-                "not",
-                "dictate",
-                "that",
-                "the"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "* character set used by the actual language or character",
-              "tokens": [
-                "*",
-                "character",
-                "set",
-                "used",
-                "by",
-                "the",
-                "actual",
-                "language",
-                "or",
-                "character"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "* constants matches.",
-              "tokens": [
-                "*",
-                "constants",
-                "matches",
-                "."
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "*",
-              "tokens": [
-                "*"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "* In practice none of these are usually issues...",
-              "tokens": [
-                "*",
-                "In",
-                "practice",
-                "none",
-                "of",
-                "these",
-                "are",
-                "usually",
-                "issues",
-                ".",
-                ".",
-                "."
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "*/",
-              "tokens": [
-                "*",
-                "/"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "/* FLAW: read the new hostname from a network socket */",
-              "tokens": [
-                "/",
-                "*",
-                "FLAW",
-                ":",
-                "read",
-                "the",
-                "new",
-                "hostname",
-                "from",
-                "a",
-                "network",
-                "socket",
-                "*",
-                "/"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "recvResult = recv(acceptSocket, data, 100 - 1, 0);",
-              "tokens": [
-                "recvResult",
-                "=",
-                "recv",
-                "(",
-                "acceptSocket",
-                ",",
-                "data",
-                ",",
-                "100",
-                "-",
-                "1",
-                ",",
-                "0",
-                ")",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "data[recvResult] = '\\0';",
-              "tokens": [
-                "data",
-                "[",
-                "recvResult",
-                "]",
-                "=",
-                "'",
-                "\\",
-                "0",
-                "'",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "/* POTENTIAL FLAW: set the hostname to data obtained from a potentially external source */",
-              "tokens": [
-                "/",
-                "*",
-                "POTENTIAL",
-                "FLAW",
-                ":",
-                "set",
-                "the",
-                "hostname",
-                "to",
-                "data",
-                "obtained",
-                "from",
-                "a",
-                "potentially",
-                "external",
-                "source",
-                "*",
-                "/"
-              ]
-            }
-          ],
-          "pattern": [
-            {
-              "pattern": "cwe15",
-              "value": "recvResult = recv(acceptSocket, data, 100 - 1, 0);"
-            },
-            {
-              "pattern": "cwe15",
-              "value": "if (!SetComputerNameA(data))"
-            }
-          ]
-        },
-        {
-          "level": "L3_FUNCTION",
-          "name": "goodG2B",
-          "normalized_name": "VOID_FUNC",
-          "return_type": "static void",
-          "parameters": [],
-          "body_start": 121,
-          "body_end": 132,
-          "statement_blocks": [
-            {
-              "level": "L4_COMPLEX_SENTENCE",
-              "type": "vulnerable_operation",
-              "start_line": 122,
-              "end_line": 127,
-              "context": {
-                "focus_line": "strcpy(data, \"hostname\");",
-                "preceding_context": [
-                  "char dataBuffer[100] = \"\";",
-                  "data = dataBuffer;",
-                  "/* FIX: get the hostname from a string literal */"
-                ],
-                "following_context": [
-                  "/* POTENTIAL FLAW: set the hostname to data obtained from a potentially external source */",
-                  "if (!SetComputerNameA(data))"
+                "tokens": [
+                  "if",
+                  "(",
+                  "WSAStartup",
+                  "(",
+                  "MAKEWORD",
+                  "(",
+                  "2",
+                  ",",
+                  "2",
+                  ")",
+                  ",",
+                  "&",
+                  "wsaData",
+                  ")",
+                  "!",
+                  "=",
+                  "NO_ERROR",
+                  ")",
+                  "break",
+                  ";"
                 ]
               },
-              "statements": [
-                "char dataBuffer[100] = \"\";",
-                "data = dataBuffer;",
-                "/* FIX: get the hostname from a string literal */",
-                "strcpy(data, \"hostname\");",
-                "/* POTENTIAL FLAW: set the hostname to data obtained from a potentially external source */",
-                "if (!SetComputerNameA(data))"
-              ],
-              "tokens": [
-                "char",
-                "dataBuffer",
-                "[",
-                "100",
-                "]",
-                "=",
-                "\"\"",
-                ";",
-                "data",
-                "=",
-                "dataBuffer",
-                ";",
-                "/",
-                "*",
-                "FIX",
-                ":",
-                "get",
-                "the",
-                "hostname",
-                "from",
-                "a",
-                "string",
-                "literal",
-                "*",
-                "/",
-                "strcpy",
-                "(",
-                "data",
-                ",",
-                "\"hostname\"",
-                ")",
-                ";",
-                "/",
-                "*",
-                "POTENTIAL",
-                "FLAW",
-                ":",
-                "set",
-                "the",
-                "hostname",
-                "to",
-                "data",
-                "obtained",
-                "from",
-                "a",
-                "potentially",
-                "external",
-                "source",
-                "*",
-                "/",
-                "if",
-                "(",
-                "!",
-                "SetComputerNameA",
-                "(",
-                "data",
-                ")",
-                ")"
-              ]
-            },
-            {
-              "level": "L4_COMPLEX_SENTENCE",
-              "type": "conditional_block",
-              "start_line": 127,
-              "end_line": 131,
-              "context": {
-                "condition": "!SetComputerNameA(data",
-                "then_branch": [
+              {
+                "level": "L4_COMPLEX_SENTENCE",
+                "type": "conditional_block",
+                "start_line": 52,
+                "end_line": 55,
+                "context": {
+                  "condition": "listenSocket == INVALID_SOCKET",
+                  "then_branch": [
+                    "break;"
+                  ],
+                  "else_branch": null
+                },
+                "statements": [
+                  "if (listenSocket == INVALID_SOCKET)",
+                  "break;"
+                ],
+                "tokens": [
+                  "if",
+                  "(",
+                  "listenSocket",
+                  "=",
+                  "=",
+                  "INVALID_SOCKET",
+                  ")",
+                  "break",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_COMPLEX_SENTENCE",
+                "type": "conditional_block",
+                "start_line": 60,
+                "end_line": 63,
+                "context": {
+                  "condition": "SOCKET_ERROR == bind(listenSocket, (struct sockaddr*",
+                  "then_branch": [
+                    "break;"
+                  ],
+                  "else_branch": null
+                },
+                "statements": [
+                  "if (SOCKET_ERROR == bind(listenSocket, (struct sockaddr*)&service, sizeof(service)))",
+                  "break;"
+                ],
+                "tokens": [
+                  "if",
+                  "(",
+                  "SOCKET_ERROR",
+                  "=",
+                  "=",
+                  "bind",
+                  "(",
+                  "listenSocket",
+                  ",",
+                  "(",
+                  "struct",
+                  "sockaddr",
+                  "*",
+                  ")",
+                  "&",
+                  "service",
+                  ",",
+                  "sizeof",
+                  "(",
+                  "service",
+                  ")",
+                  ")",
+                  ")",
+                  "break",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_COMPLEX_SENTENCE",
+                "type": "conditional_block",
+                "start_line": 64,
+                "end_line": 67,
+                "context": {
+                  "condition": "SOCKET_ERROR == listen(listenSocket, LISTEN_BACKLOG",
+                  "then_branch": [
+                    "break;"
+                  ],
+                  "else_branch": null
+                },
+                "statements": [
+                  "if (SOCKET_ERROR == listen(listenSocket, LISTEN_BACKLOG))",
+                  "break;"
+                ],
+                "tokens": [
+                  "if",
+                  "(",
+                  "SOCKET_ERROR",
+                  "=",
+                  "=",
+                  "listen",
+                  "(",
+                  "listenSocket",
+                  ",",
+                  "LISTEN_BACKLOG",
+                  ")",
+                  ")",
+                  "break",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_COMPLEX_SENTENCE",
+                "type": "conditional_block",
+                "start_line": 69,
+                "end_line": 72,
+                "context": {
+                  "condition": "acceptSocket == INVALID_SOCKET",
+                  "then_branch": [
+                    "break;"
+                  ],
+                  "else_branch": null
+                },
+                "statements": [
+                  "if (acceptSocket == INVALID_SOCKET)",
+                  "break;"
+                ],
+                "tokens": [
+                  "if",
+                  "(",
+                  "acceptSocket",
+                  "=",
+                  "=",
+                  "INVALID_SOCKET",
+                  ")",
+                  "break",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_COMPLEX_SENTENCE",
+                "type": "conditional_block",
+                "start_line": 86,
+                "end_line": 89,
+                "context": {
+                  "condition": "recvResult == SOCKET_ERROR || recvResult == 0",
+                  "then_branch": [
+                    "break;"
+                  ],
+                  "else_branch": null
+                },
+                "statements": [
+                  "if (recvResult == SOCKET_ERROR || recvResult == 0)",
+                  "break;"
+                ],
+                "tokens": [
+                  "if",
+                  "(",
+                  "recvResult",
+                  "=",
+                  "=",
+                  "SOCKET_ERROR",
+                  "|",
+                  "|",
+                  "recvResult",
+                  "=",
+                  "=",
+                  "0",
+                  ")",
+                  "break",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_COMPLEX_SENTENCE",
+                "type": "loop_block",
+                "start_line": 92,
+                "end_line": 93,
+                "context": {
+                  "loop_type": "while",
+                  "condition": "0"
+                },
+                "statements": [
+                  "while (0);",
+                  "if (acceptSocket != INVALID_SOCKET)"
+                ],
+                "tokens": [
+                  "while",
+                  "(",
+                  "0",
+                  ")",
+                  ";",
+                  "if",
+                  "(",
+                  "acceptSocket",
+                  "!",
+                  "=",
+                  "INVALID_SOCKET",
+                  ")"
+                ]
+              },
+              {
+                "level": "L4_COMPLEX_SENTENCE",
+                "type": "conditional_block",
+                "start_line": 93,
+                "end_line": 96,
+                "context": {
+                  "condition": "acceptSocket != INVALID_SOCKET",
+                  "then_branch": [
+                    "closesocket(acceptSocket);"
+                  ],
+                  "else_branch": null
+                },
+                "statements": [
+                  "if (acceptSocket != INVALID_SOCKET)",
+                  "closesocket(acceptSocket);"
+                ],
+                "tokens": [
+                  "if",
+                  "(",
+                  "acceptSocket",
+                  "!",
+                  "=",
+                  "INVALID_SOCKET",
+                  ")",
+                  "closesocket",
+                  "(",
+                  "acceptSocket",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_COMPLEX_SENTENCE",
+                "type": "conditional_block",
+                "start_line": 97,
+                "end_line": 100,
+                "context": {
+                  "condition": "listenSocket != INVALID_SOCKET",
+                  "then_branch": [
+                    "closesocket(listenSocket);"
+                  ],
+                  "else_branch": null
+                },
+                "statements": [
+                  "if (listenSocket != INVALID_SOCKET)",
+                  "closesocket(listenSocket);"
+                ],
+                "tokens": [
+                  "if",
+                  "(",
+                  "listenSocket",
+                  "!",
+                  "=",
+                  "INVALID_SOCKET",
+                  ")",
+                  "closesocket",
+                  "(",
+                  "listenSocket",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_COMPLEX_SENTENCE",
+                "type": "conditional_block",
+                "start_line": 101,
+                "end_line": 104,
+                "context": {
+                  "condition": "wsaDataInit",
+                  "then_branch": [
+                    "WSACleanup();"
+                  ],
+                  "else_branch": null
+                },
+                "statements": [
+                  "if (wsaDataInit)",
+                  "WSACleanup();"
+                ],
+                "tokens": [
+                  "if",
+                  "(",
+                  "wsaDataInit",
+                  ")",
+                  "WSACleanup",
+                  "(",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_COMPLEX_SENTENCE",
+                "type": "conditional_block",
+                "start_line": 107,
+                "end_line": 111,
+                "context": {
+                  "condition": "!SetComputerNameA(data",
+                  "then_branch": [
+                    "printLine(\"Failure setting computer name\");",
+                    "exit(1);"
+                  ],
+                  "else_branch": null
+                },
+                "statements": [
+                  "if (!SetComputerNameA(data))",
                   "printLine(\"Failure setting computer name\");",
                   "exit(1);"
                 ],
-                "else_branch": null
+                "tokens": [
+                  "if",
+                  "(",
+                  "!",
+                  "SetComputerNameA",
+                  "(",
+                  "data",
+                  ")",
+                  ")",
+                  "printLine",
+                  "(",
+                  "\"Failure setting computer name\"",
+                  ")",
+                  ";",
+                  "exit",
+                  "(",
+                  "1",
+                  ")",
+                  ";"
+                ]
               },
-              "statements": [
-                "if (!SetComputerNameA(data))",
-                "printLine(\"Failure setting computer name\");",
-                "exit(1);"
-              ],
-              "tokens": [
-                "if",
-                "(",
-                "!",
-                "SetComputerNameA",
-                "(",
-                "data",
-                ")",
-                ")",
-                "printLine",
-                "(",
-                "\"Failure setting computer name\"",
-                ")",
-                ";",
-                "exit",
-                "(",
-                "1",
-                ")",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "char * data;",
-              "tokens": [
-                "char",
-                "*",
-                "data",
-                ";"
-              ]
-            }
-          ]
-        },
-        {
-          "level": "L3_FUNCTION",
-          "name": "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good",
-          "normalized_name": "VOID_FUNC",
-          "return_type": "void",
-          "parameters": [],
-          "body_start": 136,
-          "body_end": 137,
-          "statement_blocks": [
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "goodG2B();",
-              "tokens": [
-                "goodG2B",
-                "(",
-                ")",
-                ";"
-              ]
-            }
-          ]
-        },
-        {
-          "level": "L3_FUNCTION",
-          "name": "main",
-          "normalized_name": "INT_FUNC",
-          "return_type": "int",
-          "parameters": [
-            {
-              "original_name": "argc",
-              "normalized_name": "PARAM_VAR_INT",
-              "type": "int",
-              "scope": "parameter"
-            },
-            {
-              "original_name": "argv",
-              "normalized_name": "PARAM_VAR_STR_PTR",
-              "type": "char *",
-              "scope": "parameter"
-            }
-          ],
-          "body_start": 151,
-          "body_end": 164,
-          "statement_blocks": [
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "/* seed randomness */",
-              "tokens": [
-                "/",
-                "*",
-                "seed",
-                "randomness",
-                "*",
-                "/"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "srand( (unsigned)time(NULL) );",
-              "tokens": [
-                "srand",
-                "(",
-                "(",
-                "unsigned",
-                ")",
-                "time",
-                "(",
-                "NULL",
-                ")",
-                ")",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "printLine(\"Calling good()...\");",
-              "tokens": [
-                "printLine",
-                "(",
-                "\"",
-                "Calling",
-                "good",
-                "(",
-                ")",
-                ".",
-                ".",
-                ".",
-                "\"",
-                ")",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good();",
-              "tokens": [
-                "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good",
-                "(",
-                ")",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "printLine(\"Finished good()\");",
-              "tokens": [
-                "printLine",
-                "(",
-                "\"",
-                "Finished",
-                "good",
-                "(",
-                ")",
-                "\"",
-                ")",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "printLine(\"Calling bad()...\");",
-              "tokens": [
-                "printLine",
-                "(",
-                "\"",
-                "Calling",
-                "bad",
-                "(",
-                ")",
-                ".",
-                ".",
-                ".",
-                "\"",
-                ")",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad();",
-              "tokens": [
-                "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad",
-                "(",
-                ")",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "printLine(\"Finished bad()\");",
-              "tokens": [
-                "printLine",
-                "(",
-                "\"",
-                "Finished",
-                "bad",
-                "(",
-                ")",
-                "\"",
-                ")",
-                ";"
-              ]
-            },
-            {
-              "level": "L4_SIMPLE_SENTENCE",
-              "type": "simple_statement",
-              "statement": "return 0;",
-              "tokens": [
-                "return",
-                "0",
-                ";"
-              ]
-            }
-          ]
-        }
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "l0 la may cai ifndef, include..",
+                "tokens": [
+                  "l0",
+                  "la",
+                  "may",
+                  "cai",
+                  "ifndef",
+                  ",",
+                  "include",
+                  ".",
+                  "."
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "l1 laf cai hafm",
+                "tokens": [
+                  "l1",
+                  "laf",
+                  "cai",
+                  "hafm"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "l2",
+                "tokens": [
+                  "l2"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "l3 la logivc, nhu do while, loop",
+                "tokens": [
+                  "l3",
+                  "la",
+                  "logivc",
+                  ",",
+                  "nhu",
+                  "do",
+                  "while",
+                  ",",
+                  "loop"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "char * data;",
+                "tokens": [
+                  "char",
+                  "*",
+                  "data",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "char dataBuffer[100] = \"\";",
+                "tokens": [
+                  "char",
+                  "dataBuffer",
+                  "[",
+                  "100",
+                  "]",
+                  "=",
+                  "\"\"",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "data = dataBuffer;",
+                "tokens": [
+                  "data",
+                  "=",
+                  "dataBuffer",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "WSADATA wsaData;",
+                "tokens": [
+                  "WSADATA",
+                  "wsaData",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "BOOL wsaDataInit = FALSE;",
+                "tokens": [
+                  "BOOL",
+                  "wsaDataInit",
+                  "=",
+                  "FALSE",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "SOCKET listenSocket = INVALID_SOCKET;",
+                "tokens": [
+                  "SOCKET",
+                  "listenSocket",
+                  "=",
+                  "INVALID_SOCKET",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "SOCKET acceptSocket = INVALID_SOCKET;",
+                "tokens": [
+                  "SOCKET",
+                  "acceptSocket",
+                  "=",
+                  "INVALID_SOCKET",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "struct sockaddr_in service;",
+                "tokens": [
+                  "struct",
+                  "sockaddr_in",
+                  "service",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "int recvResult;",
+                "tokens": [
+                  "int",
+                  "recvResult",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "do",
+                "tokens": [
+                  "do"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "wsaDataInit = 1;",
+                "tokens": [
+                  "wsaDataInit",
+                  "=",
+                  "1",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "listenSocket = socket(PF_INET, SOCK_STREAM, 0);",
+                "tokens": [
+                  "listenSocket",
+                  "=",
+                  "socket",
+                  "(",
+                  "PF_INET",
+                  ",",
+                  "SOCK_STREAM",
+                  ",",
+                  "0",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "memset(&service, 0, sizeof(service));",
+                "tokens": [
+                  "memset",
+                  "(",
+                  "&",
+                  "service",
+                  ",",
+                  "0",
+                  ",",
+                  "sizeof",
+                  "(",
+                  "service",
+                  ")",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "service.sin_family = AF_INET;",
+                "tokens": [
+                  "service",
+                  ".",
+                  "sin_family",
+                  "=",
+                  "AF_INET",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "service.sin_addr.s_addr = INADDR_ANY;",
+                "tokens": [
+                  "service",
+                  ".",
+                  "sin_addr",
+                  ".",
+                  "s_addr",
+                  "=",
+                  "INADDR_ANY",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "service.sin_port = htons(LISTEN_PORT);",
+                "tokens": [
+                  "service",
+                  ".",
+                  "sin_port",
+                  "=",
+                  "htons",
+                  "(",
+                  "LISTEN_PORT",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "acceptSocket = accept(listenSocket, NULL, NULL);",
+                "tokens": [
+                  "acceptSocket",
+                  "=",
+                  "accept",
+                  "(",
+                  "listenSocket",
+                  ",",
+                  "NULL",
+                  ",",
+                  "NULL",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "/* INCIDENTAL CWE 188 - reliance on data memory layout",
+                "tokens": [
+                  "/",
+                  "*",
+                  "INCIDENTAL",
+                  "CWE",
+                  "188",
+                  "-",
+                  "reliance",
+                  "on",
+                  "data",
+                  "memory",
+                  "layout"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "* recv and friends return \"number of bytes\" received",
+                "tokens": [
+                  "*",
+                  "recv",
+                  "and",
+                  "friends",
+                  "return",
+                  "\"",
+                  "number",
+                  "of",
+                  "bytes",
+                  "\"",
+                  "received"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "* char's on our system, however, may not be \"octets\" (8-bit",
+                "tokens": [
+                  "*",
+                  "char",
+                  "'",
+                  "s",
+                  "on",
+                  "our",
+                  "system",
+                  ",",
+                  "however",
+                  ",",
+                  "may",
+                  "not",
+                  "be",
+                  "\"",
+                  "octets",
+                  "\"",
+                  "(",
+                  "8",
+                  "-",
+                  "bit"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "* bytes) but could be just about anything.  Also,",
+                "tokens": [
+                  "*",
+                  "bytes",
+                  ")",
+                  "but",
+                  "could",
+                  "be",
+                  "just",
+                  "about",
+                  "anything",
+                  ".",
+                  "Also",
+                  ","
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "* even if the external environment is ASCII or UTF8,",
+                "tokens": [
+                  "*",
+                  "even",
+                  "if",
+                  "the",
+                  "external",
+                  "environment",
+                  "is",
+                  "ASCII",
+                  "or",
+                  "UTF8",
+                  ","
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "* the ANSI/ISO C standard does not dictate that the",
+                "tokens": [
+                  "*",
+                  "the",
+                  "ANSI",
+                  "/",
+                  "ISO",
+                  "C",
+                  "standard",
+                  "does",
+                  "not",
+                  "dictate",
+                  "that",
+                  "the"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "* character set used by the actual language or character",
+                "tokens": [
+                  "*",
+                  "character",
+                  "set",
+                  "used",
+                  "by",
+                  "the",
+                  "actual",
+                  "language",
+                  "or",
+                  "character"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "* constants matches.",
+                "tokens": [
+                  "*",
+                  "constants",
+                  "matches",
+                  "."
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "*",
+                "tokens": [
+                  "*"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "* In practice none of these are usually issues...",
+                "tokens": [
+                  "*",
+                  "In",
+                  "practice",
+                  "none",
+                  "of",
+                  "these",
+                  "are",
+                  "usually",
+                  "issues",
+                  ".",
+                  ".",
+                  "."
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "*/",
+                "tokens": [
+                  "*",
+                  "/"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "/* FLAW: read the new hostname from a network socket */",
+                "tokens": [
+                  "/",
+                  "*",
+                  "FLAW",
+                  ":",
+                  "read",
+                  "the",
+                  "new",
+                  "hostname",
+                  "from",
+                  "a",
+                  "network",
+                  "socket",
+                  "*",
+                  "/"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "recvResult = recv(acceptSocket, data, 100 - 1, 0);",
+                "tokens": [
+                  "recvResult",
+                  "=",
+                  "recv",
+                  "(",
+                  "acceptSocket",
+                  ",",
+                  "data",
+                  ",",
+                  "100",
+                  "-",
+                  "1",
+                  ",",
+                  "0",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "data[recvResult] = '\\0';",
+                "tokens": [
+                  "data",
+                  "[",
+                  "recvResult",
+                  "]",
+                  "=",
+                  "'",
+                  "\\",
+                  "0",
+                  "'",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "/* POTENTIAL FLAW: set the hostname to data obtained from a potentially external source */",
+                "tokens": [
+                  "/",
+                  "*",
+                  "POTENTIAL",
+                  "FLAW",
+                  ":",
+                  "set",
+                  "the",
+                  "hostname",
+                  "to",
+                  "data",
+                  "obtained",
+                  "from",
+                  "a",
+                  "potentially",
+                  "external",
+                  "source",
+                  "*",
+                  "/"
+                ]
+              }
+            ],
+            "pattern": [
+              {
+                "pattern": "cwe15",
+                "value": "recvResult = recv(acceptSocket, data, 100 - 1, 0);"
+              },
+              {
+                "pattern": "cwe15",
+                "value": "if (!SetComputerNameA(data))"
+              }
+            ]
+          },
+          {
+            "level": "L3_FUNCTION",
+            "name": "goodG2B",
+            "normalized_name": "VOID_FUNC",
+            "return_type": "static void",
+            "parameters": [],
+            "body_start": 121,
+            "body_end": 132,
+            "statement_blocks": [
+              {
+                "level": "L4_COMPLEX_SENTENCE",
+                "type": "vulnerable_operation",
+                "start_line": 122,
+                "end_line": 127,
+                "context": {
+                  "focus_line": "strcpy(data, \"hostname\");",
+                  "preceding_context": [
+                    "char dataBuffer[100] = \"\";",
+                    "data = dataBuffer;",
+                    "/* FIX: get the hostname from a string literal */"
+                  ],
+                  "following_context": [
+                    "/* POTENTIAL FLAW: set the hostname to data obtained from a potentially external source */",
+                    "if (!SetComputerNameA(data))"
+                  ]
+                },
+                "statements": [
+                  "char dataBuffer[100] = \"\";",
+                  "data = dataBuffer;",
+                  "/* FIX: get the hostname from a string literal */",
+                  "strcpy(data, \"hostname\");",
+                  "/* POTENTIAL FLAW: set the hostname to data obtained from a potentially external source */",
+                  "if (!SetComputerNameA(data))"
+                ],
+                "tokens": [
+                  "char",
+                  "dataBuffer",
+                  "[",
+                  "100",
+                  "]",
+                  "=",
+                  "\"\"",
+                  ";",
+                  "data",
+                  "=",
+                  "dataBuffer",
+                  ";",
+                  "/",
+                  "*",
+                  "FIX",
+                  ":",
+                  "get",
+                  "the",
+                  "hostname",
+                  "from",
+                  "a",
+                  "string",
+                  "literal",
+                  "*",
+                  "/",
+                  "strcpy",
+                  "(",
+                  "data",
+                  ",",
+                  "\"hostname\"",
+                  ")",
+                  ";",
+                  "/",
+                  "*",
+                  "POTENTIAL",
+                  "FLAW",
+                  ":",
+                  "set",
+                  "the",
+                  "hostname",
+                  "to",
+                  "data",
+                  "obtained",
+                  "from",
+                  "a",
+                  "potentially",
+                  "external",
+                  "source",
+                  "*",
+                  "/",
+                  "if",
+                  "(",
+                  "!",
+                  "SetComputerNameA",
+                  "(",
+                  "data",
+                  ")",
+                  ")"
+                ]
+              },
+              {
+                "level": "L4_COMPLEX_SENTENCE",
+                "type": "conditional_block",
+                "start_line": 127,
+                "end_line": 131,
+                "context": {
+                  "condition": "!SetComputerNameA(data",
+                  "then_branch": [
+                    "printLine(\"Failure setting computer name\");",
+                    "exit(1);"
+                  ],
+                  "else_branch": null
+                },
+                "statements": [
+                  "if (!SetComputerNameA(data))",
+                  "printLine(\"Failure setting computer name\");",
+                  "exit(1);"
+                ],
+                "tokens": [
+                  "if",
+                  "(",
+                  "!",
+                  "SetComputerNameA",
+                  "(",
+                  "data",
+                  ")",
+                  ")",
+                  "printLine",
+                  "(",
+                  "\"Failure setting computer name\"",
+                  ")",
+                  ";",
+                  "exit",
+                  "(",
+                  "1",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "char * data;",
+                "tokens": [
+                  "char",
+                  "*",
+                  "data",
+                  ";"
+                ]
+              }
+            ]
+          },
+          {
+            "level": "L3_FUNCTION",
+            "name": "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good",
+            "normalized_name": "VOID_FUNC",
+            "return_type": "void",
+            "parameters": [],
+            "body_start": 136,
+            "body_end": 137,
+            "statement_blocks": [
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "goodG2B();",
+                "tokens": [
+                  "goodG2B",
+                  "(",
+                  ")",
+                  ";"
+                ]
+              }
+            ]
+          },
+          {
+            "level": "L3_FUNCTION",
+            "name": "main",
+            "normalized_name": "INT_FUNC",
+            "return_type": "int",
+            "parameters": [
+              {
+                "original_name": "argc",
+                "normalized_name": "PARAM_VAR_INT",
+                "type": "int",
+                "scope": "parameter"
+              },
+              {
+                "original_name": "argv",
+                "normalized_name": "PARAM_VAR_STR_PTR",
+                "type": "char *",
+                "scope": "parameter"
+              }
+            ],
+            "body_start": 151,
+            "body_end": 164,
+            "statement_blocks": [
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "/* seed randomness */",
+                "tokens": [
+                  "/",
+                  "*",
+                  "seed",
+                  "randomness",
+                  "*",
+                  "/"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "srand( (unsigned)time(NULL) );",
+                "tokens": [
+                  "srand",
+                  "(",
+                  "(",
+                  "unsigned",
+                  ")",
+                  "time",
+                  "(",
+                  "NULL",
+                  ")",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "printLine(\"Calling good()...\");",
+                "tokens": [
+                  "printLine",
+                  "(",
+                  "\"",
+                  "Calling",
+                  "good",
+                  "(",
+                  ")",
+                  ".",
+                  ".",
+                  ".",
+                  "\"",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good();",
+                "tokens": [
+                  "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good",
+                  "(",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "printLine(\"Finished good()\");",
+                "tokens": [
+                  "printLine",
+                  "(",
+                  "\"",
+                  "Finished",
+                  "good",
+                  "(",
+                  ")",
+                  "\"",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "printLine(\"Calling bad()...\");",
+                "tokens": [
+                  "printLine",
+                  "(",
+                  "\"",
+                  "Calling",
+                  "bad",
+                  "(",
+                  ")",
+                  ".",
+                  ".",
+                  ".",
+                  "\"",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad();",
+                "tokens": [
+                  "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad",
+                  "(",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "printLine(\"Finished bad()\");",
+                "tokens": [
+                  "printLine",
+                  "(",
+                  "\"",
+                  "Finished",
+                  "bad",
+                  "(",
+                  ")",
+                  "\"",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_SIMPLE_SENTENCE",
+                "type": "simple_statement",
+                "statement": "return 0;",
+                "tokens": [
+                  "return",
+                  "0",
+                  ";"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "level": "L1_PROGRAM",
+    "language": "c",
+    "total_lines": 167,
+    "code": "/* TEMPLATE GENERATED TESTCASE FILE\nFilename: CWE15_External_Control_of_System_or_Configuration_Setting__w32_01.c\nLabel Definition File: CWE15_External_Control_of_System_or_Configuration_Setting__w32.label.xml\nTemplate File: sources-sink-01.tmpl.c\n*/\n/*\n * @description\n * CWE: 15 External Control of System or Configuration Setting\n * BadSource:  Get the hostname from a network socket\n * GoodSource: Get the hostname from a string literal\n * Sink:\n *    BadSink : Set the hostname\n * Flow Variant: 01 Baseline\n *\n * */\n\n#include \"std_testcase.h\"\n\n#include <winsock2.h>\n#pragma comment(lib, \"ws2_32\")\n\n#define LISTEN_PORT 999\n#define LISTEN_BACKLOG 5\n\n#include <windows.h>\n\n#ifndef OMITBAD\n\nvoid CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad()\n{\n    l0 la may cai ifndef, include..\n    l1 laf cai hafm\n    l2\n    l3 la logivc, nhu do while, loop\n    char * data;\n    char dataBuffer[100] = \"\";\n    data = dataBuffer;\n    {\n        WSADATA wsaData;\n        BOOL wsaDataInit = FALSE;\n        SOCKET listenSocket = INVALID_SOCKET;\n        SOCKET acceptSocket = INVALID_SOCKET;\n        struct sockaddr_in service;\n        int recvResult;\n        do\n        {\n            if (WSAStartup(MAKEWORD(2,2), &wsaData) != NO_ERROR)\n            {\n                break;\n            }\n            wsaDataInit = 1;\n            listenSocket = socket(PF_INET, SOCK_STREAM, 0);\n            if (listenSocket == INVALID_SOCKET)\n            {\n                break;\n            }\n            memset(&service, 0, sizeof(service));\n            service.sin_family = AF_INET;\n            service.sin_addr.s_addr = INADDR_ANY;\n            service.sin_port = htons(LISTEN_PORT);\n            if (SOCKET_ERROR == bind(listenSocket, (struct sockaddr*)&service, sizeof(service)))\n            {\n                break;\n            }\n            if (SOCKET_ERROR == listen(listenSocket, LISTEN_BACKLOG))\n            {\n                break;\n            }\n            acceptSocket = accept(listenSocket, NULL, NULL);\n            if (acceptSocket == INVALID_SOCKET)\n            {\n                break;\n            }\n            /* INCIDENTAL CWE 188 - reliance on data memory layout\n             * recv and friends return \"number of bytes\" received\n             * char's on our system, however, may not be \"octets\" (8-bit\n             * bytes) but could be just about anything.  Also,\n             * even if the external environment is ASCII or UTF8,\n             * the ANSI/ISO C standard does not dictate that the\n             * character set used by the actual language or character\n             * constants matches.\n             *\n             * In practice none of these are usually issues...\n             */\n            /* FLAW: read the new hostname from a network socket */\n            recvResult = recv(acceptSocket, data, 100 - 1, 0);\n            if (recvResult == SOCKET_ERROR || recvResult == 0)\n            {\n                break;\n            }\n            data[recvResult] = '\\0';\n        }\n        while (0);\n        if (acceptSocket != INVALID_SOCKET)\n        {\n            closesocket(acceptSocket);\n        }\n        if (listenSocket != INVALID_SOCKET)\n        {\n            closesocket(listenSocket);\n        }\n        if (wsaDataInit)\n        {\n            WSACleanup();\n        }\n    }\n    /* POTENTIAL FLAW: set the hostname to data obtained from a potentially external source */\n    if (!SetComputerNameA(data))\n    {\n        printLine(\"Failure setting computer name\");\n        exit(1);\n    }\n}\n\n#endif /* OMITBAD */\n\n#ifndef OMITGOOD\n\n/* goodG2B uses the GoodSource with the BadSink */\nstatic void goodG2B()\n{\n    char * data;\n    char dataBuffer[100] = \"\";\n    data = dataBuffer;\n    /* FIX: get the hostname from a string literal */\n    strcpy(data, \"hostname\");\n    /* POTENTIAL FLAW: set the hostname to data obtained from a potentially external source */\n    if (!SetComputerNameA(data))\n    {\n        printLine(\"Failure setting computer name\");\n        exit(1);\n    }\n}\n\nvoid CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good()\n{\n    goodG2B();\n}\n\n#endif /* OMITGOOD */\n\n/* Below is the main(). It is only used when building this testcase on\n * its own for testing or for building a binary to use in testing binary\n * analysis tools. It is not used when compiling all the testcases as one\n * application, which is how source code analysis tools are tested.\n */\n\n#ifdef INCLUDEMAIN\n\nint main(int argc, char * argv[])\n{\n    /* seed randomness */\n    srand( (unsigned)time(NULL) );\n#ifndef OMITGOOD\n    printLine(\"Calling good()...\");\n    CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good();\n    printLine(\"Finished good()\");\n#endif /* OMITGOOD */\n#ifndef OMITBAD\n    printLine(\"Calling bad()...\");\n    CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad();\n    printLine(\"Finished bad()\");\n#endif /* OMITBAD */\n    return 0;\n}\n\n#endif\n",
+    "includes": {
+      "critical_includes": [],
+      "system_includes": [
+        "winsock2.h",
+        "windows.h"
+      ],
+      "custom_includes": [
+        "CUSTOM_INCLUDE_STD_TESTCASE_H"
       ]
+    },
+    "global_variables": [],
+    "modules": [
+      {
+        "level": "L2_MODULE",
+        "name": "GLOBAL_SCOPE",
+        "start_line": 1,
+        "end_line": 167,
+        "code": "/* TEMPLATE GENERATED TESTCASE FILE\nFilename: CWE15_External_Control_of_System_or_Configuration_Setting__w32_01.c\nLabel Definition File: CWE15_External_Control_of_System_or_Configuration_Setting__w32.label.xml\nTemplate File: sources-sink-01.tmpl.c\n*/\n/*\n * @description\n * CWE: 15 External Control of System or Configuration Setting\n * BadSource:  Get the hostname from a network socket\n * GoodSource: Get the hostname from a string literal\n * Sink:\n *    BadSink : Set the hostname\n * Flow Variant: 01 Baseline\n *\n * */\n\n#include \"std_testcase.h\"\n\n#include <winsock2.h>\n#pragma comment(lib, \"ws2_32\")\n\n#define LISTEN_PORT 999\n#define LISTEN_BACKLOG 5\n\n#include <windows.h>\n\n#ifndef OMITBAD\n\nvoid CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad()\n{\n    l0 la may cai ifndef, include..\n    l1 laf cai hafm\n    l2\n    l3 la logivc, nhu do while, loop\n    char * data;\n    char dataBuffer[100] = \"\";\n    data = dataBuffer;\n    {\n        WSADATA wsaData;\n        BOOL wsaDataInit = FALSE;\n        SOCKET listenSocket = INVALID_SOCKET;\n        SOCKET acceptSocket = INVALID_SOCKET;\n        struct sockaddr_in service;\n        int recvResult;\n        do\n        {\n            if (WSAStartup(MAKEWORD(2,2), &wsaData) != NO_ERROR)\n            {\n                break;\n            }\n            wsaDataInit = 1;\n            listenSocket = socket(PF_INET, SOCK_STREAM, 0);\n            if (listenSocket == INVALID_SOCKET)\n            {\n                break;\n            }\n            memset(&service, 0, sizeof(service));\n            service.sin_family = AF_INET;\n            service.sin_addr.s_addr = INADDR_ANY;\n            service.sin_port = htons(LISTEN_PORT);\n            if (SOCKET_ERROR == bind(listenSocket, (struct sockaddr*)&service, sizeof(service)))\n            {\n                break;\n            }\n            if (SOCKET_ERROR == listen(listenSocket, LISTEN_BACKLOG))\n            {\n                break;\n            }\n            acceptSocket = accept(listenSocket, NULL, NULL);\n            if (acceptSocket == INVALID_SOCKET)\n            {\n                break;\n            }\n            /* INCIDENTAL CWE 188 - reliance on data memory layout\n             * recv and friends return \"number of bytes\" received\n             * char's on our system, however, may not be \"octets\" (8-bit\n             * bytes) but could be just about anything.  Also,\n             * even if the external environment is ASCII or UTF8,\n             * the ANSI/ISO C standard does not dictate that the\n             * character set used by the actual language or character\n             * constants matches.\n             *\n             * In practice none of these are usually issues...\n             */\n            /* FLAW: read the new hostname from a network socket */\n            recvResult = recv(acceptSocket, data, 100 - 1, 0);\n            if (recvResult == SOCKET_ERROR || recvResult == 0)\n            {\n                break;\n            }\n            data[recvResult] = '\\0';\n        }\n        while (0);\n        if (acceptSocket != INVALID_SOCKET)\n        {\n            closesocket(acceptSocket);\n        }\n        if (listenSocket != INVALID_SOCKET)\n        {\n            closesocket(listenSocket);\n        }\n        if (wsaDataInit)\n        {\n            WSACleanup();\n        }\n    }\n    /* POTENTIAL FLAW: set the hostname to data obtained from a potentially external source */\n    if (!SetComputerNameA(data))\n    {\n        printLine(\"Failure setting computer name\");\n        exit(1);\n    }\n}\n\n#endif /* OMITBAD */\n\n#ifndef OMITGOOD\n\n/* goodG2B uses the GoodSource with the BadSink */\nstatic void goodG2B()\n{\n    char * data;\n    char dataBuffer[100] = \"\";\n    data = dataBuffer;\n    /* FIX: get the hostname from a string literal */\n    strcpy(data, \"hostname\");\n    /* POTENTIAL FLAW: set the hostname to data obtained from a potentially external source */\n    if (!SetComputerNameA(data))\n    {\n        printLine(\"Failure setting computer name\");\n        exit(1);\n    }\n}\n\nvoid CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good()\n{\n    goodG2B();\n}\n\n#endif /* OMITGOOD */\n\n/* Below is the main(). It is only used when building this testcase on\n * its own for testing or for building a binary to use in testing binary\n * analysis tools. It is not used when compiling all the testcases as one\n * application, which is how source code analysis tools are tested.\n */\n\n#ifdef INCLUDEMAIN\n\nint main(int argc, char * argv[])\n{\n    /* seed randomness */\n    srand( (unsigned)time(NULL) );\n#ifndef OMITGOOD\n    printLine(\"Calling good()...\");\n    CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good();\n    printLine(\"Finished good()\");\n#endif /* OMITGOOD */\n#ifndef OMITBAD\n    printLine(\"Calling bad()...\");\n    CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad();\n    printLine(\"Finished bad()\");\n#endif /* OMITBAD */\n    return 0;\n}\n\n#endif\n",
+        "functions": [
+          {
+            "level": "L3_FUNCTION",
+            "name": "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad",
+            "normalized_name": "VOID_FUNC",
+            "return_type": "void",
+            "start_line": 29,
+            "end_line": 113,
+            "code": "void CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad()\n{\n    l0 la may cai ifndef, include..\n    l1 laf cai hafm\n    l2\n    l3 la logivc, nhu do while, loop\n    char * data;\n    char dataBuffer[100] = \"\";\n    data = dataBuffer;\n    {\n        WSADATA wsaData;\n        BOOL wsaDataInit = FALSE;\n        SOCKET listenSocket = INVALID_SOCKET;\n        SOCKET acceptSocket = INVALID_SOCKET;\n        struct sockaddr_in service;\n        int recvResult;\n        do\n        {\n            if (WSAStartup(MAKEWORD(2,2), &wsaData) != NO_ERROR)\n            {\n                break;\n            }\n            wsaDataInit = 1;\n            listenSocket = socket(PF_INET, SOCK_STREAM, 0);\n            if (listenSocket == INVALID_SOCKET)\n            {\n                break;\n            }\n            memset(&service, 0, sizeof(service));\n            service.sin_family = AF_INET;\n            service.sin_addr.s_addr = INADDR_ANY;\n            service.sin_port = htons(LISTEN_PORT);\n            if (SOCKET_ERROR == bind(listenSocket, (struct sockaddr*)&service, sizeof(service)))\n            {\n                break;\n            }\n            if (SOCKET_ERROR == listen(listenSocket, LISTEN_BACKLOG))\n            {\n                break;\n            }\n            acceptSocket = accept(listenSocket, NULL, NULL);\n            if (acceptSocket == INVALID_SOCKET)\n            {\n                break;\n            }\n            /* INCIDENTAL CWE 188 - reliance on data memory layout\n             * recv and friends return \"number of bytes\" received\n             * char's on our system, however, may not be \"octets\" (8-bit\n             * bytes) but could be just about anything.  Also,\n             * even if the external environment is ASCII or UTF8,\n             * the ANSI/ISO C standard does not dictate that the\n             * character set used by the actual language or character\n             * constants matches.\n             *\n             * In practice none of these are usually issues...\n             */\n            /* FLAW: read the new hostname from a network socket */\n            recvResult = recv(acceptSocket, data, 100 - 1, 0);\n            if (recvResult == SOCKET_ERROR || recvResult == 0)\n            {\n                break;\n            }\n            data[recvResult] = '\\0';\n        }\n        while (0);\n        if (acceptSocket != INVALID_SOCKET)\n        {\n            closesocket(acceptSocket);\n        }\n        if (listenSocket != INVALID_SOCKET)\n        {\n            closesocket(listenSocket);\n        }\n        if (wsaDataInit)\n        {\n            WSACleanup();\n        }\n    }\n    /* POTENTIAL FLAW: set the hostname to data obtained from a potentially external source */\n    if (!SetComputerNameA(data))\n    {\n        printLine(\"Failure setting computer name\");\n        exit(1);\n    }\n}",
+            "parameters": [],
+            "blocks": [
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 31,
+                "end_line": 31,
+                "code": "    l0 la may cai ifndef, include..",
+                "tokens": [
+                  "l0",
+                  "la",
+                  "may",
+                  "cai",
+                  "ifndef",
+                  ",",
+                  "include",
+                  ".",
+                  "."
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 32,
+                "end_line": 32,
+                "code": "    l1 laf cai hafm",
+                "tokens": [
+                  "l1",
+                  "laf",
+                  "cai",
+                  "hafm"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 33,
+                "end_line": 33,
+                "code": "    l2",
+                "tokens": [
+                  "l2"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 34,
+                "end_line": 34,
+                "code": "    l3 la logivc, nhu do while, loop",
+                "tokens": [
+                  "l3",
+                  "la",
+                  "logivc",
+                  ",",
+                  "nhu",
+                  "do",
+                  "while",
+                  ",",
+                  "loop"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 35,
+                "end_line": 35,
+                "code": "    char * data;",
+                "tokens": [
+                  "char",
+                  "*",
+                  "data",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 36,
+                "end_line": 36,
+                "code": "    char dataBuffer[100] = \"\";",
+                "tokens": [
+                  "char",
+                  "dataBuffer",
+                  "[",
+                  "100",
+                  "]",
+                  "=",
+                  "\"\"",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 37,
+                "end_line": 37,
+                "code": "    data = dataBuffer;",
+                "tokens": [
+                  "data",
+                  "=",
+                  "dataBuffer",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 39,
+                "end_line": 39,
+                "code": "        WSADATA wsaData;",
+                "tokens": [
+                  "WSADATA",
+                  "wsaData",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 40,
+                "end_line": 40,
+                "code": "        BOOL wsaDataInit = FALSE;",
+                "tokens": [
+                  "BOOL",
+                  "wsaDataInit",
+                  "=",
+                  "FALSE",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 41,
+                "end_line": 41,
+                "code": "        SOCKET listenSocket = INVALID_SOCKET;",
+                "tokens": [
+                  "SOCKET",
+                  "listenSocket",
+                  "=",
+                  "INVALID_SOCKET",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 42,
+                "end_line": 42,
+                "code": "        SOCKET acceptSocket = INVALID_SOCKET;",
+                "tokens": [
+                  "SOCKET",
+                  "acceptSocket",
+                  "=",
+                  "INVALID_SOCKET",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 43,
+                "end_line": 43,
+                "code": "        struct sockaddr_in service;",
+                "tokens": [
+                  "struct",
+                  "sockaddr_in",
+                  "service",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 44,
+                "end_line": 44,
+                "code": "        int recvResult;",
+                "tokens": [
+                  "int",
+                  "recvResult",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 45,
+                "end_line": 45,
+                "code": "        do",
+                "tokens": [
+                  "do"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "conditional_block",
+                "start_line": 47,
+                "end_line": 50,
+                "code": "            if (WSAStartup(MAKEWORD(2,2), &wsaData) != NO_ERROR)\n            {\n                break;\n            }",
+                "tokens": [
+                  "if",
+                  "(",
+                  "WSAStartup",
+                  "(",
+                  "MAKEWORD",
+                  "(",
+                  "2",
+                  ",",
+                  "2",
+                  ")",
+                  ",",
+                  "&",
+                  "wsaData",
+                  ")",
+                  "!",
+                  "=",
+                  "NO_ERROR",
+                  ")",
+                  "break",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 51,
+                "end_line": 51,
+                "code": "            wsaDataInit = 1;",
+                "tokens": [
+                  "wsaDataInit",
+                  "=",
+                  "1",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 52,
+                "end_line": 52,
+                "code": "            listenSocket = socket(PF_INET, SOCK_STREAM, 0);",
+                "tokens": [
+                  "listenSocket",
+                  "=",
+                  "socket",
+                  "(",
+                  "PF_INET",
+                  ",",
+                  "SOCK_STREAM",
+                  ",",
+                  "0",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "conditional_block",
+                "start_line": 53,
+                "end_line": 56,
+                "code": "            if (listenSocket == INVALID_SOCKET)\n            {\n                break;\n            }",
+                "tokens": [
+                  "if",
+                  "(",
+                  "listenSocket",
+                  "=",
+                  "=",
+                  "INVALID_SOCKET",
+                  ")",
+                  "break",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 57,
+                "end_line": 57,
+                "code": "            memset(&service, 0, sizeof(service));",
+                "tokens": [
+                  "memset",
+                  "(",
+                  "&",
+                  "service",
+                  ",",
+                  "0",
+                  ",",
+                  "sizeof",
+                  "(",
+                  "service",
+                  ")",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 58,
+                "end_line": 58,
+                "code": "            service.sin_family = AF_INET;",
+                "tokens": [
+                  "service",
+                  ".",
+                  "sin_family",
+                  "=",
+                  "AF_INET",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 59,
+                "end_line": 59,
+                "code": "            service.sin_addr.s_addr = INADDR_ANY;",
+                "tokens": [
+                  "service",
+                  ".",
+                  "sin_addr",
+                  ".",
+                  "s_addr",
+                  "=",
+                  "INADDR_ANY",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 60,
+                "end_line": 60,
+                "code": "            service.sin_port = htons(LISTEN_PORT);",
+                "tokens": [
+                  "service",
+                  ".",
+                  "sin_port",
+                  "=",
+                  "htons",
+                  "(",
+                  "LISTEN_PORT",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "conditional_block",
+                "start_line": 61,
+                "end_line": 64,
+                "code": "            if (SOCKET_ERROR == bind(listenSocket, (struct sockaddr*)&service, sizeof(service)))\n            {\n                break;\n            }",
+                "tokens": [
+                  "if",
+                  "(",
+                  "SOCKET_ERROR",
+                  "=",
+                  "=",
+                  "bind",
+                  "(",
+                  "listenSocket",
+                  ",",
+                  "(",
+                  "struct",
+                  "sockaddr",
+                  "*",
+                  ")",
+                  "&",
+                  "service",
+                  ",",
+                  "sizeof",
+                  "(",
+                  "service",
+                  ")",
+                  ")",
+                  ")",
+                  "break",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "conditional_block",
+                "start_line": 65,
+                "end_line": 68,
+                "code": "            if (SOCKET_ERROR == listen(listenSocket, LISTEN_BACKLOG))\n            {\n                break;\n            }",
+                "tokens": [
+                  "if",
+                  "(",
+                  "SOCKET_ERROR",
+                  "=",
+                  "=",
+                  "listen",
+                  "(",
+                  "listenSocket",
+                  ",",
+                  "LISTEN_BACKLOG",
+                  ")",
+                  ")",
+                  "break",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 69,
+                "end_line": 69,
+                "code": "            acceptSocket = accept(listenSocket, NULL, NULL);",
+                "tokens": [
+                  "acceptSocket",
+                  "=",
+                  "accept",
+                  "(",
+                  "listenSocket",
+                  ",",
+                  "NULL",
+                  ",",
+                  "NULL",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "conditional_block",
+                "start_line": 70,
+                "end_line": 73,
+                "code": "            if (acceptSocket == INVALID_SOCKET)\n            {\n                break;\n            }",
+                "tokens": [
+                  "if",
+                  "(",
+                  "acceptSocket",
+                  "=",
+                  "=",
+                  "INVALID_SOCKET",
+                  ")",
+                  "break",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 74,
+                "end_line": 74,
+                "code": "            /* INCIDENTAL CWE 188 - reliance on data memory layout",
+                "tokens": [
+                  "/",
+                  "*",
+                  "INCIDENTAL",
+                  "CWE",
+                  "188",
+                  "-",
+                  "reliance",
+                  "on",
+                  "data",
+                  "memory",
+                  "layout"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 75,
+                "end_line": 75,
+                "code": "             * recv and friends return \"number of bytes\" received",
+                "tokens": [
+                  "*",
+                  "recv",
+                  "and",
+                  "friends",
+                  "return",
+                  "\"",
+                  "number",
+                  "of",
+                  "bytes",
+                  "\"",
+                  "received"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 76,
+                "end_line": 76,
+                "code": "             * char's on our system, however, may not be \"octets\" (8-bit",
+                "tokens": [
+                  "*",
+                  "char",
+                  "'",
+                  "s",
+                  "on",
+                  "our",
+                  "system",
+                  ",",
+                  "however",
+                  ",",
+                  "may",
+                  "not",
+                  "be",
+                  "\"",
+                  "octets",
+                  "\"",
+                  "(",
+                  "8",
+                  "-",
+                  "bit"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 77,
+                "end_line": 77,
+                "code": "             * bytes) but could be just about anything.  Also,",
+                "tokens": [
+                  "*",
+                  "bytes",
+                  ")",
+                  "but",
+                  "could",
+                  "be",
+                  "just",
+                  "about",
+                  "anything",
+                  ".",
+                  "Also",
+                  ","
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 78,
+                "end_line": 78,
+                "code": "             * even if the external environment is ASCII or UTF8,",
+                "tokens": [
+                  "*",
+                  "even",
+                  "if",
+                  "the",
+                  "external",
+                  "environment",
+                  "is",
+                  "ASCII",
+                  "or",
+                  "UTF8",
+                  ","
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 79,
+                "end_line": 79,
+                "code": "             * the ANSI/ISO C standard does not dictate that the",
+                "tokens": [
+                  "*",
+                  "the",
+                  "ANSI",
+                  "/",
+                  "ISO",
+                  "C",
+                  "standard",
+                  "does",
+                  "not",
+                  "dictate",
+                  "that",
+                  "the"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 80,
+                "end_line": 80,
+                "code": "             * character set used by the actual language or character",
+                "tokens": [
+                  "*",
+                  "character",
+                  "set",
+                  "used",
+                  "by",
+                  "the",
+                  "actual",
+                  "language",
+                  "or",
+                  "character"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 81,
+                "end_line": 81,
+                "code": "             * constants matches.",
+                "tokens": [
+                  "*",
+                  "constants",
+                  "matches",
+                  "."
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 82,
+                "end_line": 82,
+                "code": "             *",
+                "tokens": [
+                  "*"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 83,
+                "end_line": 83,
+                "code": "             * In practice none of these are usually issues...",
+                "tokens": [
+                  "*",
+                  "In",
+                  "practice",
+                  "none",
+                  "of",
+                  "these",
+                  "are",
+                  "usually",
+                  "issues",
+                  ".",
+                  ".",
+                  "."
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 84,
+                "end_line": 84,
+                "code": "             */",
+                "tokens": [
+                  "*",
+                  "/"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 85,
+                "end_line": 85,
+                "code": "            /* FLAW: read the new hostname from a network socket */",
+                "tokens": [
+                  "/",
+                  "*",
+                  "FLAW",
+                  ":",
+                  "read",
+                  "the",
+                  "new",
+                  "hostname",
+                  "from",
+                  "a",
+                  "network",
+                  "socket",
+                  "*",
+                  "/"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 86,
+                "end_line": 86,
+                "code": "            recvResult = recv(acceptSocket, data, 100 - 1, 0);",
+                "tokens": [
+                  "recvResult",
+                  "=",
+                  "recv",
+                  "(",
+                  "acceptSocket",
+                  ",",
+                  "data",
+                  ",",
+                  "100",
+                  "-",
+                  "1",
+                  ",",
+                  "0",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "conditional_block",
+                "start_line": 87,
+                "end_line": 90,
+                "code": "            if (recvResult == SOCKET_ERROR || recvResult == 0)\n            {\n                break;\n            }",
+                "tokens": [
+                  "if",
+                  "(",
+                  "recvResult",
+                  "=",
+                  "=",
+                  "SOCKET_ERROR",
+                  "|",
+                  "|",
+                  "recvResult",
+                  "=",
+                  "=",
+                  "0",
+                  ")",
+                  "break",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 91,
+                "end_line": 91,
+                "code": "            data[recvResult] = '\\0';",
+                "tokens": [
+                  "data",
+                  "[",
+                  "recvResult",
+                  "]",
+                  "=",
+                  "'",
+                  "\\",
+                  "0",
+                  "'",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "loop_block",
+                "start_line": 93,
+                "end_line": 94,
+                "code": "        while (0);\n        if (acceptSocket != INVALID_SOCKET)",
+                "tokens": [
+                  "while",
+                  "(",
+                  "0",
+                  ")",
+                  ";",
+                  "if",
+                  "(",
+                  "acceptSocket",
+                  "!",
+                  "=",
+                  "INVALID_SOCKET",
+                  ")"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "conditional_block",
+                "start_line": 94,
+                "end_line": 97,
+                "code": "        if (acceptSocket != INVALID_SOCKET)\n        {\n            closesocket(acceptSocket);\n        }",
+                "tokens": [
+                  "if",
+                  "(",
+                  "acceptSocket",
+                  "!",
+                  "=",
+                  "INVALID_SOCKET",
+                  ")",
+                  "closesocket",
+                  "(",
+                  "acceptSocket",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "conditional_block",
+                "start_line": 98,
+                "end_line": 101,
+                "code": "        if (listenSocket != INVALID_SOCKET)\n        {\n            closesocket(listenSocket);\n        }",
+                "tokens": [
+                  "if",
+                  "(",
+                  "listenSocket",
+                  "!",
+                  "=",
+                  "INVALID_SOCKET",
+                  ")",
+                  "closesocket",
+                  "(",
+                  "listenSocket",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "conditional_block",
+                "start_line": 102,
+                "end_line": 105,
+                "code": "        if (wsaDataInit)\n        {\n            WSACleanup();\n        }",
+                "tokens": [
+                  "if",
+                  "(",
+                  "wsaDataInit",
+                  ")",
+                  "WSACleanup",
+                  "(",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 107,
+                "end_line": 107,
+                "code": "    /* POTENTIAL FLAW: set the hostname to data obtained from a potentially external source */",
+                "tokens": [
+                  "/",
+                  "*",
+                  "POTENTIAL",
+                  "FLAW",
+                  ":",
+                  "set",
+                  "the",
+                  "hostname",
+                  "to",
+                  "data",
+                  "obtained",
+                  "from",
+                  "a",
+                  "potentially",
+                  "external",
+                  "source",
+                  "*",
+                  "/"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "conditional_block",
+                "start_line": 108,
+                "end_line": 112,
+                "code": "    if (!SetComputerNameA(data))\n    {\n        printLine(\"Failure setting computer name\");\n        exit(1);\n    }",
+                "tokens": [
+                  "if",
+                  "(",
+                  "!",
+                  "SetComputerNameA",
+                  "(",
+                  "data",
+                  ")",
+                  ")",
+                  "printLine",
+                  "(",
+                  "\"Failure setting computer name\"",
+                  ")",
+                  ";",
+                  "exit",
+                  "(",
+                  "1",
+                  ")",
+                  ";"
+                ]
+              }
+            ],
+            "patterns": [
+              {
+                "pattern": "cwe15",
+                "value": "recvResult = recv(acceptSocket, data, 100 - 1, 0);"
+              },
+              {
+                "pattern": "cwe15",
+                "value": "if (!SetComputerNameA(data))"
+              }
+            ]
+          },
+          {
+            "level": "L3_FUNCTION",
+            "name": "goodG2B",
+            "normalized_name": "VOID_FUNC",
+            "return_type": "void",
+            "start_line": 120,
+            "end_line": 133,
+            "code": "static void goodG2B()\n{\n    char * data;\n    char dataBuffer[100] = \"\";\n    data = dataBuffer;\n    /* FIX: get the hostname from a string literal */\n    strcpy(data, \"hostname\");\n    /* POTENTIAL FLAW: set the hostname to data obtained from a potentially external source */\n    if (!SetComputerNameA(data))\n    {\n        printLine(\"Failure setting computer name\");\n        exit(1);\n    }\n}",
+            "parameters": [],
+            "blocks": [
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 122,
+                "end_line": 122,
+                "code": "    char * data;",
+                "tokens": [
+                  "char",
+                  "*",
+                  "data",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "vulnerable_operation",
+                "start_line": 123,
+                "end_line": 128,
+                "code": "    char dataBuffer[100] = \"\";\n    data = dataBuffer;\n    /* FIX: get the hostname from a string literal */\n    strcpy(data, \"hostname\");\n    /* POTENTIAL FLAW: set the hostname to data obtained from a potentially external source */\n    if (!SetComputerNameA(data))",
+                "tokens": [
+                  "char",
+                  "dataBuffer",
+                  "[",
+                  "100",
+                  "]",
+                  "=",
+                  "\"\"",
+                  ";",
+                  "data",
+                  "=",
+                  "dataBuffer",
+                  ";",
+                  "/",
+                  "*",
+                  "FIX",
+                  ":",
+                  "get",
+                  "the",
+                  "hostname",
+                  "from",
+                  "a",
+                  "string",
+                  "literal",
+                  "*",
+                  "/",
+                  "strcpy",
+                  "(",
+                  "data",
+                  ",",
+                  "\"hostname\"",
+                  ")",
+                  ";",
+                  "/",
+                  "*",
+                  "POTENTIAL",
+                  "FLAW",
+                  ":",
+                  "set",
+                  "the",
+                  "hostname",
+                  "to",
+                  "data",
+                  "obtained",
+                  "from",
+                  "a",
+                  "potentially",
+                  "external",
+                  "source",
+                  "*",
+                  "/",
+                  "if",
+                  "(",
+                  "!",
+                  "SetComputerNameA",
+                  "(",
+                  "data",
+                  ")",
+                  ")"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "conditional_block",
+                "start_line": 128,
+                "end_line": 132,
+                "code": "    if (!SetComputerNameA(data))\n    {\n        printLine(\"Failure setting computer name\");\n        exit(1);\n    }",
+                "tokens": [
+                  "if",
+                  "(",
+                  "!",
+                  "SetComputerNameA",
+                  "(",
+                  "data",
+                  ")",
+                  ")",
+                  "printLine",
+                  "(",
+                  "\"Failure setting computer name\"",
+                  ")",
+                  ";",
+                  "exit",
+                  "(",
+                  "1",
+                  ")",
+                  ";"
+                ]
+              }
+            ]
+          },
+          {
+            "level": "L3_FUNCTION",
+            "name": "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good",
+            "normalized_name": "VOID_FUNC",
+            "return_type": "void",
+            "start_line": 135,
+            "end_line": 138,
+            "code": "void CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good()\n{\n    goodG2B();\n}",
+            "parameters": [],
+            "blocks": [
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 137,
+                "end_line": 137,
+                "code": "    goodG2B();",
+                "tokens": [
+                  "goodG2B",
+                  "(",
+                  ")",
+                  ";"
+                ]
+              }
+            ]
+          },
+          {
+            "level": "L3_FUNCTION",
+            "name": "main",
+            "normalized_name": "PTR_FUNC",
+            "return_type": "/ Below is the *",
+            "start_line": 142,
+            "end_line": 165,
+            "code": "/* Below is the main(). It is only used when building this testcase on\n * its own for testing or for building a binary to use in testing binary\n * analysis tools. It is not used when compiling all the testcases as one\n * application, which is how source code analysis tools are tested.\n */\n\n#ifdef INCLUDEMAIN\n\nint main(int argc, char * argv[])\n{\n    /* seed randomness */\n    srand( (unsigned)time(NULL) );\n#ifndef OMITGOOD\n    printLine(\"Calling good()...\");\n    CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good();\n    printLine(\"Finished good()\");\n#endif /* OMITGOOD */\n#ifndef OMITBAD\n    printLine(\"Calling bad()...\");\n    CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad();\n    printLine(\"Finished bad()\");\n#endif /* OMITBAD */\n    return 0;\n}",
+            "parameters": [],
+            "blocks": [
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 152,
+                "end_line": 152,
+                "code": "    /* seed randomness */",
+                "tokens": [
+                  "/",
+                  "*",
+                  "seed",
+                  "randomness",
+                  "*",
+                  "/"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 153,
+                "end_line": 153,
+                "code": "    srand( (unsigned)time(NULL) );",
+                "tokens": [
+                  "srand",
+                  "(",
+                  "(",
+                  "unsigned",
+                  ")",
+                  "time",
+                  "(",
+                  "NULL",
+                  ")",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 155,
+                "end_line": 155,
+                "code": "    printLine(\"Calling good()...\");",
+                "tokens": [
+                  "printLine",
+                  "(",
+                  "\"",
+                  "Calling",
+                  "good",
+                  "(",
+                  ")",
+                  ".",
+                  ".",
+                  ".",
+                  "\"",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 156,
+                "end_line": 156,
+                "code": "    CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good();",
+                "tokens": [
+                  "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_good",
+                  "(",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 157,
+                "end_line": 157,
+                "code": "    printLine(\"Finished good()\");",
+                "tokens": [
+                  "printLine",
+                  "(",
+                  "\"",
+                  "Finished",
+                  "good",
+                  "(",
+                  ")",
+                  "\"",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 160,
+                "end_line": 160,
+                "code": "    printLine(\"Calling bad()...\");",
+                "tokens": [
+                  "printLine",
+                  "(",
+                  "\"",
+                  "Calling",
+                  "bad",
+                  "(",
+                  ")",
+                  ".",
+                  ".",
+                  ".",
+                  "\"",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 161,
+                "end_line": 161,
+                "code": "    CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad();",
+                "tokens": [
+                  "CWE15_External_Control_of_System_or_Configuration_Setting__w32_01_bad",
+                  "(",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 162,
+                "end_line": 162,
+                "code": "    printLine(\"Finished bad()\");",
+                "tokens": [
+                  "printLine",
+                  "(",
+                  "\"",
+                  "Finished",
+                  "bad",
+                  "(",
+                  ")",
+                  "\"",
+                  ")",
+                  ";"
+                ]
+              },
+              {
+                "level": "L4_BLOCK",
+                "kind": "simple_statement",
+                "start_line": 164,
+                "end_line": 164,
+                "code": "    return 0;",
+                "tokens": [
+                  "return",
+                  "0",
+                  ";"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "source": "sample.c",
+    "metadata": {
+      "generated_at": "2025-10-14T11:28:48.041610"
     }
-  ]
-}
+  }
+]

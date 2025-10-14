@@ -48,6 +48,7 @@ class Function:
     body_start: int
     body_end: int
     is_library: bool = False
+    signature_start: int = 0
 
 class ComplexSentenceType(Enum):
     LOOP_BLOCK = "loop_block"
@@ -208,14 +209,23 @@ class CVulnerabilityFramework:
             'if', 'inline', 'int', 'long', 'register', 'restrict', 'return',
             'short', 'signed', 'sizeof', 'static', 'struct', 'switch',
             'typedef', 'union', 'unsigned', 'void', 'volatile', 'while',
-            '_Bool', '_Complex', '_Imaginary'
+            '_Bool', '_Complex', '_Imaginary',
+            # C++ keywords
+            'alignas', 'alignof', 'and', 'and_eq', 'asm', 'bitand', 'bitor',
+            'bool', 'catch', 'char16_t', 'char32_t', 'class', 'compl',
+            'constexpr', 'const_cast', 'delete', 'dynamic_cast', 'explicit',
+            'export', 'friend', 'mutable', 'namespace', 'new', 'noexcept',
+            'not', 'not_eq', 'nullptr', 'operator', 'or', 'or_eq', 'private',
+            'protected', 'public', 'reinterpret_cast', 'static_assert',
+            'static_cast', 'template', 'this', 'thread_local', 'throw', 'try',
+            'typename', 'using', 'virtual', 'wchar_t', 'xor', 'xor_eq'
         }
         
         self.operators = {
             '+', '-', '*', '/', '%', '=', '+=', '-=', '*=', '/=', '%=',
             '==', '!=', '<', '>', '<=', '>=', '&&', '||', '!',
             '&', '|', '^', '~', '<<', '>>', '++', '--',
-            '->', '.', '?', ':'
+            '->', '.', '?', ':', '::'
         }
         
         self.critical_preserves = {
@@ -437,14 +447,44 @@ class CVulnerabilityFramework:
 
         return symbol_table
 
+    def _parse_function_signature(self, signature: str) -> Optional[Tuple[str, str, str]]:
+        """Parse a function signature into return type, function name, and parameter segment."""
+        if '(' not in signature or ')' not in signature:
+            return None
+
+        open_idx = signature.find('(')
+        close_idx = signature.rfind(')')
+        if close_idx < open_idx:
+            return None
+
+        before = signature[:open_idx].strip()
+        param_segment = signature[open_idx + 1:close_idx].strip()
+
+        if not before:
+            return None
+
+        normalized = before.replace('*', ' * ').replace('&', ' & ')
+        tokens = [tok for tok in normalized.split() if tok]
+        if not tokens:
+            return None
+
+        if len(tokens) >= 2 and tokens[-2] == 'operator':
+            func_name = f"{tokens[-2]} {tokens[-1]}"
+            return_type_tokens = tokens[:-2]
+        else:
+            func_name = tokens[-1]
+            return_type_tokens = tokens[:-1]
+
+        return_type = ' '.join(return_type_tokens).strip()
+        if not return_type:
+            return_type = 'void'
+
+        return return_type, func_name, param_segment
+
     def _extract_functions(self, source_code: str) -> List[Function]:
         """Extract functions với return type classification"""
         functions: List[Function] = []
         lines = source_code.splitlines()
-
-        signature_pattern = re.compile(
-            r'^((?:[\w_]+\s+)*\**[\w_]+(?:\s*\*)?)\s+([\w_]+)\s*\((.*)\)\s*(?:\{|$)'
-        )
 
         i = 0
         while i < len(lines):
@@ -470,19 +510,17 @@ class CVulnerabilityFramework:
                 continue
 
             trailing = signature.split(')')[-1].strip()
-            if trailing.startswith(';'):
+            if trailing.endswith(';') or signature.strip().endswith(';'):
                 # Function prototype; skip without consuming the body
                 i = j + 1
                 continue
 
-            match = signature_pattern.match(signature)
-            if not match:
+            parsed = self._parse_function_signature(signature)
+            if not parsed:
                 i = j + 1 if j > i else i + 1
                 continue
 
-            return_type = match.group(1).strip()
-            func_name = match.group(2)
-            param_segment = match.group(3).strip()
+            return_type, func_name, param_segment = parsed
 
             # Locate the line containing the opening brace
             brace_idx = j
@@ -534,7 +572,8 @@ class CVulnerabilityFramework:
                 parameters=parameters,
                 body_start=body_start,
                 body_end=body_end,
-                is_library=func_name in self.library_functions
+                is_library=func_name in self.library_functions,
+                signature_start=i
             ))
 
             i = body_end + 1
@@ -554,7 +593,9 @@ class CVulnerabilityFramework:
                 i += 1
                 continue
 
-            if not (stripped.startswith('typedef struct') or stripped.startswith('struct')):
+            if not (stripped.startswith('typedef struct') or
+                    stripped.startswith('struct') or
+                    stripped.startswith('class')):
                 i += 1
                 continue
 
@@ -608,16 +649,16 @@ class CVulnerabilityFramework:
 
     def _deduce_module_name(self, header_line: str, closing_line: str, index: int) -> str:
         """Derive a stable module name from struct declaration context"""
-        header_match = re.search(r'struct\s+([A-Za-z_]\w*)', header_line)
+        header_match = re.search(r'(struct|class)\s+([A-Za-z_]\w*)', header_line)
         if header_match and '{' in header_line:
-            return header_match.group(1)
+            return header_match.group(2)
 
         closing_match = re.search(r'}\s*([A-Za-z_]\w*)\s*;', closing_line)
         if closing_match:
             return closing_match.group(1)
 
         if header_match:
-            return header_match.group(1)
+            return header_match.group(2)
 
         return f"MODULE_{index}"
 
@@ -1120,104 +1161,120 @@ class CVulnerabilityFramework:
 
         return module_functions_map
 
+
     def _analyze_function_nested(self, function: Function, lines: List[str]) -> Dict[str, Any]:
         """
-        Analyze a single function and return nested structure
-        L3: Function → L4: Statement Blocks → L5: Tokens
+        Analyze a single function and return nested structure aligned with the hierarchical framework.
+        L3: Function -> L4: Statement Blocks -> L5: Tokens
         """
         symbol_table = self._build_symbol_table(function, lines)
 
-        # L3: Function Level
+        func_start = max(function.signature_start, 0)
+        func_end = min(function.body_end, len(lines) - 1)
+        function_lines = lines[func_start:func_end + 1] if func_end >= func_start else []
+        function_code = '\n'.join(function_lines).strip('\n')
+
         func_repr = {
-            'level': 'L3_FUNCTION',
+            'level': 'L3',
             'name': function.name,
             'normalized_name': self._normalize_user_function(function.name, function.return_type),
-            'return_type': function.return_type,
+            'return_type': self._sanitize_type(function.return_type),
+            'start_line': func_start + 1,
+            'end_line': func_end + 1,
+            'code': function_code,
             'parameters': [
                 {
-                    'original_name': param.name,
-                    'normalized_name': self._normalize_variable(param.name, param.var_type, param.scope),
-                    'type': param.var_type,
+                    'name': param.name,
+                    'normalized': self._normalize_variable(param.name, param.var_type, param.scope),
+                    'type': self._sanitize_type(param.var_type),
                     'scope': param.scope
                 }
                 for param in function.parameters
             ],
-            'body_start': function.body_start,
-            'body_end': function.body_end,
-            'statement_blocks': []  # L4 will be nested here
+            'blocks': []
         }
 
-        # L4: Statement Block Level (Complex Sentences)
         complex_sentences = self.extract_complex_sentences(function, lines)
 
         for cs in complex_sentences:
-            cs_repr = {
-                'level': 'L4_COMPLEX_SENTENCE',
-                'type': cs.sentence_type.value,
-                'start_line': cs.start_line,
-                'end_line': cs.end_line,
-                'context': cs.context,
-                'statements': cs.statements,
-                'tokens': []  # L5 will be nested here
-            }
+            start_idx = max(cs.start_line, 0)
+            end_idx = min(cs.end_line, len(lines) - 1)
+            block_lines = lines[start_idx:end_idx + 1] if end_idx >= start_idx else []
+            block_code = '\n'.join(block_lines).strip('\n')
 
-            # L5: Tokenize this complex sentence and register tokens
-            cs_tokens = self.normalize_tokens(cs.statements, symbol_table)
-            for token in cs_tokens:
-                self.token_registry.register_token(token)
-            cs_repr['tokens'] = [
+            token_objects = self.normalize_tokens(cs.statements, symbol_table)
+            token_values = [
                 token.original if token.original is not None else token.value
-                for token in cs_tokens
+                for token in token_objects
             ]
+            for token in token_objects:
+                self.token_registry.register_token(token)
 
-            func_repr['statement_blocks'].append(cs_repr)
+            func_repr['blocks'].append({
+                'level': 'L4',
+                'kind': cs.sentence_type.value,
+                'start_line': start_idx + 1,
+                'end_line': end_idx + 1,
+                'code': block_code,
+                'tokens': token_values
+            })
 
-        # L4: Statement Block Level (Simple Sentences)
         simple_sentences = self._extract_simple_sentences(function, lines, complex_sentences)
 
-        for simple_stmt in simple_sentences:
-            simple_repr = {
-                'level': 'L4_SIMPLE_SENTENCE',
-                'type': 'simple_statement',
-                'statement': simple_stmt,
-                'tokens': []  # L5 will be nested here
-            }
+        for line_num, original_line in simple_sentences:
+            statement_core = original_line.split('//')[0].strip()
+            if not statement_core:
+                continue
 
-            # L5: Tokenize this simple sentence and register tokens
-            simple_tokens = self.normalize_tokens([simple_stmt], symbol_table)
-            for token in simple_tokens:
-                self.token_registry.register_token(token)
-            simple_repr['tokens'] = [
+            token_objects = self.normalize_tokens([statement_core], symbol_table)
+            token_values = [
                 token.original if token.original is not None else token.value
-                for token in simple_tokens
+                for token in token_objects
             ]
+            for token in token_objects:
+                self.token_registry.register_token(token)
 
-            func_repr['statement_blocks'].append(simple_repr)
+            func_repr['blocks'].append({
+                'level': 'L4',
+                'kind': 'simple_statement',
+                'start_line': line_num + 1,
+                'end_line': line_num + 1,
+                'code': original_line.rstrip(),
+                'tokens': token_values
+            })
 
         pattern_matches = self._extract_flaw_patterns(function, lines)
         if pattern_matches:
-            func_repr['pattern'] = pattern_matches
+            func_repr['patterns'] = pattern_matches
+
+        func_repr['blocks'].sort(key=lambda blk: blk['start_line'])
 
         return func_repr
 
-    def generate_hierarchical_representation(self, source_code: str) -> Dict[str, Any]:
-        """
-        Main method to generate complete nested hierarchical representation
-        L1: Program → L2: Modules → L3: Functions → L4: Statement Blocks → L5: Tokens
-        """
+
+    def generate_hierarchical_representation(
+        self,
+        source_code: str,
+        language: str = "c",
+        source_path: Optional[Path] = None
+    ) -> Dict[str, Any]:
         lines = source_code.splitlines()
 
         # Phase 1: Program Level (L1)
         program_structure = self.parse_program(source_code)
 
-        # L1: Program Level - Top level structure
         hierarchical_repr = {
             'level': 'L1_PROGRAM',
+            'language': language,
             'total_lines': program_structure['total_lines'],
+            'code': source_code,
             'includes': program_structure['includes'],
             'global_variables': program_structure['global_variables'],
-            'modules': []  # L2 will be nested here
+            'modules': []
         }
+
+        if source_path is not None:
+            hierarchical_repr['source'] = str(source_path)
 
         # Build module-function mapping
         module_functions_map = self._map_functions_to_modules(
@@ -1227,36 +1284,41 @@ class CVulnerabilityFramework:
 
         # L2: Module Level (nested in Program)
         for module in program_structure['modules']:
+            start_line = module.get('start_line', 1)
+            end_line = module.get('end_line', start_line)
+            module_lines = lines[start_line - 1:end_line] if end_line >= start_line else []
+            module_code = '\n'.join(module_lines).strip('\n')
+
             module_repr = {
-                'level': 'L2_MODULE',
+                'level': 'L2',
                 'name': module['name'],
-                'type': module['type'],
-                'start_line': module['start_line'],
-                'end_line': module['end_line'],
-                'functions': []  # L3 will be nested here
+                'start_line': start_line,
+                'end_line': end_line,
+                'code': module_code,
+                'functions': []
             }
 
-            # Get functions belonging to this module
             module_functions = module_functions_map.get(module['name'], [])
-
-            # L3: Function Level (nested in Module)
             for function in module_functions:
                 func_repr = self._analyze_function_nested(function, lines)
                 module_repr['functions'].append(func_repr)
 
+            module_repr['functions'].sort(key=lambda fn: fn['start_line'])
             hierarchical_repr['modules'].append(module_repr)
 
         # Handle functions not belonging to any module (global functions)
-        orphan_functions = [f for f in program_structure['functions']
-                           if f not in [func for funcs in module_functions_map.values() for func in funcs]]
+        orphan_functions = [
+            f for f in program_structure['functions']
+            if f not in [func for funcs in module_functions_map.values() for func in funcs]
+        ]
 
         if orphan_functions:
             global_module = {
-                'level': 'L2_MODULE',
+                'level': 'L2',
                 'name': 'GLOBAL_SCOPE',
-                'type': 'implicit_module',
                 'start_line': 1,
                 'end_line': program_structure['total_lines'],
+                'code': source_code,
                 'functions': []
             }
 
@@ -1264,7 +1326,10 @@ class CVulnerabilityFramework:
                 func_repr = self._analyze_function_nested(function, lines)
                 global_module['functions'].append(func_repr)
 
+            global_module['functions'].sort(key=lambda fn: fn['start_line'])
             hierarchical_repr['modules'].append(global_module)
+
+        hierarchical_repr['modules'].sort(key=lambda mod: mod['start_line'])
 
         return hierarchical_repr
 
@@ -1342,7 +1407,7 @@ class CVulnerabilityFramework:
         return vocabulary
 
     def _extract_simple_sentences(self, function: Function, source_lines: List[str], 
-                                 complex_sentences: List[ComplexSentence]) -> List[str]:
+                                 complex_sentences: List[ComplexSentence]) -> List[Tuple[int, str]]:
         """Extract simple statements not part of complex sentences"""
         func_lines = source_lines[function.body_start:function.body_end]
         
@@ -1352,7 +1417,7 @@ class CVulnerabilityFramework:
             for line_num in range(cs.start_line, cs.end_line + 1):
                 covered_lines.add(line_num)
         
-        simple_sentences = []
+        simple_sentences: List[Tuple[int, str]] = []
         for i, line in enumerate(func_lines):
             line_num = function.body_start + i
             line = line.strip()
@@ -1362,9 +1427,10 @@ class CVulnerabilityFramework:
                 not line.startswith('//') and
                 not line.startswith('#') and
                 line != '{' and line != '}'):
-                simple_sentences.append(line)
+                simple_sentences.append((line_num, source_lines[line_num]))
         
         return simple_sentences
+
 
     def export_analysis_report(self, hierarchical_repr: Dict[str, Any]) -> str:
         """Export a concise textual summary of the nested hierarchical slicing result."""
@@ -1374,53 +1440,57 @@ class CVulnerabilityFramework:
         report.append("=" * 70)
         report.append("L1: PROGRAM LEVEL")
         report.append("=" * 70)
+        report.append(f"Language: {hierarchical_repr.get('language', 'unknown')}")
+        if 'source' in hierarchical_repr:
+            report.append(f"Source: {hierarchical_repr['source']}")
         report.append(f"Total Lines: {hierarchical_repr['total_lines']}")
-        report.append(f"Critical Includes: {hierarchical_repr['includes']['critical_includes']}")
-        report.append(f"System Includes: {hierarchical_repr['includes']['system_includes']}")
-        report.append(f"Global Variables: {len(hierarchical_repr['global_variables'])}")
-        report.append(f"Modules: {len(hierarchical_repr['modules'])}")
+
+        includes = hierarchical_repr.get('includes', {})
+        report.append(f"Critical Includes: {includes.get('critical_includes', [])}")
+        report.append(f"System Includes: {includes.get('system_includes', [])}")
+        report.append(f"Custom Includes: {includes.get('custom_includes', [])}")
+        report.append(f"Global Variables: {len(hierarchical_repr.get('global_variables', []))}")
+        report.append(f"Modules: {len(hierarchical_repr.get('modules', []))}")
         report.append("")
 
-        # L2: Module Level
-        for module in hierarchical_repr['modules']:
+        # L2/L3: Module and Function Levels
+        for module in hierarchical_repr.get('modules', []):
             report.append("  " + "-" * 66)
             report.append(f"  L2: MODULE - {module['name']}")
             report.append("  " + "-" * 66)
-            report.append(f"  Type: {module['type']}")
             report.append(f"  Lines: {module['start_line']}-{module['end_line']}")
-            report.append(f"  Functions: {len(module['functions'])}")
+            report.append(f"  Functions: {len(module.get('functions', []))}")
             report.append("")
 
-            # L3: Function Level
-            for function in module['functions']:
+            for function in module.get('functions', []):
                 report.append(f"    L3: FUNCTION - {function['name']}")
                 report.append(f"        Normalized: {function['normalized_name']}")
                 report.append(f"        Return Type: {function['return_type']}")
-                report.append(f"        Parameters: {len(function['parameters'])}")
+                report.append(f"        Lines: {function['start_line']}-{function['end_line']}")
+                report.append(f"        Parameters: {len(function.get('parameters', []))}")
 
-                if function['parameters']:
-                    for param in function['parameters']:
-                        report.append(f"          - {param['original_name']} ({param['type']}) -> {param['normalized_name']}")
+                for param in function.get('parameters', []):
+                    report.append(
+                        f"          - {param['name']} ({param['type']}) -> {param['normalized']} [{param['scope']}]"
+                    )
 
-                report.append(f"        Statement Blocks: {len(function['statement_blocks'])}")
+                blocks = function.get('blocks', [])
+                simple_count = sum(1 for block in blocks if block.get('kind') == 'simple_statement')
+                complex_count = len(blocks) - simple_count
+                report.append(f"        Blocks: {len(blocks)} (complex={complex_count}, simple={simple_count})")
 
-                # L4: Statement Block Level
-                complex_count = sum(1 for sb in function['statement_blocks']
-                                   if sb['level'] == 'L4_COMPLEX_SENTENCE')
-                simple_count = sum(1 for sb in function['statement_blocks']
-                                  if sb['level'] == 'L4_SIMPLE_SENTENCE')
-
-                report.append(f"          Complex Sentences: {complex_count}")
-                report.append(f"          Simple Sentences: {simple_count}")
-
-                # Show example of first complex sentence
-                for sb in function['statement_blocks']:
-                    if sb['level'] == 'L4_COMPLEX_SENTENCE':
-                        report.append(f"          Example Complex: {sb['type']} (lines {sb['start_line']}-{sb['end_line']})")
-                        report.append(f"            Token IDs: {len(sb['tokens'])} tokens")
-                        if sb['tokens']:
-                            report.append(f"            Sample: {sb['tokens'][:5]}...")
+                for block in blocks:
+                    if block.get('kind') != 'simple_statement':
+                        report.append(
+                            f"          Example Complex: {block['kind']} (lines {block['start_line']}-{block['end_line']})"
+                        )
+                        sample_tokens = block.get('tokens', [])[:5]
+                        if sample_tokens:
+                            report.append(f"            Tokens: {sample_tokens}...")
                         break
+
+                if 'patterns' in function:
+                    report.append(f"        Patterns: {function['patterns']}")
 
                 report.append("")
 
@@ -1428,40 +1498,86 @@ class CVulnerabilityFramework:
         report.append("SUMMARY STATISTICS")
         report.append("=" * 70)
 
-        total_functions = sum(len(m['functions']) for m in hierarchical_repr['modules'])
-        total_stmt_blocks = sum(len(f['statement_blocks'])
-                               for m in hierarchical_repr['modules']
-                               for f in m['functions'])
-        total_tokens = sum(len(sb['tokens'])
-                          for m in hierarchical_repr['modules']
-                          for f in m['functions']
-                          for sb in f['statement_blocks'])
+        total_modules = len(hierarchical_repr.get('modules', []))
+        total_functions = sum(len(m.get('functions', [])) for m in hierarchical_repr.get('modules', []))
+        total_blocks = sum(len(f.get('blocks', [])) for m in hierarchical_repr.get('modules', []) for f in m.get('functions', []))
+        total_tokens = sum(len(block.get('tokens', [])) for m in hierarchical_repr.get('modules', []) for f in m.get('functions', []) for block in f.get('blocks', []))
 
-        report.append(f"Total Modules: {len(hierarchical_repr['modules'])}")
+        report.append(f"Total Modules: {total_modules}")
         report.append(f"Total Functions: {total_functions}")
-        report.append(f"Total Statement Blocks: {total_stmt_blocks}")
+        report.append(f"Total Blocks: {total_blocks}")
         report.append(f"Total Tokens: {total_tokens}")
 
         return '\n'.join(report)
 
 
+def detect_language_from_path(path: Path) -> str:
+    """Infer language from file extension (supports C and C++)."""
+    suffix = path.suffix.lower()
+    cpp_suffixes = {'.cpp', '.cxx', '.cc', '.hpp', '.hh', '.hxx', '.ipp', '.ixx'}
+    return 'cpp' if suffix in cpp_suffixes else 'c'
+
+
+def append_analysis_record(output_path: Path, record: Dict[str, Any]) -> None:
+    """Append a single analysis record to the JSON file, preserving existing data."""
+    try:
+        existing = json.loads(output_path.read_text(encoding='utf-8'))
+        if isinstance(existing, list):
+            records = existing
+        elif isinstance(existing, dict):
+            records = [existing]
+        else:
+            records = []
+    except (FileNotFoundError, json.JSONDecodeError):
+        records = []
+
+    records.append(record)
+    output_path.write_text(
+        json.dumps(records, indent=2, ensure_ascii=False),
+        encoding='utf-8'
+    )
+
+
+def update_vocabulary_file(vocab_path: Path, tokens: List[str]) -> OrderedDict[str, int]:
+    """Merge new tokens into the vocabulary file without introducing duplicates."""
+    try:
+        current_vocab = json.loads(
+            vocab_path.read_text(encoding='utf-8'),
+            object_pairs_hook=OrderedDict
+        )
+    except (FileNotFoundError, json.JSONDecodeError):
+        current_vocab = OrderedDict()
+
+    max_id = 0
+    for value in current_vocab.values():
+        if isinstance(value, int) and value > max_id:
+            max_id = value
+
+    for token in tokens:
+        mapped = 'm!' if token == '!' else token
+        if mapped in current_vocab:
+            continue
+        max_id += 1
+        current_vocab[mapped] = max_id
+
+    vocab_path.write_text(
+        json.dumps(current_vocab, indent=2, ensure_ascii=False),
+        encoding='utf-8'
+    )
+
+    return current_vocab
+
 def main():
-    """Analyze a C source file specified by the user (defaults to sample.c)."""
+    """Analyze a source file and persist hierarchical slicing artefacts."""
 
     parser = argparse.ArgumentParser(
-        description="Generate a hierarchical code slice for a C source file."
+        description="Generate a hierarchical code slice for a C/C++ source file."
     )
     parser.add_argument(
         "input_file",
         nargs="?",
         default="sample.c",
-        help="Path to the C source file to analyze (default: sample.c)"
-    )
-    parser.add_argument(
-        "--token-preview",
-        type=int,
-        default=20,
-        help="Number of tokens to include in the JSON token preview (default: 20)"
+        help="Path to the source file to analyze (default: sample.c)"
     )
     args = parser.parse_args()
 
@@ -1472,7 +1588,7 @@ def main():
 
     source_path = next((path for path in candidate_paths if path.is_file()), None)
     if source_path is None:
-        print(f"Unable to locate C source file '{args.input_file}'.", file=sys.stderr)
+        print(f"Unable to locate source file '{args.input_file}'.", file=sys.stderr)
         for path in candidate_paths:
             print(f"  X {path}", file=sys.stderr)
         sys.exit(1)
@@ -1487,52 +1603,46 @@ def main():
         print(f"Warning: The source file '{source_path}' is empty.", file=sys.stderr)
         sys.exit(1)
 
-    # Initialize framework with token registry
-    token_registry = TokenRegistry(Path("token.json"))
+    language = detect_language_from_path(source_path)
+
+    token_registry = TokenRegistry(Path("vocabs.json"))
     framework = CVulnerabilityFramework(token_registry)
 
     print("Performing hierarchical code slicing...")
-    print(f"Source file: {source_path}")
+    print(f"Source file: {source_path} ({language})")
     print("=" * 50)
 
-    analysis = framework.generate_hierarchical_representation(sample_code)
+    analysis = framework.generate_hierarchical_representation(
+        sample_code,
+        language=language,
+        source_path=source_path
+    )
 
     report = framework.export_analysis_report(analysis)
     print(report)
 
-    # The analysis is already in serializable format (nested structure)
-    # Just need to convert any remaining enum or dataclass objects
-    def make_serializable(obj):
-        """Recursively convert objects to JSON-serializable format"""
+    def make_serializable(obj: Any) -> Any:
+        """Recursively convert objects to JSON-serializable format."""
         if isinstance(obj, dict):
             return {k: make_serializable(v) for k, v in obj.items()}
-        elif isinstance(obj, list):
+        if isinstance(obj, list):
             return [make_serializable(item) for item in obj]
-        elif hasattr(obj, '__dict__'):
+        if hasattr(obj, '__dict__'):
             return make_serializable(obj.__dict__)
-        elif isinstance(obj, Enum):
+        if isinstance(obj, Enum):
             return obj.value
-        else:
-            return obj
+        return obj
 
     serializable_analysis = make_serializable(analysis)
+    serializable_analysis.setdefault('metadata', {})['generated_at'] = datetime.now().isoformat()
 
-    # Save main analysis JSON
-    output_path = source_path.with_suffix('.json')
-    output_path.write_text(json.dumps(serializable_analysis, indent=2, default=str), encoding="utf-8")
-    print(f"Slicing result saved to {output_path}")
+    output_path = Path("sample.json")
+    append_analysis_record(output_path, serializable_analysis)
+    print(f"Slicing result appended to {output_path}")
 
-    # Save token registry
-    token_registry.save_registry()
-    print(f"Token registry saved to {token_registry.registry_path}")
-    print(f"  Total unique tokens: {token_registry.statistics.get('total', len(token_registry.id_to_token))}")
-    print(f"  Token types: {dict(token_registry.statistics)}")
-
-    # Save vocabulary mapping
-    vocabulary = framework.generate_vocabulary(serializable_analysis, max_tokens=250)
-    vocab_path = Path("vocabs.json")
-    vocab_path.write_text(json.dumps(vocabulary, indent=2, ensure_ascii=False), encoding="utf-8")
-    print(f"Vocabulary saved to {vocab_path} ({len(vocabulary)} tokens)")
+    vocab_tokens = list(framework._iter_tokens_from_repr(serializable_analysis))
+    update_vocabulary_file(Path("vocabs.json"), vocab_tokens)
+    print(f"Vocabulary updated at vocabs.json (total tokens processed: {len(vocab_tokens)})")
 
 
 if __name__ == "__main__":

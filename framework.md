@@ -116,9 +116,9 @@ statement_block_priority = {
 
 
 
-## 3. Statement Block Level (Câu Phức) - Có 3 dạng 
+## 2.3 Statement Block Level (Câu Phức) - Có 3 dạng 
 
-### 3.1 Loop Blocks
+### 2.3.1 Loop Blocks
 **Định nghĩa**: Cấu trúc lặp với logic phức tạp
 
 ```c
@@ -140,7 +140,7 @@ Một loop block bao gồm:
 3. Increment clause: i++
 4. Body logic: Các statements bên trong với logic phức tạp
 5. 
-### 3.2 Conditional Blocks
+### 2.3.2 Conditional Blocks
 **Định nghĩa**: Cấu trúc điều kiện với multiple branches
 
 ```c
@@ -178,7 +178,7 @@ if (buffer != NULL) {                                // Kiểm tra validation
 free(buffer);                                       // Giải phóng tài nguyên
 ```
 
-## 4. Statement Level (Câu Đơn)
+## 2.4. Statement Level (Câu Đơn)
 
 giữ l
 
@@ -210,7 +210,7 @@ FILE *input_file;                      // Simple sentence - Pointer declaration
 const int MAX_RETRIES = 3;            // Simple sentence - Constant declaration
 ```
 
-## 5. Token Level (Từ) - Normalization Strategy
+## 2.5. Token Level (Từ) - Normalization Strategy
 
 ### 5.1 Library Function Names - giữ nguyên
 **Nguyên tắc**: Giữ nguyên tên các hàm thư viện chuẩn

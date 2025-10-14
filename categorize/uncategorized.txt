@@ -1,6 +1,3 @@
-Uncategorized CWE Testcases
-================================================================================
-
 CWE114_Process_Control
 CWE121_Stack_Based_Buffer_Overflow
 CWE122_Heap_Based_Buffer_Overflow
