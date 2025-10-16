@@ -159,7 +159,7 @@ if (ptr != NULL && size > 0 && size < MAX_SIZE) {     // Điều kiện phức t
 ```
 
 
-### 3.3 Function Call Context Blocks
+### 2.3.3 Function Call Context Blocks
 **Định nghĩa**: Function call với setup và cleanup context
 
 ```c
