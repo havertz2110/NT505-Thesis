@@ -1,3 +1,4 @@
+CWE114_Process_Control
 CWE121_Stack_Based_Buffer_Overflow
 s01: CWE129_connect_socket (82), CWE129_fgets (82), CWE129_fscanf (82)
 s02: CWE193_wchar_t_alloca (315), CWE193_char_alloca_loop (63), CWE193_char_alloca_memcpy (63)
@@ -8,7 +9,6 @@ s06: CWE806_char_alloca_loop (78), CWE806_char_alloca_memcpy (78), CWE806_char_a
 s07: CWE806_wchar_t_alloca (468), CWE806_wchar_t_declare (390), CWE806_char_declare_snprintf (78)
 s08: dest_wchar_t_alloca (126), dest_wchar_t_declare (126), CWE806_wchar_t_declare (78)
 s09: src_wchar_t_alloca (156), src_wchar_t_declare (156), src_char_declare_cpy (78)
-
 
 CWE122_Heap_Based_Buffer_Overflow
 s01: cpp_CWE129_connect_socket (82), cpp_CWE129_fgets (82), cpp_CWE129_fscanf (82)
@@ -23,26 +23,23 @@ s09: c_CWE805_wchar_t (312), c_CWE806_wchar_t (156), c_CWE806_char_loop (78)
 s10: c_CWE806_wchar_t (312), c_dest_wchar_t (156), c_src_wchar_t (156)
 s11: sizeof_double (78), sizeof_int64_t (78), sizeof_struct (78)
 
-
+CWE123_Write_What_Where_Condition
 CWE124_Buffer_Underwrite
 s01: CWE839_connect_socket (82), CWE839_fgets (82), CWE839_fscanf (82)
 s02: CWE839_negative (82), CWE839_rand (82), malloc_char_cpy (78)
 s03: new_char_cpy (78), new_char_loop (78), new_char_memcpy (78)
 s04: wchar_t_alloca_memcpy (63), wchar_t_alloca_memmove (63), wchar_t_alloca_ncpy (63)
 
-
 CWE126_Buffer_Overread
 s01: CWE129_connect_socket (82), CWE129_fgets (82), CWE129_fscanf (82)
 s02: malloc_char_loop (78), malloc_char_memcpy (78), malloc_char_memmove (78)
 s03: new_wchar_t_memmove (78), wchar_t_alloca_loop (63), wchar_t_alloca_memcpy (63)
-
 
 CWE127_Buffer_Underread
 s01: CWE839_connect_socket (82), CWE839_fgets (82), CWE839_fscanf (82)
 s02: CWE839_negative (82), CWE839_rand (82), malloc_char_cpy (78)
 s03: new_char_cpy (78), new_char_loop (78), new_char_memcpy (78)
 s04: wchar_t_alloca_memcpy (63), wchar_t_alloca_memmove (63), wchar_t_alloca_ncpy (63)
-
 
 CWE134_Uncontrolled_Format_String
 s01: char_connect_socket_fprintf (82), char_connect_socket_printf (82), char_connect_socket_snprintf (82)
@@ -52,7 +49,8 @@ s04: wchar_t_connect_socket (246), wchar_t_console_fprintf (82), wchar_t_console
 s05: wchar_t_environment_snprintf (82), wchar_t_environment_vfprintf (82), wchar_t_environment_vprintf (82)
 s06: wchar_t_listen_socket (410)
 
-
+CWE176_Improper_Handling_of_Unicode_Encoding
+CWE188_Reliance_on_Data_Memory_Layout
 CWE190_Integer_Overflow
 s01: char_fscanf_add (82), char_fscanf_multiply (82), char_fscanf_square (82)
 s02: int64_t_fscanf_square (82), int64_t_max_add (82), int64_t_max_multiply (82)
@@ -62,7 +60,6 @@ s05: short_rand_square (82), unsigned_int_fscanf_add (82), unsigned_int_fscanf_m
 s06: char_fscanf_postinc (56), char_max_postinc (56), char_rand_postinc (56)
 s07: char_fscanf_preinc (56), char_max_preinc (56), char_rand_preinc (56)
 
-
 CWE191_Integer_Underflow
 s01: char_fscanf_multiply (82), char_fscanf_sub (82), char_min_multiply (82)
 s02: int64_t_rand_sub (82), int_connect_socket_multiply (82), int_connect_socket_sub (82)
@@ -70,34 +67,47 @@ s03: int_rand_multiply (82), int_rand_sub (82), short_fscanf_multiply (82)
 s04: char_fscanf_postdec (56), char_min_postdec (56), char_rand_postdec (56)
 s05: char_fscanf_predec (56), char_min_predec (56), char_rand_predec (56)
 
-
 CWE194_Unexpected_Sign_Extension
 s01: connect_socket_malloc (78), connect_socket_memcpy (78), connect_socket_memmove (78)
 s02: listen_socket_malloc (78), listen_socket_memcpy (78), listen_socket_memmove (78)
-
 
 CWE195_Signed_to_Unsigned_Conversion_Error
 s01: connect_socket_malloc (78), connect_socket_memcpy (78), connect_socket_memmove (78)
 s02: listen_socket_malloc (78), listen_socket_memcpy (78), listen_socket_memmove (78)
 
+CWE196_Unsigned_to_Signed_Conversion_Error
 
 CWE197_Numeric_Truncation_Error
 s01: int_connect_socket_to (156), int_listen_socket_to (156), int_fgets_to_char (78)
 s02: short_connect_socket (78), short_fgets (78), short_fscanf (78)
 
+CWE222_Truncation_of_Security_Relevant_Information
 
-CWE23_Relative_Path_Traversal
-s01: char_connect_socket_fopen (78), char_connect_socket_ifstream (78), char_connect_socket_ofstream (78)
-s02: char_environment_ofstream (78), char_environment_open (78), char_environment_w32CreateFile (78)
-s03: wchar_t_connect_socket (390), char_listen_socket_w32CreateFile (78), wchar_t_console_fopen (78)
-s04: wchar_t_listen_socket (234), wchar_t_environment_ifstream (78), wchar_t_environment_ofstream (78)
-s05: wchar_t_listen_socket (156)
+CWE226_Sensitive_Information_Uncleared_Before_Release
 
+CWE242_Use_of_Inherently_Dangerous_Function
+
+CWE244_Heap_Inspection
+
+CWE247_Reliance_on_DNS_Lookups_in_Security_Decision
+
+CWE252_Unchecked_Return_Value
+
+CWE253_Incorrect_Check_of_Function_Return_Value
+
+CWE272_Least_Privilege_Violation
+
+CWE273_Improper_Check_for_Dropped_Privileges
+
+CWE364_Signal_Handler_Race_Condition
+
+CWE366_Race_Condition_Within_Thread
+
+CWE367_TOC_TOU
 
 CWE369_Divide_by_Zero
 s01: float_connect_socket (82), float_fgets (82), float_fscanf (82)
 s02: int_fscanf_modulo (82), int_listen_socket_divide (82), int_listen_socket_modulo (82)
-
 
 CWE36_Absolute_Path_Traversal
 s01: char_connect_socket_fopen (78), char_connect_socket_ifstream (78), char_connect_socket_ofstream (78)
@@ -106,6 +116,15 @@ s03: wchar_t_connect_socket (390), char_listen_socket_w32CreateFile (78), wchar_
 s04: wchar_t_listen_socket (234), wchar_t_environment_ifstream (78), wchar_t_environment_ofstream (78)
 s05: wchar_t_listen_socket (156)
 
+CWE390_Error_Without_Action
+
+CWE391_Unchecked_Error_Condition
+
+CWE396_Catch_Generic_Exception
+
+CWE397_Throw_Generic_Exception
+
+CWE398_Poor_Code_Quality
 
 CWE400_Resource_Exhaustion
 s01: connect_socket_for_loop (82), connect_socket_fwrite (82), connect_socket_sleep (82)
@@ -117,16 +136,73 @@ s01: char_calloc (82), char_malloc (82), char_realloc (82)
 s02: strdup_char (82), new_array_int64_t (68), new_array_int (68)
 s03: strdup_wchar_t (82), struct_twoIntsStruct_calloc (82), struct_twoIntsStruct_malloc (82)
 
-
+CWE404_Improper_Resource_Shutdown
 CWE415_Double_Free
 s01: malloc_free_char (82), malloc_free_int64_t (82), malloc_free_int (82)
 s02: new_delete_array_struct (82), new_delete_array_wchar (82), new_delete_char (82)
 
-
+CWE416_Use_After_Free
+CWE427_Uncontrolled_Search_Path_Element
+CWE440_Expected_Behavior_Violation
 CWE457_Use_of_Uninitialized_Variable
 s01: char_pointer (25), double (25), double_array_alloca_no (25)
 s02: twointsclass_array_malloc_partial (25), twointsclass_array_new_no (25), twointsclass_array_new_partial (25)
 
+CWE459_Incomplete_Cleanup
+
+CWE464_Addition_of_Data_Structure_Sentinel
+
+CWE467_Use_of_sizeof_on_Pointer_Type
+
+CWE468_Incorrect_Pointer_Scaling
+
+CWE469_Use_of_Pointer_Subtraction_to_Determine_Size
+
+CWE475_Undefined_Behavior_for_Input_to_API
+
+CWE476_NULL_Pointer_Dereference
+
+CWE478_Missing_Default_Case_in_Switch
+
+CWE479_Signal_Handler_Use_of_Non_Reentrant_Function
+
+CWE480_Use_of_Incorrect_Operator
+
+CWE481_Assigning_Instead_of_Comparing
+
+CWE482_Comparing_Instead_of_Assigning
+
+CWE483_Incorrect_Block_Delimitation
+
+CWE484_Omitted_Break_Statement_in_Switch
+
+CWE500_Public_Static_Field_Not_Final
+
+CWE506_Embedded_Malicious_Code
+
+CWE510_Trapdoor
+
+CWE511_Logic_Time_Bomb
+
+CWE534_Info_Exposure_Debug_Log
+
+CWE535_Info_Exposure_Shell_Error
+
+CWE546_Suspicious_Comment
+
+CWE561_Dead_Code
+
+CWE562_Return_of_Stack_Variable_Address
+
+CWE563_Unused_Variable
+
+CWE570_Expression_Always_False
+
+CWE571_Expression_Always_True
+
+CWE587_Assignment_of_Fixed_Address_to_Pointer
+
+CWE588_Attempt_to_Access_Child_of_Non_Structure_Pointer
 
 CWE590_Free_Memory_Not_on_Heap
 s01: delete_array_int64_t (189), delete_array_char_alloca (63), delete_array_char_declare (63)
@@ -135,11 +211,45 @@ s03: delete_int64_t_declare (63), delete_int64_t_placement (63), delete_int64_t_
 s04: delete_wchar_t_alloca (63), delete_wchar_t_declare (63), delete_wchar_t_placement (63)
 s05: free_long_static (63), free_struct_alloca (63), free_struct_declare (63)
 
+CWE591_Sensitive_Data_Storage_in_Improperly_Locked_Memory
+
+CWE605_Multiple_Binds_Same_Port
+
+CWE606_Unchecked_Loop_Condition
+
+CWE615_Info_Exposure_by_Comment
+
+CWE617_Reachable_Assertion
+
+CWE665_Improper_Initialization
+
+CWE666_Operation_on_Resource_in_Wrong_Phase_of_Lifetime
+
+CWE667_Improper_Locking
+
+CWE672_Operation_on_Resource_After_Expiration_or_Release
+
+CWE674_Uncontrolled_Recursion
+
+CWE675_Duplicate_Operations_on_Resource
+
+CWE676_Use_of_Potentially_Dangerous_Function
+
+CWE680_Integer_Overflow_to_Buffer_Overflow
+
+CWE681_Incorrect_Conversion_Between_Numeric_Types
+
+CWE685_Function_Call_With_Incorrect_Number_of_Arguments
+
+CWE688_Function_Call_With_Incorrect_Variable_or_Reference_as_Argument
 
 CWE690_NULL_Deref_From_Return
 s01: char_calloc (78), char_malloc (78), char_realloc (78)
 s02: long_realloc (78), struct_calloc (78), struct_malloc (78)
 
+CWE758_Undefined_Behavior
+
+CWE761_Free_Pointer_Not_at_Start_of_Buffer
 
 CWE762_Mismatched_Memory_Management_Routines
 s01: delete_array_int64_t (246), delete_array_char_calloc (82), delete_array_char_malloc (82)
@@ -150,19 +260,19 @@ s05: new_array_delete_int64 (82), new_array_delete_int (82), new_array_delete_lo
 s06: new_array_free_wchar (82), new_delete_array_char (82), new_delete_array_class (82)
 s07: new_free_int (82), new_free_long (82), new_free_struct (82)
 
+CWE773_Missing_Reference_to_Active_File_Descriptor_or_Handle
+
+CWE775_Missing_Release_of_File_Descriptor_or_Handle
+
+CWE785_Path_Manipulation_Function_Without_Max_Sized_Buffer
 
 CWE789_Uncontrolled_Mem_Alloc
 s01: malloc_char_connect_socket (82), malloc_char_fgets (82), malloc_char_fscanf (82)
 s02: new_char_fgets (82), new_char_fscanf (82), new_char_listen_socket (82)
 
 
-CWE78_OS_Command_Injection
-s01: char_connect_socket_w32 (390), char_connect_socket_execlp (78), char_connect_socket_execl (78)
-s02: char_console_popen (78), char_console_system (78), char_console_w32spawnl (78)
-s03: char_environment_w32spawnl (78), char_environment_w32_execvp (78), char_environment_w32_execv (78)
-s04: char_listen_socket_w32 (234), char_file_w32_execv (78), char_file_w32_spawnlp (78)
-s05: wchar_t_connect_socket (780), char_listen_socket_w32 (156)
-s06: wchar_t_console_w32 (390), wchar_t_console_execlp (78), wchar_t_console_execl (78)
-s07: wchar_t_environment_w32 (390), wchar_t_environment_popen (78), wchar_t_environment_system (78)
-s08: wchar_t_listen_socket (468), wchar_t_file_w32 (390), wchar_t_file_w32spawnl (78)
-s09: wchar_t_listen_socket (312)
+CWE832_Unlock_of_Resource_That_is_Not_Locked
+
+CWE835_Infinite_Loop
+
+CWE843_Type_Confusion

@@ -1,5 +1,9 @@
 These are notes for how I categorize the dataset following Top 10 OWASP2021
 
+First I map CWEs in Juliet following top 10 OWASP 2021
+
+After that, for each CWE, I list out their variants
+
 A01:2021 - Broken Access Control:
 - CWE23_Relative_Path_Traversal
 s01: char_connect_socket_fopen (78), char_connect_socket_ifstream (78), char_connect_socket_ofstream (78)
