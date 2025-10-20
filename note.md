@@ -17,3 +17,13 @@ cái L5 sau sẽ thành token.json, sửa lại 1 chút
     l1 laf cai hafm
     l2
     l3 la logivc, nhu do while, loop
+
+
+note 20/10
+lấy các dataset này: 
+Juliet Test Suite: The largest synthetic dataset, useful for baseline training on a wide range of CWEs.
+
+DiverseVul: A large-scale real-world dataset with strong CWE coverage, ideal for training robust models.
+MegaVul: Comprehensive and continuously updated, offering rich code representations for advanced ML tasks.
+
+Big-Vul: A f

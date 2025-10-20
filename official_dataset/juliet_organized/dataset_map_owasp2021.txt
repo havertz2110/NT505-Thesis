@@ -1,0 +1,65 @@
+These are notes for how I categorize the dataset following Top 10 OWASP2021
+
+A01:2021 - Broken Access Control:
+- CWE23_Relative_Path_Traversal
+s01: char_connect_socket_fopen (78), char_connect_socket_ifstream (78), char_connect_socket_ofstream (78)
+s02: char_environment_ofstream (78), char_environment_open (78), char_environment_w32CreateFile (78)
+s03: wchar_t_connect_socket (390), char_listen_socket_w32CreateFile (78), wchar_t_console_fopen (78)
+s04: wchar_t_listen_socket (234), wchar_t_environment_ifstream (78), wchar_t_environment_ofstream (78)
+s05: wchar_t_listen_socket (156)
+
+- CWE284_Improper_Access_Control
+- CWE377_Insecure_Temporary_File
+
+------------------------------------
+
+A02:2021 - Cryptographic Failures:
+- CWE319_Cleartext_Tx_Sensitive_Info
+- CWE321_Hard_Coded_Cryptographic_Key
+- CWE325_Missing_Required_Cryptographic_Step
+- CWE327_Use_Broken_Crypto
+- CWE328_Reversible_One_Way_Hash
+- CWE338_Weak_PRNG
+- CWE780_Use_of_RSA_Algorithm_Without_OAEP
+
+------------------------------------
+
+A03:2021 - Injection
+- CWE78_OS_Command_Injection
+s01: char_connect_socket_w32 (390), char_connect_socket_execlp (78), char_connect_socket_execl (78)
+s02: char_console_popen (78), char_console_system (78), char_console_w32spawnl (78)
+s03: char_environment_w32spawnl (78), char_environment_w32_execvp (78), char_environment_w32_execv (78)
+s04: char_listen_socket_w32 (234), char_file_w32_execv (78), char_file_w32_spawnlp (78)
+s05: wchar_t_connect_socket (780), char_listen_socket_w32 (156)
+s06: wchar_t_console_w32 (390), wchar_t_console_execlp (78), wchar_t_console_execl (78)
+s07: wchar_t_environment_w32 (390), wchar_t_environment_popen (78), wchar_t_environment_system (78)
+s08: wchar_t_listen_socket (468), wchar_t_file_w32 (390), wchar_t_file_w32spawnl (78)
+s09: wchar_t_listen_socket (312)
+- CWE90_LDAP_Injection
+
+------------------------------------
+
+A04:2021 - Insecure Design
+- CWE256_Plaintext_Storage_of_Password
+
+------------------------------------
+
+A05:2021 - Security Misconfiguration
+- CWE15_External_Control_of_System_or_Configuration_Setting
+- CWE526_Info_Exposure_Environment_Variables
+
+------------------------------------
+
+A07:2021 - Identification and Authentication Failures
+- CWE259_Hard_Coded_Password
+- CWE620_Unverified_Password_Change
+
+------------------------------------
+
+A08:2021 - Software and Data Integrity Failures
+- CWE426_Untrusted_Search_Path
+
+------------------------------------
+
+A09:2021 - Security Logging and Monitoring Failures
+- CWE223_Omission_of_Security_Relevant_Information
