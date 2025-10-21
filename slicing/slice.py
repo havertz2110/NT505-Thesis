@@ -87,12 +87,6 @@ class HierarchicalSlicer:
             'socket', 'bind', 'listen', 'accept', 'connect'
         }
         
-        self.vulnerable_functions = {
-            'strcpy', 'strcat', 'sprintf', 'gets', 'scanf',
-            'memcpy', 'memmove', 'strncpy', 'strncat',
-            'recv', 'recvfrom', 'fopen'
-        }
-        
         self.c_keywords = {
             'if', 'else', 'for', 'while', 'do', 'switch', 'case', 'default',
             'break', 'continue', 'return', 'goto',
@@ -107,15 +101,32 @@ class HierarchicalSlicer:
             '&&', '||', '!', '&', '|', '^', '~', '<<', '>>',
             '->', '.', '++', '--'
         }
+        # Holds 0-based line indexes of POTENTIAL FLAW annotations for current file
+        self.current_potential_flaw_lines = set()
+        # Original lines for current file (with comments) for annotation lookup
+        self.current_original_lines: List[str] = []
     
     def _preprocess_code(self, code: str) -> str:
-        """Remove comments"""
+        """Remove comments while preserving line count (for stable indices)."""
+        # Strip // comments but keep newlines
         code = re.sub(r'//.*?$', '', code, flags=re.MULTILINE)
-        code = re.sub(r'/\*.*?\*/', '', code, flags=re.DOTALL)
+
+        # Replace /* ... */ with the same number of newlines inside the comment
+        def _block_repl(match: re.Match) -> str:
+            s = match.group(0)
+            # Count how many newlines are in the comment and preserve them
+            newlines = s.count('\n')
+            return '\n' * newlines
+
+        code = re.sub(r'/\*.*?\*/', _block_repl, code, flags=re.DOTALL)
         return code
     
     def slice_program(self, source_code: str, source_path: Optional[Path] = None) -> CodeSlice:
         """L0: PROGRAM LEVEL"""
+        # Detect Juliet POTENTIAL FLAW annotations before stripping comments
+        self.current_original_lines = source_code.splitlines()
+        self.current_potential_flaw_lines = self._find_potential_flaw_annotations(source_code)
+
         source_code = self._preprocess_code(source_code)
         lines = source_code.splitlines()
         
@@ -143,6 +154,17 @@ class HierarchicalSlicer:
         program_slice.children = modules
         
         return program_slice
+
+    def _find_potential_flaw_annotations(self, original_code: str) -> set:
+        """Find lines that start with '/* POTENTIAL FLAW' in original source.
+
+        Returns a set of 0-based line indexes for quick lookup later.
+        """
+        result = set()
+        for idx, raw in enumerate(original_code.splitlines()):
+            if raw.lstrip().startswith('/* POTENTIAL FLAW'):
+                result.add(idx)
+        return result
     
     def _slice_modules(self, lines: List[str]) -> List[CodeSlice]:
         """L1: MODULE LEVEL"""
@@ -393,6 +415,14 @@ class HierarchicalSlicer:
         while i < end_idx:
             line = lines[i].strip()
             
+            # Detect Juliet markers: /* POTENTIAL FLAW ... */ (detected using original-code line map)
+            if i in self.current_potential_flaw_lines:
+                block = self._slice_potential_flaw_context(lines, i, end_idx)
+                if block:
+                    blocks.append(block)
+                    i = block.end_line
+                    continue
+
             if line.startswith('for') or line.startswith('while'):
                 block = self._slice_loop_block(lines, i, end_idx)
                 if block:
@@ -407,12 +437,7 @@ class HierarchicalSlicer:
                     i = block.end_line
                     continue
             
-            elif self._contains_vulnerable_function(line):
-                block = self._slice_function_call_context(lines, i, end_idx)
-                if block:
-                    blocks.append(block)
-                    i = block.end_line
-                    continue
+            # function-based vulnerable detection removed
             
             else:
                 # L4 disabled: skip simple statements
@@ -421,6 +446,44 @@ class HierarchicalSlicer:
             i += 1
         
         return blocks
+
+    def _slice_potential_flaw_context(self, lines: List[str], annotation_idx: int, end_idx: int) -> Optional[CodeSlice]:
+        """Slice context around Juliet POTENTIAL FLAW annotations.
+
+        The convention: the line immediately below the comment is the vulnerable line.
+        We capture a small window around that line for context.
+        """
+        vuln_idx = min(annotation_idx + 1, end_idx)
+        context_start = max(0, vuln_idx - 3)
+        context_end = min(end_idx, vuln_idx + 3)
+
+        block_lines = lines[context_start:context_end + 1]
+        full_code = '\n'.join(block_lines)
+
+        # Use original lines for annotation and vulnerable line capture
+        orig = self.current_original_lines or []
+        annotation = (orig[annotation_idx].strip() if annotation_idx < len(orig) else '')
+        vulnerable_line = (orig[vuln_idx].strip() if vuln_idx < len(orig) else '')
+
+        block_slice = CodeSlice(
+            level=Level.STATEMENT_BLOCK,
+            name="vulnerable_context",
+            full_code=full_code,
+            start_line=context_start + 1,
+            end_line=context_end + 1,
+            metadata={
+                'block_type': 'potential_flaw_context',
+                'annotation_line_number': annotation_idx + 1,
+                'annotation': annotation,
+                'vulnerable_line': vulnerable_line,
+                'focus_line_number': vuln_idx + 1,
+                'detected_by': 'comment_potential_flaw'
+            }
+        )
+        
+        # Children statements suppressed (L4 disabled)
+        block_slice.children = []
+        return block_slice
     
     def _slice_loop_block(self, lines: List[str], start_idx: int, end_idx: int) -> Optional[CodeSlice]:
         """Slice loop block"""
@@ -488,32 +551,7 @@ class HierarchicalSlicer:
         
         return block_slice
     
-    def _slice_function_call_context(self, lines: List[str], start_idx: int, end_idx: int) -> Optional[CodeSlice]:
-        """Slice function call context"""
-        context_start = max(0, start_idx - 3)
-        context_end = min(end_idx, start_idx + 3)
-        
-        block_lines = lines[context_start:context_end + 1]
-        full_code = '\n'.join(block_lines)
-        vulnerable_line = lines[start_idx].strip()
-        
-        block_slice = CodeSlice(
-            level=Level.STATEMENT_BLOCK,
-            name="vulnerable_context",
-            full_code=full_code,
-            start_line=context_start + 1,
-            end_line=context_end + 1,
-            metadata={
-                'block_type': 'function_call_context',
-                'vulnerable_line': vulnerable_line,
-                'focus_line_number': start_idx + 1
-            }
-        )
-        
-        statements = self._slice_statements_in_block(lines, context_start, context_end)
-        block_slice.children = statements
-        
-        return block_slice
+    # function-based vulnerable context removed
     
     def _slice_simple_statement(self, lines: List[str], idx: int) -> Optional[CodeSlice]:
         """L4: STATEMENT LEVEL"""
@@ -782,11 +820,7 @@ class HierarchicalSlicer:
         
         return start_idx
     
-    def _contains_vulnerable_function(self, line: str) -> bool:
-        for func in self.vulnerable_functions:
-            if re.search(rf'\b{func}\s*\(', line):
-                return True
-        return False
+    # function-based vulnerable detection removed
     
     def _extract_loop_condition(self, header: str, loop_type: str) -> str:
         if loop_type == 'for':
@@ -911,7 +945,7 @@ class BatchProcessor:
             if 'tokens' in node.metadata:
                 stats['token_count'] += len(node.metadata['tokens'])
             
-            if node.metadata.get('block_type') == 'function_call_context':
+            if node.metadata.get('block_type') == 'potential_flaw_context':
                 stats['vulnerable_function_count'] += 1
             
             for child in node.children:
@@ -1051,7 +1085,7 @@ def main():
     print(f"📝 Output: {output_path}")
     print(f"📝 Tokens: {tokens_output_path}")
     print(f"⚙️  Strategy: {args.nested}")
-    print(f"✨ Slicing: L0–L3 (L4 disabled), tokens separate")
+    print(f"✨ Slicing: L0–L3 (L4 disabled), tokens separate; vulnerable by POTENTIAL FLAW comments")
     
     # Process
     processor = BatchProcessor(nested_strategy=args.nested)

@@ -1,6 +1,6 @@
 {
   "batch_info": {
-    "processed_at": "2025-10-21T08:08:08.054654",
+    "processed_at": "2025-10-21T08:02:52.120465",
     "note": "L5 tokens exported separately; main results contain L0-L3 only."
   },
   "statistics": {
@@ -67,7 +67,7 @@
     {
       "file_path": "/mnt/d/GitHub/NT505-Thesis/slicing/CWE23_Relative_Path_Traversal__char_connect_socket_fopen_01.cpp",
       "file_name": "CWE23_Relative_Path_Traversal__char_connect_socket_fopen_01.cpp",
-      "processed_at": "2025-10-21T08:08:08.039716",
+      "processed_at": "2025-10-21T08:02:52.107683",
       "token_statistics": {
         "line_entries": 112,
         "token_count": 628
@@ -1378,7 +1378,7 @@
     {
       "file_path": "/mnt/d/GitHub/NT505-Thesis/slicing/CWE23_Relative_Path_Traversal__char_connect_socket_fopen_02.cpp",
       "file_name": "CWE23_Relative_Path_Traversal__char_connect_socket_fopen_02.cpp",
-      "processed_at": "2025-10-21T08:08:08.045526",
+      "processed_at": "2025-10-21T08:02:52.113031",
       "token_statistics": {
         "line_entries": 127,
         "token_count": 704

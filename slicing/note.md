@@ -27,3 +27,12 @@ DiverseVul: A large-scale real-world dataset with strong CWE coverage, ideal for
 MegaVul: Comprehensive and continuously updated, offering rich code representations for advanced ML tasks.
 
 Big-Vul: A f
+
+
+ví dụ, mỗi cate của owasp sẽ có có 10 cwe, mỗi cwe sẽ có  1 file json cho nó, trong đó phần marking ở L3.
+
+Quy tắc sẽ là Nếu gặp dòng comment bắt đầu bằng “/* POTENTIAL FLAW”, thì dòng ngay bên dưới đó được gắn làm “vulnerable_line” (focus).
+Tạo block L3 tên vulnerable_context với metadata.block_type = "potential_flaw_context" và metadata kèm theo:
+annotation_line_number, annotation (nguyên văn comment),
+focus_line_number, vulnerable_line (dòng ngay dưới comment),
+detected_by: "comment_potential_flaw".

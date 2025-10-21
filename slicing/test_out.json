@@ -1,6 +1,6 @@
 {
   "batch_info": {
-    "processed_at": "2025-10-21T08:08:08.045535",
+    "processed_at": "2025-10-21T08:02:52.113038",
     "nested_strategy": "mark_nested"
   },
   "statistics": {
@@ -69,7 +69,7 @@
     {
       "file_path": "/mnt/d/GitHub/NT505-Thesis/slicing/CWE23_Relative_Path_Traversal__char_connect_socket_fopen_01.cpp",
       "file_name": "CWE23_Relative_Path_Traversal__char_connect_socket_fopen_01.cpp",
-      "processed_at": "2025-10-21T08:08:08.039618",
+      "processed_at": "2025-10-21T08:02:52.107656",
       "statistics": {
         "function_count": 4,
         "statement_count": 0,
@@ -371,7 +371,7 @@
     {
       "file_path": "/mnt/d/GitHub/NT505-Thesis/slicing/CWE23_Relative_Path_Traversal__char_connect_socket_fopen_02.cpp",
       "file_name": "CWE23_Relative_Path_Traversal__char_connect_socket_fopen_02.cpp",
-      "processed_at": "2025-10-21T08:08:08.045475",
+      "processed_at": "2025-10-21T08:02:52.113013",
       "statistics": {
         "function_count": 5,
         "statement_count": 0,
