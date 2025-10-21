@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
 """
-Hierarchical Code Slicer - Framework 6 Levels
-Slice code C theo đúng structure: L0→L1→L2→L3→L4→L5
-Mỗi level giữ nguyên FULL CODE, nested structure như VSCode collapse
+Hierarchical Code Slicer - Batch Processing Version
+Auto scan folder, process all .c/.cpp files, append to single JSON
+
+Features:
+- Auto scan current directory or specified folder
+- Process multiple files in batch
+- Append all results to single JSON file
+- Full options enabled by default
+- Progress tracking
 """
 
 import re
@@ -12,16 +18,17 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
+from datetime import datetime
 
 
 class Level(Enum):
     """6 levels trong framework"""
-    PROGRAM = "L0"           # Cuốn sách - Toàn bộ file
-    MODULE = "L1"            # Chương - Struct + functions
-    FUNCTION = "L2"          # Đoạn văn - Function hoàn chỉnh
-    STATEMENT_BLOCK = "L3"   # Câu phức - Loop/If/Context blocks
-    STATEMENT = "L4"         # Câu đơn - Single statement
-    TOKEN = "L5"             # Từ - Individual tokens
+    PROGRAM = "L0"
+    MODULE = "L1"
+    FUNCTION = "L2"
+    STATEMENT_BLOCK = "L3"
+    STATEMENT = "L4"
+    TOKEN = "L5"
 
 
 @dataclass
@@ -64,21 +71,26 @@ class CodeSlice:
 
 
 class HierarchicalSlicer:
-    """Main slicer class - slice code theo 6 levels"""
+    """Main slicer class"""
     
-    def __init__(self):
+    def __init__(self, nested_strategy: str = 'mark_nested'):
+        self.nested_strategy = nested_strategy
+        
         self.library_functions = {
             'malloc', 'free', 'calloc', 'realloc',
             'strcpy', 'strncpy', 'strcat', 'strncat', 'sprintf', 'snprintf',
             'memcpy', 'memmove', 'memset',
             'gets', 'scanf', 'getchar', 'fgets', 'getline',
             'fopen', 'fread', 'fwrite', 'fclose', 'fprintf', 'fscanf',
-            'printf', 'puts', 'putchar'
+            'printf', 'puts', 'putchar',
+            'recv', 'recvfrom', 'send', 'sendto',
+            'socket', 'bind', 'listen', 'accept', 'connect'
         }
         
         self.vulnerable_functions = {
             'strcpy', 'strcat', 'sprintf', 'gets', 'scanf',
-            'memcpy', 'memmove', 'strncpy', 'strncat'
+            'memcpy', 'memmove', 'strncpy', 'strncat',
+            'recv', 'recvfrom', 'fopen'
         }
         
         self.c_keywords = {
@@ -96,8 +108,15 @@ class HierarchicalSlicer:
             '->', '.', '++', '--'
         }
     
+    def _preprocess_code(self, code: str) -> str:
+        """Remove comments"""
+        code = re.sub(r'//.*?$', '', code, flags=re.MULTILINE)
+        code = re.sub(r'/\*.*?\*/', '', code, flags=re.DOTALL)
+        return code
+    
     def slice_program(self, source_code: str, source_path: Optional[Path] = None) -> CodeSlice:
-        """L0: PROGRAM LEVEL - Cuốn sách"""
+        """L0: PROGRAM LEVEL"""
+        source_code = self._preprocess_code(source_code)
         lines = source_code.splitlines()
         
         includes = self._extract_includes(lines)
@@ -126,7 +145,7 @@ class HierarchicalSlicer:
         return program_slice
     
     def _slice_modules(self, lines: List[str]) -> List[CodeSlice]:
-        """L1: MODULE LEVEL - Chương"""
+        """L1: MODULE LEVEL"""
         modules = []
         
         struct_modules = self._extract_struct_modules(lines)
@@ -148,7 +167,7 @@ class HierarchicalSlicer:
         return modules
     
     def _extract_struct_modules(self, lines: List[str]) -> List[CodeSlice]:
-        """Extract struct definitions as modules"""
+        """Extract struct modules"""
         modules = []
         i = 0
         
@@ -166,7 +185,7 @@ class HierarchicalSlicer:
         return modules
     
     def _extract_single_struct_module(self, lines: List[str], start_idx: int) -> Optional[CodeSlice]:
-        """Extract một struct module hoàn chỉnh"""
+        """Extract single struct module"""
         brace_line = start_idx
         while brace_line < len(lines) and '{' not in lines[brace_line]:
             brace_line += 1
@@ -214,7 +233,7 @@ class HierarchicalSlicer:
         return "UNNAMED_STRUCT"
     
     def _extract_module_functions(self, lines: List[str], start_idx: int, module_name: str) -> List[CodeSlice]:
-        """Extract functions liên quan đến module"""
+        """Extract module functions"""
         functions = []
         i = start_idx
         
@@ -231,8 +250,62 @@ class HierarchicalSlicer:
         
         return functions
     
+    def _mark_nested_functions(self, functions: List[CodeSlice]) -> List[CodeSlice]:
+        """Mark nested functions"""
+        for i, func in enumerate(functions):
+            is_nested = False
+            parent_name = None
+            
+            for j, other in enumerate(functions):
+                if i != j:
+                    if (other.start_line <= func.start_line and 
+                        other.end_line >= func.end_line):
+                        is_nested = True
+                        parent_name = other.name
+                        break
+            
+            if is_nested:
+                func.metadata['is_nested'] = True
+                func.metadata['parent_function'] = parent_name
+                func.metadata['function_scope'] = 'nested'
+            else:
+                func.metadata['is_nested'] = False
+                func.metadata['function_scope'] = 'top_level'
+        
+        return functions
+    
+    def _filter_nested_functions(self, functions: List[CodeSlice]) -> List[CodeSlice]:
+        """Filter nested functions"""
+        result = []
+        
+        for i, func in enumerate(functions):
+            is_nested = False
+            
+            for j, other in enumerate(functions):
+                if i != j:
+                    if (other.start_line <= func.start_line and 
+                        other.end_line >= func.end_line):
+                        is_nested = True
+                        break
+            
+            if not is_nested:
+                result.append(func)
+        
+        return result
+    
+    def _process_nested_functions(self, functions: List[CodeSlice]) -> List[CodeSlice]:
+        """Process nested functions based on strategy"""
+        if self.nested_strategy == 'filter':
+            return self._filter_nested_functions(functions)
+        elif self.nested_strategy == 'keep_all':
+            return functions
+        elif self.nested_strategy == 'mark_nested':
+            return self._mark_nested_functions(functions)
+        else:
+            return self._mark_nested_functions(functions)
+    
     def _extract_orphan_functions(self, lines: List[str], struct_modules: List[CodeSlice]) -> List[CodeSlice]:
-        """Extract functions không thuộc module nào"""
+        """Extract orphan functions"""
         module_ranges = set()
         for module in struct_modules:
             for func in module.children:
@@ -261,10 +334,11 @@ class HierarchicalSlicer:
                     continue
             i += 1
         
+        orphan_functions = self._process_nested_functions(orphan_functions)
         return orphan_functions
     
     def _slice_function(self, lines: List[str], start_idx: int) -> Optional[CodeSlice]:
-        """L2: FUNCTION LEVEL - Đoạn văn"""
+        """L2: FUNCTION LEVEL"""
         signature, sig_end = self._extract_function_signature(lines, start_idx)
         if not signature:
             return None
@@ -312,7 +386,7 @@ class HierarchicalSlicer:
         return function_slice
     
     def _slice_statement_blocks(self, lines: List[str], start_idx: int, end_idx: int) -> List[CodeSlice]:
-        """L3: STATEMENT BLOCK LEVEL - Câu phức"""
+        """L3: STATEMENT BLOCK LEVEL"""
         blocks = []
         i = start_idx
         
@@ -341,16 +415,15 @@ class HierarchicalSlicer:
                     continue
             
             else:
-                stmt = self._slice_simple_statement(lines, i)
-                if stmt:
-                    blocks.append(stmt)
+                # L4 disabled: skip simple statements
+                pass
             
             i += 1
         
         return blocks
     
     def _slice_loop_block(self, lines: List[str], start_idx: int, end_idx: int) -> Optional[CodeSlice]:
-        """Slice loop structure"""
+        """Slice loop block"""
         header = lines[start_idx].strip()
         block_end = self._find_block_end(lines, start_idx, end_idx)
         
@@ -379,7 +452,7 @@ class HierarchicalSlicer:
         return block_slice
     
     def _slice_conditional_block(self, lines: List[str], start_idx: int, end_idx: int) -> Optional[CodeSlice]:
-        """Slice if-else structure"""
+        """Slice conditional block"""
         header = lines[start_idx].strip()
         if_end = self._find_block_end(lines, start_idx, end_idx)
         
@@ -416,7 +489,7 @@ class HierarchicalSlicer:
         return block_slice
     
     def _slice_function_call_context(self, lines: List[str], start_idx: int, end_idx: int) -> Optional[CodeSlice]:
-        """Slice vulnerable function call với context"""
+        """Slice function call context"""
         context_start = max(0, start_idx - 3)
         context_end = min(end_idx, start_idx + 3)
         
@@ -443,7 +516,7 @@ class HierarchicalSlicer:
         return block_slice
     
     def _slice_simple_statement(self, lines: List[str], idx: int) -> Optional[CodeSlice]:
-        """L4: STATEMENT LEVEL - Câu đơn"""
+        """L4: STATEMENT LEVEL"""
         line = lines[idx].strip()
         
         if not line or line in ['{', '}'] or line.startswith('//') or line.startswith('/*'):
@@ -459,25 +532,19 @@ class HierarchicalSlicer:
             end_line=idx + 1,
             metadata={
                 'statement_type': self._classify_statement(line),
-                'tokens': self._tokenize_for_ml(line)  # L5 tokens
+                'tokens': self._tokenize_for_ml(line)
             }
         )
         
         return statement_slice
     
     def _slice_statements_in_block(self, lines: List[str], start_idx: int, end_idx: int) -> List[CodeSlice]:
-        """Extract all statements trong một block"""
-        statements = []
-        
-        for i in range(start_idx, min(end_idx + 1, len(lines))):
-            stmt = self._slice_simple_statement(lines, i)
-            if stmt:
-                statements.append(stmt)
-        
-        return statements
+        """Extract statements in block (L4 disabled)"""
+        # L4 (STATEMENT) slicing is disabled; only L0-L3 slices are produced.
+        return []
     
     def _tokenize_for_ml(self, code: str, max_tokens: int = 250) -> List[str]:
-        """L5: TOKEN LEVEL - Tokenization như NLP"""
+        """L5: TOKEN LEVEL"""
         tokens = []
         
         code = re.sub(r'//.*$', '', code)
@@ -499,18 +566,15 @@ class HierarchicalSlicer:
         return tokens
     
     def _normalize_token_for_ml(self, token: str) -> str:
-        """Normalize token theo framework rules"""
+        """Normalize token"""
         token = token.strip()
         
         if token in self.library_functions:
             return token
-        
         if token in self.c_keywords:
             return token
-        
         if token in self.operators or token in ['(', ')', '{', '}', '[', ']', ';', ',', '.', '->']:
             return token
-        
         if token in ['NULL', '0', '1']:
             return token
         
@@ -519,7 +583,6 @@ class HierarchicalSlicer:
         
         if re.match(r'^[0-9]+(\.[0-9]+)?$', token):
             return 'NUM_LITERAL'
-        
         if re.match(r'^0[xX][0-9a-fA-F]+$', token) or re.match(r'^0[0-7]+$', token):
             return 'NUM_LITERAL'
         
@@ -532,13 +595,31 @@ class HierarchicalSlicer:
                 return 'VAR'
         
         return token
-    
-    def tokenize_full_code(self, code: str, max_tokens: int = 250) -> List[str]:
-        """Tokenize full code thành sequence"""
-        return self._tokenize_for_ml(code, max_tokens)
+
+    def extract_tokens_by_line(self, source_code: str) -> List[Dict[str, Any]]:
+        """Extract L5 tokens per non-empty, non-brace code line.
+
+        Comments are removed via preprocessing; tokens are collected per line
+        using the same normalization used in L5.
+        """
+        preprocessed = self._preprocess_code(source_code)
+        lines = preprocessed.splitlines()
+        tokens_result: List[Dict[str, Any]] = []
+        for i, raw in enumerate(lines):
+            stripped = raw.strip()
+            if not stripped or stripped in {'{', '}'}:
+                continue
+            tokens = self._tokenize_for_ml(raw)
+            if tokens:
+                tokens_result.append({
+                    'line': i + 1,
+                    'code': raw,
+                    'tokens': tokens
+                })
+        return tokens_result
     
     def build_vocabulary(self, sliced_result: CodeSlice) -> Dict[str, int]:
-        """Build vocabulary từ sliced result"""
+        """Build vocabulary"""
         vocab = {}
         token_id = 1
         
@@ -562,7 +643,7 @@ class HierarchicalSlicer:
         return vocab
     
     def _classify_statement(self, statement: str) -> str:
-        """Classify statement type"""
+        """Classify statement"""
         if '=' in statement and '==' not in statement:
             return 'assignment'
         elif statement.startswith('return'):
@@ -576,10 +657,8 @@ class HierarchicalSlicer:
         else:
             return 'expression'
     
-    # ========== Helper Methods ==========
-    
+    # Helper methods
     def _extract_includes(self, lines: List[str]) -> List[str]:
-        """Extract #include statements"""
         includes = []
         for line in lines:
             if line.strip().startswith('#include'):
@@ -587,13 +666,11 @@ class HierarchicalSlicer:
         return includes
     
     def _extract_global_variables(self, lines: List[str]) -> List[Dict[str, Any]]:
-        """Extract global variables"""
         global_vars = []
         brace_depth = 0
         
         for idx, line in enumerate(lines):
             stripped = line.strip()
-            
             brace_depth += line.count('{')
             brace_depth -= line.count('}')
             
@@ -612,10 +689,8 @@ class HierarchicalSlicer:
         return global_vars
     
     def _is_function_definition(self, line: str, lines: List[str], idx: int) -> bool:
-        """Check if line starts function definition"""
         if not line or line.startswith('#') or line.startswith('//'):
             return False
-        
         if '(' not in line:
             return False
         
@@ -624,11 +699,9 @@ class HierarchicalSlicer:
                 return True
             if ';' in lines[i]:
                 return False
-        
         return False
     
     def _extract_function_signature(self, lines: List[str], start_idx: int) -> Tuple[str, int]:
-        """Extract complete function signature"""
         signature = lines[start_idx].strip()
         end_idx = start_idx
         
@@ -642,14 +715,12 @@ class HierarchicalSlicer:
         return signature, end_idx
     
     def _extract_function_name(self, signature: str) -> str:
-        """Extract function name"""
         match = re.search(r'(\w+)\s*\(', signature)
         if match:
             return match.group(1)
         return "UNKNOWN_FUNCTION"
     
     def _extract_return_type(self, signature: str) -> str:
-        """Extract return type"""
         before_paren = signature.split('(')[0].strip()
         tokens = before_paren.split()
         if len(tokens) >= 2:
@@ -657,9 +728,7 @@ class HierarchicalSlicer:
         return 'void'
     
     def _extract_parameters(self, signature: str) -> List[Dict[str, str]]:
-        """Extract parameters"""
         params = []
-        
         match = re.search(r'\((.*?)\)', signature)
         if not match:
             return params
@@ -670,19 +739,33 @@ class HierarchicalSlicer:
         
         for param in param_str.split(','):
             param = param.strip()
+            
+            if param == '...':
+                params.append({'type': '...', 'name': None})
+                continue
+            
             tokens = param.split()
             if len(tokens) >= 2:
                 param_type = ' '.join(tokens[:-1])
-                param_name = tokens[-1].split('[')[0]
+                param_name = tokens[-1]
+                
+                if param_name.startswith('*'):
+                    param_type += '*' * param_name.count('*')
+                    param_name = param_name.lstrip('*')
+                
+                if '[' in param_name:
+                    param_name = param_name[:param_name.index('[')]
+                
                 params.append({
-                    'name': param_name,
+                    'name': param_name if param_name else None,
                     'type': param_type
                 })
+            elif len(tokens) == 1:
+                params.append({'type': tokens[0], 'name': None})
         
         return params
     
     def _find_block_end(self, lines: List[str], start_idx: int, max_idx: int) -> int:
-        """Find end of code block"""
         line = lines[start_idx].strip()
         
         if '{' not in line:
@@ -700,14 +783,12 @@ class HierarchicalSlicer:
         return start_idx
     
     def _contains_vulnerable_function(self, line: str) -> bool:
-        """Check if line contains vulnerable function"""
         for func in self.vulnerable_functions:
             if re.search(rf'\b{func}\s*\(', line):
                 return True
         return False
     
     def _extract_loop_condition(self, header: str, loop_type: str) -> str:
-        """Extract loop condition"""
         if loop_type == 'for':
             match = re.search(r'for\s*\((.*?)\)', header)
             if match:
@@ -719,255 +800,292 @@ class HierarchicalSlicer:
         return ""
     
     def _extract_if_condition(self, header: str) -> str:
-        """Extract if condition"""
         match = re.search(r'if\s*\((.*?)\)', header)
         if match:
             return match.group(1)
         return ""
 
 
-def export_to_json(slice_result: CodeSlice, output_path: Path, pretty: bool = True):
-    """Export sliced result to JSON"""
-    data = slice_result.to_dict()
-    
-    with open(output_path, 'w', encoding='utf-8') as f:
-        if pretty:
-            json.dump(data, f, indent=2, ensure_ascii=False)
-        else:
-            json.dump(data, f, ensure_ascii=False)
-    
-    print(f"✅ Sliced result exported to: {output_path}")
+# ========== BATCH PROCESSING ==========
 
+class BatchProcessor:
+    """Batch processor for multiple files"""
+    
+    def __init__(self, nested_strategy: str = 'mark_nested'):
+        self.slicer = HierarchicalSlicer(nested_strategy=nested_strategy)
+        self.results = []
+        self.tokens_results = []
+        self.global_vocab = {}
+        self.stats = {
+            'total_files': 0,
+            'processed_files': 0,
+            'failed_files': 0,
+            'total_functions': 0,
+            'total_statements': 0,  # L4 disabled
+            'total_tokens': 0
+        }
+    
+    def find_c_files(self, directory: Path) -> List[Path]:
+        """Find all .c and .cpp files in directory"""
+        c_files = list(directory.glob('**/*.c'))
+        cpp_files = list(directory.glob('**/*.cpp'))
+        return sorted(c_files + cpp_files)
+    
+    def process_file(self, file_path: Path) -> Optional[Dict[str, Any]]:
+        """Process single file"""
+        try:
+            print(f"  📄 Processing: {file_path.name}")
+            
+            source_code = file_path.read_text(encoding='utf-8', errors='ignore')
+            sliced_result = self.slicer.slice_program(source_code, file_path)
+            
+            # Extract tokens per line (L5) for separate export
+            tokens_by_line = self.slicer.extract_tokens_by_line(source_code)
+            token_count = sum(len(entry['tokens']) for entry in tokens_by_line)
 
-def export_vocabulary(slicer: HierarchicalSlicer, slice_result: CodeSlice, output_path: Path):
-    """Export vocabulary to JSON"""
-    vocab = slicer.build_vocabulary(slice_result)
+            # Collect statistics
+            file_stats = self._collect_file_stats(sliced_result)
+            file_stats['token_count'] = token_count
+            self.stats['processed_files'] += 1
+            self.stats['total_functions'] += file_stats['function_count']
+            self.stats['total_statements'] += file_stats['statement_count']
+            self.stats['total_tokens'] += token_count
+            
+            # Build vocabulary for this file from tokens
+            file_vocab = self._build_vocab_from_token_sequences(tokens_by_line)
+            
+            # Merge into global vocab
+            for token in file_vocab.keys():
+                if token not in self.global_vocab:
+                    self.global_vocab[token] = len(self.global_vocab) + 1
+            
+            result = {
+                'file_path': str(file_path),
+                'file_name': file_path.name,
+                'processed_at': datetime.now().isoformat(),
+                'statistics': file_stats,
+                'sliced_data': sliced_result.to_dict()
+            }
+            
+            print(f"    ✅ Done: {file_stats['function_count']} functions, "
+                  f"{file_stats['statement_count']} statements (L4 disabled), "
+                  f"{file_stats['token_count']} tokens")
+            
+            # Stash tokens for separate export
+            self.tokens_results.append({
+                'file_path': str(file_path),
+                'file_name': file_path.name,
+                'processed_at': datetime.now().isoformat(),
+                'token_statistics': {
+                    'line_entries': len(tokens_by_line),
+                    'token_count': token_count
+                },
+                'tokens_by_line': tokens_by_line
+            })
+            
+            return result
+            
+        except Exception as e:
+            print(f"    ❌ Error: {str(e)}")
+            self.stats['failed_files'] += 1
+            return None
     
-    with open(output_path, 'w', encoding='utf-8') as f:
-        json.dump(vocab, f, indent=2, ensure_ascii=False)
-    
-    print(f"✅ Vocabulary exported to: {output_path}")
-    print(f"   Total tokens: {len(vocab)}")
-
-
-def export_tokenized_sequences(slice_result: CodeSlice, output_path: Path):
-    """Export all tokenized sequences"""
-    sequences = []
-    
-    def collect_sequences(node: CodeSlice):
-        if 'tokens' in node.metadata:
-            seq = node.metadata['tokens']
-            if seq:
-                sequences.append({
-                    'level': node.level.value,
-                    'name': node.name,
-                    'line': f"{node.start_line}-{node.end_line}",
-                    'tokens': seq,
-                    'token_count': len(seq)
-                })
-        
-        for child in node.children:
-            collect_sequences(child)
-    
-    collect_sequences(slice_result)
-    
-    with open(output_path, 'w', encoding='utf-8') as f:
-        json.dump(sequences, f, indent=2, ensure_ascii=False)
-    
-    print(f"✅ Sequences exported to: {output_path}")
-    print(f"   Total sequences: {len(sequences)}")
-
-
-def print_summary(slice_result: CodeSlice):
-    """Print hierarchical summary"""
-    print("\n" + "="*70)
-    print("📊 HIERARCHICAL SLICING SUMMARY")
-    print("="*70)
-    
-    def count_nodes(node: CodeSlice, level_counts: Dict[str, int]):
-        level_counts[node.level.value] += 1
-        for child in node.children:
-            count_nodes(child, level_counts)
-    
-    def count_tokens(node: CodeSlice) -> int:
-        total = 0
-        if 'tokens' in node.metadata:
-            total += len(node.metadata['tokens'])
-        for child in node.children:
-            total += count_tokens(child)
-        return total
-    
-    level_counts = {'L0': 0, 'L1': 0, 'L2': 0, 'L3': 0, 'L4': 0}
-    count_nodes(slice_result, level_counts)
-    total_tokens = count_tokens(slice_result)
-    
-    print(f"\n🎯 L0 (PROGRAM): {level_counts['L0']} - {slice_result.name}")
-    print(f"   Total Lines: {slice_result.end_line}")
-    print(f"   Includes: {len(slice_result.metadata.get('includes', []))}")
-    print(f"   Global Vars: {len(slice_result.metadata.get('global_variables', []))}")
-    
-    print(f"\n📚 L1 (MODULES): {level_counts['L1']}")
-    for module in slice_result.children:
-        print(f"   • {module.name} (lines {module.start_line}-{module.end_line})")
-        print(f"     Functions: {len(module.children)}")
-    
-    print(f"\n📖 L2 (FUNCTIONS): {level_counts['L2']}")
-    print(f"🧩 L3 (STATEMENT BLOCKS): {level_counts['L3']}")
-    print(f"📝 L4 (STATEMENTS): {level_counts['L4']}")
-    print(f"🔤 L5 (TOKENS): {total_tokens} tokens total")
-    
-    print("\n" + "="*70)
-
-
-def visualize_tree(slice_result: CodeSlice, max_depth: int = 3, show_tokens: bool = False):
-    """Visualize hierarchical tree structure"""
-    print("\n" + "="*70)
-    print("🌲 HIERARCHICAL TREE VIEW")
-    print("="*70 + "\n")
-    
-    def print_node(node: CodeSlice, depth: int, prefix: str = ""):
-        if depth > max_depth:
-            return
-        
-        icons = {
-            Level.PROGRAM: "📦",
-            Level.MODULE: "📚",
-            Level.FUNCTION: "⚡",
-            Level.STATEMENT_BLOCK: "🔷",
-            Level.STATEMENT: "▪️",
+    def _collect_file_stats(self, sliced_result: CodeSlice) -> Dict[str, int]:
+        """Collect statistics from sliced result"""
+        stats = {
+            'function_count': 0,
+            'statement_count': 0,
+            'token_count': 0,
+            'nested_function_count': 0,
+            'vulnerable_function_count': 0
         }
         
-        icon = icons.get(node.level, "•")
-        line_info = f"[{node.start_line}-{node.end_line}]"
-        print(f"{prefix}{icon} {node.level.value} {node.name} {line_info}")
-        
-        if node.metadata and depth < max_depth:
+        def count_nodes(node: CodeSlice):
             if node.level == Level.FUNCTION:
-                ret_type = node.metadata.get('return_type', '')
-                params = node.metadata.get('parameters', [])
-                print(f"{prefix}   ↳ {ret_type} ({len(params)} params)")
-            elif node.level == Level.STATEMENT_BLOCK:
-                block_type = node.metadata.get('block_type', '')
-                print(f"{prefix}   ↳ {block_type}")
+                stats['function_count'] += 1
+                if node.metadata.get('is_nested', False):
+                    stats['nested_function_count'] += 1
+            elif node.level == Level.STATEMENT:
+                stats['statement_count'] += 1
             
-            if show_tokens and 'tokens' in node.metadata:
-                tokens = node.metadata['tokens'][:10]
-                tokens_preview = ' '.join(tokens)
-                if len(node.metadata['tokens']) > 10:
-                    tokens_preview += f" ... (+{len(node.metadata['tokens']) - 10} more)"
-                print(f"{prefix}   🔤 [{tokens_preview}]")
+            if 'tokens' in node.metadata:
+                stats['token_count'] += len(node.metadata['tokens'])
+            
+            if node.metadata.get('block_type') == 'function_call_context':
+                stats['vulnerable_function_count'] += 1
+            
+            for child in node.children:
+                count_nodes(child)
         
-        if depth < max_depth:
-            for i, child in enumerate(node.children[:5]):
-                is_last = i == min(4, len(node.children) - 1)
-                child_prefix = prefix + ("    " if is_last else "│   ")
-                print_node(child, depth + 1, child_prefix)
-            
-            if len(node.children) > 5:
-                print(f"{prefix}    ... +{len(node.children) - 5} more")
+        count_nodes(sliced_result)
+        return stats
     
-    print_node(slice_result, 0)
-    print("\n" + "="*70)
+    def process_directory(self, directory: Path) -> Dict[str, Any]:
+        """Process all files in directory"""
+        print(f"\n🔍 Scanning directory: {directory}")
+        
+        files = self.find_c_files(directory)
+        self.stats['total_files'] = len(files)
+        
+        if not files:
+            print("  ⚠️  No .c or .cpp files found!")
+            return {'results': [], 'statistics': self.stats, 'vocabulary': {}}
+        
+        print(f"  📊 Found {len(files)} files\n")
+        
+        self.results = []
+        for file_path in files:
+            result = self.process_file(file_path)
+            if result:
+                self.results.append(result)
+        
+        return {
+            'batch_info': {
+                'directory': str(directory),
+                'processed_at': datetime.now().isoformat(),
+                'nested_strategy': self.slicer.nested_strategy
+            },
+            'statistics': self.stats,
+            'vocabulary': self.global_vocab,
+            'results': self.results
+        }
+    
+    def export_results(self, output_path: Path):
+        """Export all results to single JSON"""
+        batch_data = {
+            'batch_info': {
+                'processed_at': datetime.now().isoformat(),
+                'nested_strategy': self.slicer.nested_strategy
+            },
+            'statistics': self.stats,
+            'vocabulary': self.global_vocab,
+            'vocabulary_size': len(self.global_vocab),
+            'files': self.results
+        }
+        
+        with open(output_path, 'w', encoding='utf-8') as f:
+            json.dump(batch_data, f, indent=2, ensure_ascii=False)
+        
+        print(f"\n✅ Results exported to: {output_path}")
 
+    def export_tokens(self, output_path: Path):
+        """Export L5 tokens to a separate JSON file."""
+        data = {
+            'batch_info': {
+                'processed_at': datetime.now().isoformat(),
+                'note': 'L5 tokens exported separately; main results contain L0-L3 only.'
+            },
+            'statistics': {
+                'total_files': self.stats['total_files'],
+                'processed_files': self.stats['processed_files'],
+                'failed_files': self.stats['failed_files'],
+                'total_tokens': self.stats['total_tokens']
+            },
+            'vocabulary': self.global_vocab,
+            'vocabulary_size': len(self.global_vocab),
+            'files': self.tokens_results
+        }
+        with open(output_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        print(f"✅ Tokens exported to: {output_path}")
+
+    def _build_vocab_from_token_sequences(self, tokens_by_line: List[Dict[str, Any]]) -> Dict[str, int]:
+        """Build a per-file vocabulary mapping from token sequences."""
+        vocab: Dict[str, int] = {}
+        next_id = 1
+        # Special tokens first for consistency
+        for special in ['<PAD>', '<UNK>', '<START>', '<END>']:
+            vocab[special] = next_id
+            next_id += 1
+        for entry in tokens_by_line:
+            for tok in entry.get('tokens', []):
+                if tok not in vocab:
+                    vocab[tok] = next_id
+                    next_id += 1
+        return vocab
+
+
+# ========== MAIN ==========
 
 def main():
-    """Main entry point"""
+    """Main entry point - L0-L3 slicing, L5 tokens separate"""
     import argparse
     
     parser = argparse.ArgumentParser(
-        description="Hierarchical Code Slicer - Slice C code theo 6 levels"
+        description="Hierarchical Code Slicer - Batch Processing (L0-L3 only; tokens separate)"
     )
     parser.add_argument(
-        "input_file",
-        nargs="?",
-        default="sample.c",
-        help="Path to C source file (default: sample.c)"
+        "-d", "--directory",
+        type=str,
+        default=".",
+        help="Directory to scan for .c/.cpp files (default: current directory)"
     )
     parser.add_argument(
         "-o", "--output",
-        default="sliced_output.json",
-        help="Output JSON file (default: sliced_output.json)"
+        default="batch_sliced_results.json",
+        help="Output JSON file for L0-L3 slices (default: batch_sliced_results.json)"
     )
     parser.add_argument(
-        "-v", "--visualize",
-        action="store_true",
-        help="Show tree visualization"
+        "--tokens-output",
+        default="batch_tokens.json",
+        help="Output JSON file for L5 tokens (default: batch_tokens.json)"
     )
     parser.add_argument(
-        "-d", "--max-depth",
-        type=int,
-        default=3,
-        help="Max depth for visualization (default: 3)"
-    )
-    parser.add_argument(
-        "--show-tokens",
-        action="store_true",
-        help="Show token preview in visualization"
-    )
-    parser.add_argument(
-        "--export-vocab",
-        action="store_true",
-        help="Export vocabulary to vocab.json"
-    )
-    parser.add_argument(
-        "--export-sequences",
-        action="store_true",
-        help="Export tokenized sequences to sequences.json"
+        "--nested",
+        choices=['filter', 'keep_all', 'mark_nested'],
+        default='mark_nested',
+        help="Nested function strategy (default: mark_nested for Juliet)"
     )
     
     args = parser.parse_args()
     
-    # Find input file
-    input_path = Path(args.input_file)
-    if not input_path.is_file():
-        script_dir = Path(__file__).parent
-        input_path = script_dir / args.input_file
-    
-    if not input_path.is_file():
-        print(f"❌ Error: Cannot find input file '{args.input_file}'", file=sys.stderr)
-        sys.exit(1)
-    
-    # Read source code
-    try:
-        source_code = input_path.read_text(encoding='utf-8')
-    except Exception as e:
-        print(f"❌ Error reading file: {e}", file=sys.stderr)
-        sys.exit(1)
-    
-    print(f"\n🔍 Analyzing: {input_path}")
-    print(f"📏 Size: {len(source_code)} bytes, {len(source_code.splitlines())} lines")
-    
-    # Slice the code
-    print("\n⚙️  Slicing code into hierarchical levels...")
-    slicer = HierarchicalSlicer()
-    sliced_result = slicer.slice_program(source_code, input_path)
-    
-    # Print summary
-    print_summary(sliced_result)
-    
-    # Visualize tree
-    if args.visualize:
-        visualize_tree(sliced_result, args.max_depth, args.show_tokens)
-    
-    # Export to JSON
+    # Setup
+    directory = Path(args.directory).resolve()
     output_path = Path(args.output)
-    export_to_json(sliced_result, output_path)
+    tokens_output_path = Path(args.tokens_output)
     
-    # Export vocabulary
-    if args.export_vocab:
-        vocab_path = Path("vocab.json")
-        export_vocabulary(slicer, sliced_result, vocab_path)
+    print("="*70)
+    print("🚀 HIERARCHICAL CODE SLICER - BATCH MODE")
+    print("="*70)
+    print(f"📂 Directory: {directory}")
+    print(f"📝 Output: {output_path}")
+    print(f"📝 Tokens: {tokens_output_path}")
+    print(f"⚙️  Strategy: {args.nested}")
+    print(f"✨ Slicing: L0–L3 (L4 disabled), tokens separate")
     
-    # Export tokenized sequences
-    if args.export_sequences:
-        seq_path = Path("sequences.json")
-        export_tokenized_sequences(sliced_result, seq_path)
+    # Process
+    processor = BatchProcessor(nested_strategy=args.nested)
+    batch_results = processor.process_directory(directory)
     
-    print(f"\n✨ Done! Check output at: {output_path}")
-    print(f"💡 Tip: Use -v to visualize tree structure")
-    print(f"💡 Tip: Use --show-tokens to see token preview")
-    print(f"💡 Tip: Use --export-vocab to generate vocabulary")
-    print(f"💡 Tip: Use --export-sequences to export all tokenized sequences")
+    # Export
+    processor.export_results(output_path)
+    processor.export_tokens(tokens_output_path)
+    
+    # Summary
+    print("\n" + "="*70)
+    print("📊 BATCH PROCESSING SUMMARY")
+    print("="*70)
+    stats = processor.stats
+    print(f"✅ Processed: {stats['processed_files']}/{stats['total_files']} files")
+    print(f"❌ Failed: {stats['failed_files']} files")
+    print(f"⚡ Functions: {stats['total_functions']}")
+    print(f"📝 Statements: {stats['total_statements']}")
+    print(f"🔤 Tokens: {stats['total_tokens']}")
+    print(f"📚 Vocabulary: {len(processor.global_vocab)} unique tokens")
+    print("="*70)
+    
+    print(f"\n💡 Output structure (main):")
+    print(f"   ├─ batch_info (metadata)")
+    print(f"   ├─ statistics (aggregate stats)")
+    print(f"   ├─ vocabulary (global vocab)")
+    print(f"   └─ files[] (all sliced files)")
+    print(f"       ├─ file_path")
+    print(f"       ├─ statistics")
+    print(f"       └─ sliced_data (L0-L3 hierarchy)")
+    print(f"\n💡 Tokens file:")
+    print(f"   └─ {tokens_output_path}")
+    
+    print(f"\n✨ All done! Check: {output_path} and {tokens_output_path}")
 
 
 if __name__ == "__main__":

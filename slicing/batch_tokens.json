@@ -1,0 +1,2856 @@
+{
+  "batch_info": {
+    "processed_at": "2025-10-21T06:35:08.976785",
+    "note": "L5 tokens exported separately; main results contain L0-L3 only."
+  },
+  "statistics": {
+    "total_files": 2,
+    "processed_files": 2,
+    "failed_files": 0,
+    "total_tokens": 1332
+  },
+  "vocabulary": {
+    "<PAD>": 1,
+    "<UNK>": 2,
+    "<START>": 3,
+    "<END>": 4,
+    "#": 5,
+    "VAR": 6,
+    "\"STRING_LITERAL\"": 7,
+    "MACRO_VAR": 8,
+    "TYPE_VAR": 9,
+    "else": 10,
+    "<": 11,
+    ".": 12,
+    ">": 13,
+    "(": 14,
+    ",": 15,
+    ")": 16,
+    "/": 17,
+    "socket": 18,
+    "-": 19,
+    "1": 20,
+    "int": 21,
+    "NUM_LITERAL": 22,
+    "fopen": 23,
+    "void": 24,
+    "char": 25,
+    "*": 26,
+    ";": 27,
+    "[": 28,
+    "]": 29,
+    "=": 30,
+    "0": 31,
+    "struct": 32,
+    "do": 33,
+    "if": 34,
+    "&": 35,
+    "!=": 36,
+    "break": 37,
+    "==": 38,
+    "memset": 39,
+    "connect": 40,
+    "recv": 41,
+    "+": 42,
+    "||": 43,
+    "'": 44,
+    "\\": 45,
+    "while": 46,
+    "NULL": 47,
+    "fclose": 48,
+    "static": 49,
+    "strcat": 50,
+    "return": 51
+  },
+  "vocabulary_size": 51,
+  "files": [
+    {
+      "file_path": "/mnt/d/GitHub/NT505-Thesis/slicing/CWE23_Relative_Path_Traversal__char_connect_socket_fopen_01.cpp",
+      "file_name": "CWE23_Relative_Path_Traversal__char_connect_socket_fopen_01.cpp",
+      "processed_at": "2025-10-21T06:35:08.964176",
+      "token_statistics": {
+        "line_entries": 112,
+        "token_count": 628
+      },
+      "tokens_by_line": [
+        {
+          "line": 4,
+          "code": "#include \"std_testcase.h\"",
+          "tokens": [
+            "#",
+            "VAR",
+            "\"STRING_LITERAL\""
+          ]
+        },
+        {
+          "line": 6,
+          "code": "#ifdef _WIN32",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR"
+          ]
+        },
+        {
+          "line": 7,
+          "code": "#define BASEPATH \"c:\\\\temp\\\\\"",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR",
+            "\"STRING_LITERAL\""
+          ]
+        },
+        {
+          "line": 8,
+          "code": "#else",
+          "tokens": [
+            "#",
+            "else"
+          ]
+        },
+        {
+          "line": 9,
+          "code": "#include <wchar.h>",
+          "tokens": [
+            "#",
+            "VAR",
+            "<",
+            "VAR",
+            ".",
+            "VAR",
+            ">"
+          ]
+        },
+        {
+          "line": 10,
+          "code": "#define BASEPATH \"/tmp/\"",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR",
+            "\"STRING_LITERAL\""
+          ]
+        },
+        {
+          "line": 11,
+          "code": "#endif",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 13,
+          "code": "#ifdef _WIN32",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR"
+          ]
+        },
+        {
+          "line": 14,
+          "code": "#include <winsock2.h>",
+          "tokens": [
+            "#",
+            "VAR",
+            "<",
+            "VAR",
+            ".",
+            "VAR",
+            ">"
+          ]
+        },
+        {
+          "line": 15,
+          "code": "#include <windows.h>",
+          "tokens": [
+            "#",
+            "VAR",
+            "<",
+            "VAR",
+            ".",
+            "VAR",
+            ">"
+          ]
+        },
+        {
+          "line": 16,
+          "code": "#include <direct.h>",
+          "tokens": [
+            "#",
+            "VAR",
+            "<",
+            "VAR",
+            ".",
+            "VAR",
+            ">"
+          ]
+        },
+        {
+          "line": 17,
+          "code": "#pragma comment(lib, \"ws2_32\") ",
+          "tokens": [
+            "#",
+            "VAR",
+            "VAR",
+            "(",
+            "VAR",
+            ",",
+            "\"STRING_LITERAL\"",
+            ")"
+          ]
+        },
+        {
+          "line": 18,
+          "code": "#define CLOSE_SOCKET closesocket",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR",
+            "VAR"
+          ]
+        },
+        {
+          "line": 19,
+          "code": "#else ",
+          "tokens": [
+            "#",
+            "else"
+          ]
+        },
+        {
+          "line": 20,
+          "code": "#include <sys/types.h>",
+          "tokens": [
+            "#",
+            "VAR",
+            "<",
+            "VAR",
+            "/",
+            "VAR",
+            ".",
+            "VAR",
+            ">"
+          ]
+        },
+        {
+          "line": 21,
+          "code": "#include <sys/socket.h>",
+          "tokens": [
+            "#",
+            "VAR",
+            "<",
+            "VAR",
+            "/",
+            "socket",
+            ".",
+            "VAR",
+            ">"
+          ]
+        },
+        {
+          "line": 22,
+          "code": "#include <netinet/in.h>",
+          "tokens": [
+            "#",
+            "VAR",
+            "<",
+            "VAR",
+            "/",
+            "VAR",
+            ".",
+            "VAR",
+            ">"
+          ]
+        },
+        {
+          "line": 23,
+          "code": "#include <arpa/inet.h>",
+          "tokens": [
+            "#",
+            "VAR",
+            "<",
+            "VAR",
+            "/",
+            "VAR",
+            ".",
+            "VAR",
+            ">"
+          ]
+        },
+        {
+          "line": 24,
+          "code": "#include <unistd.h>",
+          "tokens": [
+            "#",
+            "VAR",
+            "<",
+            "VAR",
+            ".",
+            "VAR",
+            ">"
+          ]
+        },
+        {
+          "line": 25,
+          "code": "#define INVALID_SOCKET -1",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR",
+            "-",
+            "1"
+          ]
+        },
+        {
+          "line": 26,
+          "code": "#define SOCKET_ERROR -1",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR",
+            "-",
+            "1"
+          ]
+        },
+        {
+          "line": 27,
+          "code": "#define CLOSE_SOCKET close",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR",
+            "VAR"
+          ]
+        },
+        {
+          "line": 28,
+          "code": "#define SOCKET int",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR",
+            "int"
+          ]
+        },
+        {
+          "line": 29,
+          "code": "#endif",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 31,
+          "code": "#define TCP_PORT 27015",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR",
+            "NUM_LITERAL"
+          ]
+        },
+        {
+          "line": 32,
+          "code": "#define IP_ADDRESS \"127.0.0.1\"",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR",
+            "\"STRING_LITERAL\""
+          ]
+        },
+        {
+          "line": 34,
+          "code": "#ifdef _WIN32",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR"
+          ]
+        },
+        {
+          "line": 35,
+          "code": "#define FOPEN fopen",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR",
+            "fopen"
+          ]
+        },
+        {
+          "line": 36,
+          "code": "#else",
+          "tokens": [
+            "#",
+            "else"
+          ]
+        },
+        {
+          "line": 37,
+          "code": "#define FOPEN fopen",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR",
+            "fopen"
+          ]
+        },
+        {
+          "line": 38,
+          "code": "#endif",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 40,
+          "code": "namespace CWE23_Relative_Path_Traversal__char_connect_socket_fopen_01",
+          "tokens": [
+            "VAR",
+            "TYPE_VAR"
+          ]
+        },
+        {
+          "line": 43,
+          "code": "#ifndef OMITBAD",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR"
+          ]
+        },
+        {
+          "line": 45,
+          "code": "void bad()",
+          "tokens": [
+            "void",
+            "VAR",
+            "(",
+            ")"
+          ]
+        },
+        {
+          "line": 47,
+          "code": "    char * data;",
+          "tokens": [
+            "char",
+            "*",
+            "VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 48,
+          "code": "    char dataBuffer[FILENAME_MAX] = BASEPATH;",
+          "tokens": [
+            "char",
+            "VAR",
+            "[",
+            "MACRO_VAR",
+            "]",
+            "=",
+            "TYPE_VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 49,
+          "code": "    data = dataBuffer;",
+          "tokens": [
+            "VAR",
+            "=",
+            "VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 51,
+          "code": "#ifdef _WIN32",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR"
+          ]
+        },
+        {
+          "line": 52,
+          "code": "        WSADATA wsaData;",
+          "tokens": [
+            "TYPE_VAR",
+            "VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 53,
+          "code": "        int wsaDataInit = 0;",
+          "tokens": [
+            "int",
+            "VAR",
+            "=",
+            "0",
+            ";"
+          ]
+        },
+        {
+          "line": 54,
+          "code": "#endif",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 55,
+          "code": "        int recvResult;",
+          "tokens": [
+            "int",
+            "VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 56,
+          "code": "        struct sockaddr_in service;",
+          "tokens": [
+            "struct",
+            "VAR",
+            "VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 57,
+          "code": "        char *replace;",
+          "tokens": [
+            "char",
+            "*",
+            "VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 58,
+          "code": "        SOCKET connectSocket = INVALID_SOCKET;",
+          "tokens": [
+            "TYPE_VAR",
+            "VAR",
+            "=",
+            "MACRO_VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 59,
+          "code": "        size_t dataLen = strlen(data);",
+          "tokens": [
+            "VAR",
+            "VAR",
+            "=",
+            "VAR",
+            "(",
+            "VAR",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 60,
+          "code": "        do",
+          "tokens": [
+            "do"
+          ]
+        },
+        {
+          "line": 62,
+          "code": "#ifdef _WIN32",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR"
+          ]
+        },
+        {
+          "line": 63,
+          "code": "            if (WSAStartup(MAKEWORD(2,2), &wsaData) != NO_ERROR)",
+          "tokens": [
+            "if",
+            "(",
+            "TYPE_VAR",
+            "(",
+            "TYPE_VAR",
+            "(",
+            "NUM_LITERAL",
+            ",",
+            "NUM_LITERAL",
+            ")",
+            ",",
+            "&",
+            "VAR",
+            ")",
+            "!=",
+            "MACRO_VAR",
+            ")"
+          ]
+        },
+        {
+          "line": 65,
+          "code": "                break;",
+          "tokens": [
+            "break",
+            ";"
+          ]
+        },
+        {
+          "line": 67,
+          "code": "            wsaDataInit = 1;",
+          "tokens": [
+            "VAR",
+            "=",
+            "1",
+            ";"
+          ]
+        },
+        {
+          "line": 68,
+          "code": "#endif",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 70,
+          "code": "            connectSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);",
+          "tokens": [
+            "VAR",
+            "=",
+            "socket",
+            "(",
+            "MACRO_VAR",
+            ",",
+            "MACRO_VAR",
+            ",",
+            "MACRO_VAR",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 71,
+          "code": "            if (connectSocket == INVALID_SOCKET)",
+          "tokens": [
+            "if",
+            "(",
+            "VAR",
+            "==",
+            "MACRO_VAR",
+            ")"
+          ]
+        },
+        {
+          "line": 73,
+          "code": "                break;",
+          "tokens": [
+            "break",
+            ";"
+          ]
+        },
+        {
+          "line": 75,
+          "code": "            memset(&service, 0, sizeof(service));",
+          "tokens": [
+            "memset",
+            "(",
+            "&",
+            "VAR",
+            ",",
+            "0",
+            ",",
+            "VAR",
+            "(",
+            "VAR",
+            ")",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 76,
+          "code": "            service.sin_family = AF_INET;",
+          "tokens": [
+            "VAR",
+            ".",
+            "VAR",
+            "=",
+            "MACRO_VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 77,
+          "code": "            service.sin_addr.s_addr = inet_addr(IP_ADDRESS);",
+          "tokens": [
+            "VAR",
+            ".",
+            "VAR",
+            ".",
+            "VAR",
+            "=",
+            "VAR",
+            "(",
+            "MACRO_VAR",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 78,
+          "code": "            service.sin_port = htons(TCP_PORT);",
+          "tokens": [
+            "VAR",
+            ".",
+            "VAR",
+            "=",
+            "VAR",
+            "(",
+            "MACRO_VAR",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 79,
+          "code": "            if (connect(connectSocket, (struct sockaddr*)&service, sizeof(service)) == SOCKET_ERROR)",
+          "tokens": [
+            "if",
+            "(",
+            "connect",
+            "(",
+            "VAR",
+            ",",
+            "(",
+            "struct",
+            "VAR",
+            "*",
+            ")",
+            "&",
+            "VAR",
+            ",",
+            "VAR",
+            "(",
+            "VAR",
+            ")",
+            ")",
+            "==",
+            "MACRO_VAR",
+            ")"
+          ]
+        },
+        {
+          "line": 81,
+          "code": "                break;",
+          "tokens": [
+            "break",
+            ";"
+          ]
+        },
+        {
+          "line": 85,
+          "code": "            recvResult = recv(connectSocket, (char *)(data + dataLen), sizeof(char) * (FILENAME_MAX - dataLen - 1), 0);",
+          "tokens": [
+            "VAR",
+            "=",
+            "recv",
+            "(",
+            "VAR",
+            ",",
+            "(",
+            "char",
+            "*",
+            ")",
+            "(",
+            "VAR",
+            "+",
+            "VAR",
+            ")",
+            ",",
+            "VAR",
+            "(",
+            "char",
+            ")",
+            "*",
+            "(",
+            "MACRO_VAR",
+            "-",
+            "VAR",
+            "-",
+            "1",
+            ")",
+            ",",
+            "0",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 86,
+          "code": "            if (recvResult == SOCKET_ERROR || recvResult == 0)",
+          "tokens": [
+            "if",
+            "(",
+            "VAR",
+            "==",
+            "MACRO_VAR",
+            "||",
+            "VAR",
+            "==",
+            "0",
+            ")"
+          ]
+        },
+        {
+          "line": 88,
+          "code": "                break;",
+          "tokens": [
+            "break",
+            ";"
+          ]
+        },
+        {
+          "line": 91,
+          "code": "            data[dataLen + recvResult / sizeof(char)] = '\\0';",
+          "tokens": [
+            "VAR",
+            "[",
+            "VAR",
+            "+",
+            "VAR",
+            "/",
+            "VAR",
+            "(",
+            "char",
+            ")",
+            "]",
+            "=",
+            "'",
+            "\\",
+            "0",
+            "'",
+            ";"
+          ]
+        },
+        {
+          "line": 93,
+          "code": "            replace = strchr(data, '\\r');",
+          "tokens": [
+            "VAR",
+            "=",
+            "VAR",
+            "(",
+            "VAR",
+            ",",
+            "'",
+            "\\",
+            "VAR",
+            "'",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 94,
+          "code": "            if (replace)",
+          "tokens": [
+            "if",
+            "(",
+            "VAR",
+            ")"
+          ]
+        },
+        {
+          "line": 96,
+          "code": "                *replace = '\\0';",
+          "tokens": [
+            "*",
+            "VAR",
+            "=",
+            "'",
+            "\\",
+            "0",
+            "'",
+            ";"
+          ]
+        },
+        {
+          "line": 98,
+          "code": "            replace = strchr(data, '\\n');",
+          "tokens": [
+            "VAR",
+            "=",
+            "VAR",
+            "(",
+            "VAR",
+            ",",
+            "'",
+            "\\",
+            "VAR",
+            "'",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 99,
+          "code": "            if (replace)",
+          "tokens": [
+            "if",
+            "(",
+            "VAR",
+            ")"
+          ]
+        },
+        {
+          "line": 101,
+          "code": "                *replace = '\\0';",
+          "tokens": [
+            "*",
+            "VAR",
+            "=",
+            "'",
+            "\\",
+            "0",
+            "'",
+            ";"
+          ]
+        },
+        {
+          "line": 104,
+          "code": "        while (0);",
+          "tokens": [
+            "while",
+            "(",
+            "0",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 105,
+          "code": "        if (connectSocket != INVALID_SOCKET)",
+          "tokens": [
+            "if",
+            "(",
+            "VAR",
+            "!=",
+            "MACRO_VAR",
+            ")"
+          ]
+        },
+        {
+          "line": 107,
+          "code": "            CLOSE_SOCKET(connectSocket);",
+          "tokens": [
+            "MACRO_VAR",
+            "(",
+            "VAR",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 109,
+          "code": "#ifdef _WIN32",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR"
+          ]
+        },
+        {
+          "line": 110,
+          "code": "        if (wsaDataInit)",
+          "tokens": [
+            "if",
+            "(",
+            "VAR",
+            ")"
+          ]
+        },
+        {
+          "line": 112,
+          "code": "            WSACleanup();",
+          "tokens": [
+            "TYPE_VAR",
+            "(",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 114,
+          "code": "#endif",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 117,
+          "code": "        FILE *pFile = NULL;",
+          "tokens": [
+            "TYPE_VAR",
+            "*",
+            "VAR",
+            "=",
+            "NULL",
+            ";"
+          ]
+        },
+        {
+          "line": 119,
+          "code": "        pFile = FOPEN(data, \"wb+\");",
+          "tokens": [
+            "VAR",
+            "=",
+            "TYPE_VAR",
+            "(",
+            "VAR",
+            ",",
+            "\"STRING_LITERAL\"",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 120,
+          "code": "        if (pFile != NULL)",
+          "tokens": [
+            "if",
+            "(",
+            "VAR",
+            "!=",
+            "NULL",
+            ")"
+          ]
+        },
+        {
+          "line": 122,
+          "code": "            fclose(pFile);",
+          "tokens": [
+            "fclose",
+            "(",
+            "VAR",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 127,
+          "code": "#endif ",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 129,
+          "code": "#ifndef OMITGOOD",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR"
+          ]
+        },
+        {
+          "line": 132,
+          "code": "static void goodG2B()",
+          "tokens": [
+            "static",
+            "void",
+            "VAR",
+            "(",
+            ")"
+          ]
+        },
+        {
+          "line": 134,
+          "code": "    char * data;",
+          "tokens": [
+            "char",
+            "*",
+            "VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 135,
+          "code": "    char dataBuffer[FILENAME_MAX] = BASEPATH;",
+          "tokens": [
+            "char",
+            "VAR",
+            "[",
+            "MACRO_VAR",
+            "]",
+            "=",
+            "TYPE_VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 136,
+          "code": "    data = dataBuffer;",
+          "tokens": [
+            "VAR",
+            "=",
+            "VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 138,
+          "code": "    strcat(data, \"file.txt\");",
+          "tokens": [
+            "strcat",
+            "(",
+            "VAR",
+            ",",
+            "\"STRING_LITERAL\"",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 140,
+          "code": "        FILE *pFile = NULL;",
+          "tokens": [
+            "TYPE_VAR",
+            "*",
+            "VAR",
+            "=",
+            "NULL",
+            ";"
+          ]
+        },
+        {
+          "line": 142,
+          "code": "        pFile = FOPEN(data, \"wb+\");",
+          "tokens": [
+            "VAR",
+            "=",
+            "TYPE_VAR",
+            "(",
+            "VAR",
+            ",",
+            "\"STRING_LITERAL\"",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 143,
+          "code": "        if (pFile != NULL)",
+          "tokens": [
+            "if",
+            "(",
+            "VAR",
+            "!=",
+            "NULL",
+            ")"
+          ]
+        },
+        {
+          "line": 145,
+          "code": "            fclose(pFile);",
+          "tokens": [
+            "fclose",
+            "(",
+            "VAR",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 150,
+          "code": "void good()",
+          "tokens": [
+            "void",
+            "VAR",
+            "(",
+            ")"
+          ]
+        },
+        {
+          "line": 152,
+          "code": "    goodG2B();",
+          "tokens": [
+            "VAR",
+            "(",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 155,
+          "code": "#endif ",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 161,
+          "code": "#ifdef INCLUDEMAIN",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR"
+          ]
+        },
+        {
+          "line": 163,
+          "code": "using namespace CWE23_Relative_Path_Traversal__char_connect_socket_fopen_01; ",
+          "tokens": [
+            "VAR",
+            "VAR",
+            "TYPE_VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 165,
+          "code": "int main(int argc, char * argv[])",
+          "tokens": [
+            "int",
+            "VAR",
+            "(",
+            "int",
+            "VAR",
+            ",",
+            "char",
+            "*",
+            "VAR",
+            "[",
+            "]",
+            ")"
+          ]
+        },
+        {
+          "line": 168,
+          "code": "    srand( (unsigned)time(NULL) );",
+          "tokens": [
+            "VAR",
+            "(",
+            "(",
+            "VAR",
+            ")",
+            "VAR",
+            "(",
+            "NULL",
+            ")",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 169,
+          "code": "#ifndef OMITGOOD",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR"
+          ]
+        },
+        {
+          "line": 170,
+          "code": "    printLine(\"Calling good()...\");",
+          "tokens": [
+            "VAR",
+            "(",
+            "\"STRING_LITERAL\"",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 171,
+          "code": "    good();",
+          "tokens": [
+            "VAR",
+            "(",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 172,
+          "code": "    printLine(\"Finished good()\");",
+          "tokens": [
+            "VAR",
+            "(",
+            "\"STRING_LITERAL\"",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 173,
+          "code": "#endif ",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 174,
+          "code": "#ifndef OMITBAD",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR"
+          ]
+        },
+        {
+          "line": 175,
+          "code": "    printLine(\"Calling bad()...\");",
+          "tokens": [
+            "VAR",
+            "(",
+            "\"STRING_LITERAL\"",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 176,
+          "code": "    bad();",
+          "tokens": [
+            "VAR",
+            "(",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 177,
+          "code": "    printLine(\"Finished bad()\");",
+          "tokens": [
+            "VAR",
+            "(",
+            "\"STRING_LITERAL\"",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 178,
+          "code": "#endif ",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 179,
+          "code": "    return 0;",
+          "tokens": [
+            "return",
+            "0",
+            ";"
+          ]
+        },
+        {
+          "line": 182,
+          "code": "#endif",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        }
+      ]
+    },
+    {
+      "file_path": "/mnt/d/GitHub/NT505-Thesis/slicing/CWE23_Relative_Path_Traversal__char_connect_socket_fopen_02.cpp",
+      "file_name": "CWE23_Relative_Path_Traversal__char_connect_socket_fopen_02.cpp",
+      "processed_at": "2025-10-21T06:35:08.969378",
+      "token_statistics": {
+        "line_entries": 127,
+        "token_count": 704
+      },
+      "tokens_by_line": [
+        {
+          "line": 4,
+          "code": "#include \"std_testcase.h\"",
+          "tokens": [
+            "#",
+            "VAR",
+            "\"STRING_LITERAL\""
+          ]
+        },
+        {
+          "line": 6,
+          "code": "#ifdef _WIN32",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR"
+          ]
+        },
+        {
+          "line": 7,
+          "code": "#define BASEPATH \"c:\\\\temp\\\\\"",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR",
+            "\"STRING_LITERAL\""
+          ]
+        },
+        {
+          "line": 8,
+          "code": "#else",
+          "tokens": [
+            "#",
+            "else"
+          ]
+        },
+        {
+          "line": 9,
+          "code": "#include <wchar.h>",
+          "tokens": [
+            "#",
+            "VAR",
+            "<",
+            "VAR",
+            ".",
+            "VAR",
+            ">"
+          ]
+        },
+        {
+          "line": 10,
+          "code": "#define BASEPATH \"/tmp/\"",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR",
+            "\"STRING_LITERAL\""
+          ]
+        },
+        {
+          "line": 11,
+          "code": "#endif",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 13,
+          "code": "#ifdef _WIN32",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR"
+          ]
+        },
+        {
+          "line": 14,
+          "code": "#include <winsock2.h>",
+          "tokens": [
+            "#",
+            "VAR",
+            "<",
+            "VAR",
+            ".",
+            "VAR",
+            ">"
+          ]
+        },
+        {
+          "line": 15,
+          "code": "#include <windows.h>",
+          "tokens": [
+            "#",
+            "VAR",
+            "<",
+            "VAR",
+            ".",
+            "VAR",
+            ">"
+          ]
+        },
+        {
+          "line": 16,
+          "code": "#include <direct.h>",
+          "tokens": [
+            "#",
+            "VAR",
+            "<",
+            "VAR",
+            ".",
+            "VAR",
+            ">"
+          ]
+        },
+        {
+          "line": 17,
+          "code": "#pragma comment(lib, \"ws2_32\") ",
+          "tokens": [
+            "#",
+            "VAR",
+            "VAR",
+            "(",
+            "VAR",
+            ",",
+            "\"STRING_LITERAL\"",
+            ")"
+          ]
+        },
+        {
+          "line": 18,
+          "code": "#define CLOSE_SOCKET closesocket",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR",
+            "VAR"
+          ]
+        },
+        {
+          "line": 19,
+          "code": "#else ",
+          "tokens": [
+            "#",
+            "else"
+          ]
+        },
+        {
+          "line": 20,
+          "code": "#include <sys/types.h>",
+          "tokens": [
+            "#",
+            "VAR",
+            "<",
+            "VAR",
+            "/",
+            "VAR",
+            ".",
+            "VAR",
+            ">"
+          ]
+        },
+        {
+          "line": 21,
+          "code": "#include <sys/socket.h>",
+          "tokens": [
+            "#",
+            "VAR",
+            "<",
+            "VAR",
+            "/",
+            "socket",
+            ".",
+            "VAR",
+            ">"
+          ]
+        },
+        {
+          "line": 22,
+          "code": "#include <netinet/in.h>",
+          "tokens": [
+            "#",
+            "VAR",
+            "<",
+            "VAR",
+            "/",
+            "VAR",
+            ".",
+            "VAR",
+            ">"
+          ]
+        },
+        {
+          "line": 23,
+          "code": "#include <arpa/inet.h>",
+          "tokens": [
+            "#",
+            "VAR",
+            "<",
+            "VAR",
+            "/",
+            "VAR",
+            ".",
+            "VAR",
+            ">"
+          ]
+        },
+        {
+          "line": 24,
+          "code": "#include <unistd.h>",
+          "tokens": [
+            "#",
+            "VAR",
+            "<",
+            "VAR",
+            ".",
+            "VAR",
+            ">"
+          ]
+        },
+        {
+          "line": 25,
+          "code": "#define INVALID_SOCKET -1",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR",
+            "-",
+            "1"
+          ]
+        },
+        {
+          "line": 26,
+          "code": "#define SOCKET_ERROR -1",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR",
+            "-",
+            "1"
+          ]
+        },
+        {
+          "line": 27,
+          "code": "#define CLOSE_SOCKET close",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR",
+            "VAR"
+          ]
+        },
+        {
+          "line": 28,
+          "code": "#define SOCKET int",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR",
+            "int"
+          ]
+        },
+        {
+          "line": 29,
+          "code": "#endif",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 31,
+          "code": "#define TCP_PORT 27015",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR",
+            "NUM_LITERAL"
+          ]
+        },
+        {
+          "line": 32,
+          "code": "#define IP_ADDRESS \"127.0.0.1\"",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR",
+            "\"STRING_LITERAL\""
+          ]
+        },
+        {
+          "line": 34,
+          "code": "#ifdef _WIN32",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR"
+          ]
+        },
+        {
+          "line": 35,
+          "code": "#define FOPEN fopen",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR",
+            "fopen"
+          ]
+        },
+        {
+          "line": 36,
+          "code": "#else",
+          "tokens": [
+            "#",
+            "else"
+          ]
+        },
+        {
+          "line": 37,
+          "code": "#define FOPEN fopen",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR",
+            "fopen"
+          ]
+        },
+        {
+          "line": 38,
+          "code": "#endif",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 40,
+          "code": "namespace CWE23_Relative_Path_Traversal__char_connect_socket_fopen_02",
+          "tokens": [
+            "VAR",
+            "TYPE_VAR"
+          ]
+        },
+        {
+          "line": 43,
+          "code": "#ifndef OMITBAD",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR"
+          ]
+        },
+        {
+          "line": 45,
+          "code": "void bad()",
+          "tokens": [
+            "void",
+            "VAR",
+            "(",
+            ")"
+          ]
+        },
+        {
+          "line": 47,
+          "code": "    char * data;",
+          "tokens": [
+            "char",
+            "*",
+            "VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 48,
+          "code": "    char dataBuffer[FILENAME_MAX] = BASEPATH;",
+          "tokens": [
+            "char",
+            "VAR",
+            "[",
+            "MACRO_VAR",
+            "]",
+            "=",
+            "TYPE_VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 49,
+          "code": "    data = dataBuffer;",
+          "tokens": [
+            "VAR",
+            "=",
+            "VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 50,
+          "code": "    if(1)",
+          "tokens": [
+            "if",
+            "(",
+            "1",
+            ")"
+          ]
+        },
+        {
+          "line": 53,
+          "code": "#ifdef _WIN32",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR"
+          ]
+        },
+        {
+          "line": 54,
+          "code": "            WSADATA wsaData;",
+          "tokens": [
+            "TYPE_VAR",
+            "VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 55,
+          "code": "            int wsaDataInit = 0;",
+          "tokens": [
+            "int",
+            "VAR",
+            "=",
+            "0",
+            ";"
+          ]
+        },
+        {
+          "line": 56,
+          "code": "#endif",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 57,
+          "code": "            int recvResult;",
+          "tokens": [
+            "int",
+            "VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 58,
+          "code": "            struct sockaddr_in service;",
+          "tokens": [
+            "struct",
+            "VAR",
+            "VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 59,
+          "code": "            char *replace;",
+          "tokens": [
+            "char",
+            "*",
+            "VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 60,
+          "code": "            SOCKET connectSocket = INVALID_SOCKET;",
+          "tokens": [
+            "TYPE_VAR",
+            "VAR",
+            "=",
+            "MACRO_VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 61,
+          "code": "            size_t dataLen = strlen(data);",
+          "tokens": [
+            "VAR",
+            "VAR",
+            "=",
+            "VAR",
+            "(",
+            "VAR",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 62,
+          "code": "            do",
+          "tokens": [
+            "do"
+          ]
+        },
+        {
+          "line": 64,
+          "code": "#ifdef _WIN32",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR"
+          ]
+        },
+        {
+          "line": 65,
+          "code": "                if (WSAStartup(MAKEWORD(2,2), &wsaData) != NO_ERROR)",
+          "tokens": [
+            "if",
+            "(",
+            "TYPE_VAR",
+            "(",
+            "TYPE_VAR",
+            "(",
+            "NUM_LITERAL",
+            ",",
+            "NUM_LITERAL",
+            ")",
+            ",",
+            "&",
+            "VAR",
+            ")",
+            "!=",
+            "MACRO_VAR",
+            ")"
+          ]
+        },
+        {
+          "line": 67,
+          "code": "                    break;",
+          "tokens": [
+            "break",
+            ";"
+          ]
+        },
+        {
+          "line": 69,
+          "code": "                wsaDataInit = 1;",
+          "tokens": [
+            "VAR",
+            "=",
+            "1",
+            ";"
+          ]
+        },
+        {
+          "line": 70,
+          "code": "#endif",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 72,
+          "code": "                connectSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);",
+          "tokens": [
+            "VAR",
+            "=",
+            "socket",
+            "(",
+            "MACRO_VAR",
+            ",",
+            "MACRO_VAR",
+            ",",
+            "MACRO_VAR",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 73,
+          "code": "                if (connectSocket == INVALID_SOCKET)",
+          "tokens": [
+            "if",
+            "(",
+            "VAR",
+            "==",
+            "MACRO_VAR",
+            ")"
+          ]
+        },
+        {
+          "line": 75,
+          "code": "                    break;",
+          "tokens": [
+            "break",
+            ";"
+          ]
+        },
+        {
+          "line": 77,
+          "code": "                memset(&service, 0, sizeof(service));",
+          "tokens": [
+            "memset",
+            "(",
+            "&",
+            "VAR",
+            ",",
+            "0",
+            ",",
+            "VAR",
+            "(",
+            "VAR",
+            ")",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 78,
+          "code": "                service.sin_family = AF_INET;",
+          "tokens": [
+            "VAR",
+            ".",
+            "VAR",
+            "=",
+            "MACRO_VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 79,
+          "code": "                service.sin_addr.s_addr = inet_addr(IP_ADDRESS);",
+          "tokens": [
+            "VAR",
+            ".",
+            "VAR",
+            ".",
+            "VAR",
+            "=",
+            "VAR",
+            "(",
+            "MACRO_VAR",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 80,
+          "code": "                service.sin_port = htons(TCP_PORT);",
+          "tokens": [
+            "VAR",
+            ".",
+            "VAR",
+            "=",
+            "VAR",
+            "(",
+            "MACRO_VAR",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 81,
+          "code": "                if (connect(connectSocket, (struct sockaddr*)&service, sizeof(service)) == SOCKET_ERROR)",
+          "tokens": [
+            "if",
+            "(",
+            "connect",
+            "(",
+            "VAR",
+            ",",
+            "(",
+            "struct",
+            "VAR",
+            "*",
+            ")",
+            "&",
+            "VAR",
+            ",",
+            "VAR",
+            "(",
+            "VAR",
+            ")",
+            ")",
+            "==",
+            "MACRO_VAR",
+            ")"
+          ]
+        },
+        {
+          "line": 83,
+          "code": "                    break;",
+          "tokens": [
+            "break",
+            ";"
+          ]
+        },
+        {
+          "line": 87,
+          "code": "                recvResult = recv(connectSocket, (char *)(data + dataLen), sizeof(char) * (FILENAME_MAX - dataLen - 1), 0);",
+          "tokens": [
+            "VAR",
+            "=",
+            "recv",
+            "(",
+            "VAR",
+            ",",
+            "(",
+            "char",
+            "*",
+            ")",
+            "(",
+            "VAR",
+            "+",
+            "VAR",
+            ")",
+            ",",
+            "VAR",
+            "(",
+            "char",
+            ")",
+            "*",
+            "(",
+            "MACRO_VAR",
+            "-",
+            "VAR",
+            "-",
+            "1",
+            ")",
+            ",",
+            "0",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 88,
+          "code": "                if (recvResult == SOCKET_ERROR || recvResult == 0)",
+          "tokens": [
+            "if",
+            "(",
+            "VAR",
+            "==",
+            "MACRO_VAR",
+            "||",
+            "VAR",
+            "==",
+            "0",
+            ")"
+          ]
+        },
+        {
+          "line": 90,
+          "code": "                    break;",
+          "tokens": [
+            "break",
+            ";"
+          ]
+        },
+        {
+          "line": 93,
+          "code": "                data[dataLen + recvResult / sizeof(char)] = '\\0';",
+          "tokens": [
+            "VAR",
+            "[",
+            "VAR",
+            "+",
+            "VAR",
+            "/",
+            "VAR",
+            "(",
+            "char",
+            ")",
+            "]",
+            "=",
+            "'",
+            "\\",
+            "0",
+            "'",
+            ";"
+          ]
+        },
+        {
+          "line": 95,
+          "code": "                replace = strchr(data, '\\r');",
+          "tokens": [
+            "VAR",
+            "=",
+            "VAR",
+            "(",
+            "VAR",
+            ",",
+            "'",
+            "\\",
+            "VAR",
+            "'",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 96,
+          "code": "                if (replace)",
+          "tokens": [
+            "if",
+            "(",
+            "VAR",
+            ")"
+          ]
+        },
+        {
+          "line": 98,
+          "code": "                    *replace = '\\0';",
+          "tokens": [
+            "*",
+            "VAR",
+            "=",
+            "'",
+            "\\",
+            "0",
+            "'",
+            ";"
+          ]
+        },
+        {
+          "line": 100,
+          "code": "                replace = strchr(data, '\\n');",
+          "tokens": [
+            "VAR",
+            "=",
+            "VAR",
+            "(",
+            "VAR",
+            ",",
+            "'",
+            "\\",
+            "VAR",
+            "'",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 101,
+          "code": "                if (replace)",
+          "tokens": [
+            "if",
+            "(",
+            "VAR",
+            ")"
+          ]
+        },
+        {
+          "line": 103,
+          "code": "                    *replace = '\\0';",
+          "tokens": [
+            "*",
+            "VAR",
+            "=",
+            "'",
+            "\\",
+            "0",
+            "'",
+            ";"
+          ]
+        },
+        {
+          "line": 106,
+          "code": "            while (0);",
+          "tokens": [
+            "while",
+            "(",
+            "0",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 107,
+          "code": "            if (connectSocket != INVALID_SOCKET)",
+          "tokens": [
+            "if",
+            "(",
+            "VAR",
+            "!=",
+            "MACRO_VAR",
+            ")"
+          ]
+        },
+        {
+          "line": 109,
+          "code": "                CLOSE_SOCKET(connectSocket);",
+          "tokens": [
+            "MACRO_VAR",
+            "(",
+            "VAR",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 111,
+          "code": "#ifdef _WIN32",
+          "tokens": [
+            "#",
+            "VAR",
+            "MACRO_VAR"
+          ]
+        },
+        {
+          "line": 112,
+          "code": "            if (wsaDataInit)",
+          "tokens": [
+            "if",
+            "(",
+            "VAR",
+            ")"
+          ]
+        },
+        {
+          "line": 114,
+          "code": "                WSACleanup();",
+          "tokens": [
+            "TYPE_VAR",
+            "(",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 116,
+          "code": "#endif",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 120,
+          "code": "        FILE *pFile = NULL;",
+          "tokens": [
+            "TYPE_VAR",
+            "*",
+            "VAR",
+            "=",
+            "NULL",
+            ";"
+          ]
+        },
+        {
+          "line": 122,
+          "code": "        pFile = FOPEN(data, \"wb+\");",
+          "tokens": [
+            "VAR",
+            "=",
+            "TYPE_VAR",
+            "(",
+            "VAR",
+            ",",
+            "\"STRING_LITERAL\"",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 123,
+          "code": "        if (pFile != NULL)",
+          "tokens": [
+            "if",
+            "(",
+            "VAR",
+            "!=",
+            "NULL",
+            ")"
+          ]
+        },
+        {
+          "line": 125,
+          "code": "            fclose(pFile);",
+          "tokens": [
+            "fclose",
+            "(",
+            "VAR",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 130,
+          "code": "#endif ",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 132,
+          "code": "#ifndef OMITGOOD",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR"
+          ]
+        },
+        {
+          "line": 135,
+          "code": "static void goodG2B1()",
+          "tokens": [
+            "static",
+            "void",
+            "VAR",
+            "(",
+            ")"
+          ]
+        },
+        {
+          "line": 137,
+          "code": "    char * data;",
+          "tokens": [
+            "char",
+            "*",
+            "VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 138,
+          "code": "    char dataBuffer[FILENAME_MAX] = BASEPATH;",
+          "tokens": [
+            "char",
+            "VAR",
+            "[",
+            "MACRO_VAR",
+            "]",
+            "=",
+            "TYPE_VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 139,
+          "code": "    data = dataBuffer;",
+          "tokens": [
+            "VAR",
+            "=",
+            "VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 140,
+          "code": "    if(0)",
+          "tokens": [
+            "if",
+            "(",
+            "0",
+            ")"
+          ]
+        },
+        {
+          "line": 143,
+          "code": "        printLine(\"Benign, fixed string\");",
+          "tokens": [
+            "VAR",
+            "(",
+            "\"STRING_LITERAL\"",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 145,
+          "code": "    else",
+          "tokens": [
+            "else"
+          ]
+        },
+        {
+          "line": 148,
+          "code": "        strcat(data, \"file.txt\");",
+          "tokens": [
+            "strcat",
+            "(",
+            "VAR",
+            ",",
+            "\"STRING_LITERAL\"",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 151,
+          "code": "        FILE *pFile = NULL;",
+          "tokens": [
+            "TYPE_VAR",
+            "*",
+            "VAR",
+            "=",
+            "NULL",
+            ";"
+          ]
+        },
+        {
+          "line": 153,
+          "code": "        pFile = FOPEN(data, \"wb+\");",
+          "tokens": [
+            "VAR",
+            "=",
+            "TYPE_VAR",
+            "(",
+            "VAR",
+            ",",
+            "\"STRING_LITERAL\"",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 154,
+          "code": "        if (pFile != NULL)",
+          "tokens": [
+            "if",
+            "(",
+            "VAR",
+            "!=",
+            "NULL",
+            ")"
+          ]
+        },
+        {
+          "line": 156,
+          "code": "            fclose(pFile);",
+          "tokens": [
+            "fclose",
+            "(",
+            "VAR",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 162,
+          "code": "static void goodG2B2()",
+          "tokens": [
+            "static",
+            "void",
+            "VAR",
+            "(",
+            ")"
+          ]
+        },
+        {
+          "line": 164,
+          "code": "    char * data;",
+          "tokens": [
+            "char",
+            "*",
+            "VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 165,
+          "code": "    char dataBuffer[FILENAME_MAX] = BASEPATH;",
+          "tokens": [
+            "char",
+            "VAR",
+            "[",
+            "MACRO_VAR",
+            "]",
+            "=",
+            "TYPE_VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 166,
+          "code": "    data = dataBuffer;",
+          "tokens": [
+            "VAR",
+            "=",
+            "VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 167,
+          "code": "    if(1)",
+          "tokens": [
+            "if",
+            "(",
+            "1",
+            ")"
+          ]
+        },
+        {
+          "line": 170,
+          "code": "        strcat(data, \"file.txt\");",
+          "tokens": [
+            "strcat",
+            "(",
+            "VAR",
+            ",",
+            "\"STRING_LITERAL\"",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 173,
+          "code": "        FILE *pFile = NULL;",
+          "tokens": [
+            "TYPE_VAR",
+            "*",
+            "VAR",
+            "=",
+            "NULL",
+            ";"
+          ]
+        },
+        {
+          "line": 175,
+          "code": "        pFile = FOPEN(data, \"wb+\");",
+          "tokens": [
+            "VAR",
+            "=",
+            "TYPE_VAR",
+            "(",
+            "VAR",
+            ",",
+            "\"STRING_LITERAL\"",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 176,
+          "code": "        if (pFile != NULL)",
+          "tokens": [
+            "if",
+            "(",
+            "VAR",
+            "!=",
+            "NULL",
+            ")"
+          ]
+        },
+        {
+          "line": 178,
+          "code": "            fclose(pFile);",
+          "tokens": [
+            "fclose",
+            "(",
+            "VAR",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 183,
+          "code": "void good()",
+          "tokens": [
+            "void",
+            "VAR",
+            "(",
+            ")"
+          ]
+        },
+        {
+          "line": 185,
+          "code": "    goodG2B1();",
+          "tokens": [
+            "VAR",
+            "(",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 186,
+          "code": "    goodG2B2();",
+          "tokens": [
+            "VAR",
+            "(",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 189,
+          "code": "#endif ",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 195,
+          "code": "#ifdef INCLUDEMAIN",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR"
+          ]
+        },
+        {
+          "line": 197,
+          "code": "using namespace CWE23_Relative_Path_Traversal__char_connect_socket_fopen_02; ",
+          "tokens": [
+            "VAR",
+            "VAR",
+            "TYPE_VAR",
+            ";"
+          ]
+        },
+        {
+          "line": 199,
+          "code": "int main(int argc, char * argv[])",
+          "tokens": [
+            "int",
+            "VAR",
+            "(",
+            "int",
+            "VAR",
+            ",",
+            "char",
+            "*",
+            "VAR",
+            "[",
+            "]",
+            ")"
+          ]
+        },
+        {
+          "line": 202,
+          "code": "    srand( (unsigned)time(NULL) );",
+          "tokens": [
+            "VAR",
+            "(",
+            "(",
+            "VAR",
+            ")",
+            "VAR",
+            "(",
+            "NULL",
+            ")",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 203,
+          "code": "#ifndef OMITGOOD",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR"
+          ]
+        },
+        {
+          "line": 204,
+          "code": "    printLine(\"Calling good()...\");",
+          "tokens": [
+            "VAR",
+            "(",
+            "\"STRING_LITERAL\"",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 205,
+          "code": "    good();",
+          "tokens": [
+            "VAR",
+            "(",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 206,
+          "code": "    printLine(\"Finished good()\");",
+          "tokens": [
+            "VAR",
+            "(",
+            "\"STRING_LITERAL\"",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 207,
+          "code": "#endif ",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 208,
+          "code": "#ifndef OMITBAD",
+          "tokens": [
+            "#",
+            "VAR",
+            "TYPE_VAR"
+          ]
+        },
+        {
+          "line": 209,
+          "code": "    printLine(\"Calling bad()...\");",
+          "tokens": [
+            "VAR",
+            "(",
+            "\"STRING_LITERAL\"",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 210,
+          "code": "    bad();",
+          "tokens": [
+            "VAR",
+            "(",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 211,
+          "code": "    printLine(\"Finished bad()\");",
+          "tokens": [
+            "VAR",
+            "(",
+            "\"STRING_LITERAL\"",
+            ")",
+            ";"
+          ]
+        },
+        {
+          "line": 212,
+          "code": "#endif ",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        },
+        {
+          "line": 213,
+          "code": "    return 0;",
+          "tokens": [
+            "return",
+            "0",
+            ";"
+          ]
+        },
+        {
+          "line": 216,
+          "code": "#endif",
+          "tokens": [
+            "#",
+            "VAR"
+          ]
+        }
+      ]
+    }
+  ]
+}
