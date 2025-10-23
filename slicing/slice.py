@@ -6,8 +6,9 @@ Auto scan folder, process all .c/.cpp files, append to single JSON
 Features:
 - Auto scan current directory or specified folder
 - Process multiple files in batch
-- Append all results to single JSON file
-- Full options enabled by default
+- L5 tokens: simple list (max 250) per file, original tokens (NO normalization)
+- Vocabulary exported to separate vocabs.json
+- Pattern-based vulnerability detection (CWE dict)
 - Progress tracking
 """
 
@@ -101,32 +102,31 @@ class HierarchicalSlicer:
             '&&', '||', '!', '&', '|', '^', '~', '<<', '>>',
             '->', '.', '++', '--'
         }
-        # Holds 0-based line indexes of POTENTIAL FLAW annotations for current file
-        self.current_potential_flaw_lines = set()
-        # Original lines for current file (with comments) for annotation lookup
+        
+        # Original lines for current file (with comments) for pattern matching
         self.current_original_lines: List[str] = []
+        # Loaded CWE regex patterns: list of dicts with compiled regex
+        self.cwe_regex_patterns: List[Dict[str, Any]] = []
     
     def _preprocess_code(self, code: str) -> str:
-        """Remove comments while preserving line count (for stable indices)."""
+        """Remove comments while preserving line count"""
         # Strip // comments but keep newlines
-        code = re.sub(r'//.*?$', '', code, flags=re.MULTILINE)
-
-        # Replace /* ... */ with the same number of newlines inside the comment
+        code = re.sub(r'//.*$', '', code, flags=re.MULTILINE)
+        
+        # Replace /* ... */ with the same number of newlines
         def _block_repl(match: re.Match) -> str:
             s = match.group(0)
-            # Count how many newlines are in the comment and preserve them
             newlines = s.count('\n')
             return '\n' * newlines
-
+        
         code = re.sub(r'/\*.*?\*/', _block_repl, code, flags=re.DOTALL)
         return code
     
     def slice_program(self, source_code: str, source_path: Optional[Path] = None) -> CodeSlice:
         """L0: PROGRAM LEVEL"""
-        # Detect Juliet POTENTIAL FLAW annotations before stripping comments
+        # Store original lines for pattern matching
         self.current_original_lines = source_code.splitlines()
-        self.current_potential_flaw_lines = self._find_potential_flaw_annotations(source_code)
-
+        
         source_code = self._preprocess_code(source_code)
         lines = source_code.splitlines()
         
@@ -154,17 +154,36 @@ class HierarchicalSlicer:
         program_slice.children = modules
         
         return program_slice
-
-    def _find_potential_flaw_annotations(self, original_code: str) -> set:
-        """Find lines that start with '/* POTENTIAL FLAW' in original source.
-
-        Returns a set of 0-based line indexes for quick lookup later.
-        """
-        result = set()
-        for idx, raw in enumerate(original_code.splitlines()):
-            if raw.lstrip().startswith('/* POTENTIAL FLAW'):
-                result.add(idx)
-        return result
+    
+    def load_cwe_dict(self, cwe_dict: Dict[str, Any]):
+        """Load CWE patterns from dict (regex-based matching)"""
+        compiled = []
+        cwe_id = cwe_dict.get('cwe_id') or cwe_dict.get('id')
+        for p in cwe_dict.get('patterns', []):
+            regex = p.get('regex')
+            anchor = p.get('anchor')
+            entry = {
+                'cwe_id': cwe_id,
+                'pattern_id': p.get('id') or p.get('name') or f"pat_{len(compiled)+1}",
+                'function': p.get('function'),
+                'context_any_of': p.get('context_any_of') or [],
+                'raw_regex': None,
+                'regex': None,
+                'anchor': None,
+                'type': 'regex' if regex else ('anchor' if anchor else 'unknown')
+            }
+            if regex:
+                try:
+                    entry['regex'] = re.compile(regex)
+                    entry['raw_regex'] = regex
+                except re.error:
+                    continue
+            elif anchor:
+                entry['anchor'] = str(anchor).lower()
+            else:
+                continue
+            compiled.append(entry)
+        self.cwe_regex_patterns = compiled
     
     def _slice_modules(self, lines: List[str]) -> List[CodeSlice]:
         """L1: MODULE LEVEL"""
@@ -415,14 +434,37 @@ class HierarchicalSlicer:
         while i < end_idx:
             line = lines[i].strip()
             
-            # Detect Juliet markers: /* POTENTIAL FLAW ... */ (detected using original-code line map)
-            if i in self.current_potential_flaw_lines:
-                block = self._slice_potential_flaw_context(lines, i, end_idx)
-                if block:
-                    blocks.append(block)
-                    i = block.end_line
+            # Detect via loaded CWE regex dict (pattern-based detection ONLY)
+            if self.cwe_regex_patterns:
+                orig_line = self.current_original_lines[i] if 0 <= i < len(self.current_original_lines) else lines[i]
+                matched = False
+                for pat in self.cwe_regex_patterns:
+                    if pat.get('type') == 'regex' and pat.get('regex') and pat['regex'].search(orig_line):
+                        block = self._slice_cwe_pattern_context(lines, i, end_idx, pat)
+                        if block:
+                            blocks.append(block)
+                            i = block.end_line
+                            matched = True
+                            break
+                    elif pat.get('type') == 'anchor' and pat.get('anchor'):
+                        callee = self._extract_call_callee(orig_line)
+                        if callee and pat['anchor'] in callee.lower():
+                            ctx_tokens = set()
+                            cstart = max(0, i - 3)
+                            cend = min(end_idx, i + 3)
+                            for k in range(cstart, cend + 1):
+                                ctx_tokens.update(self._tokenize_for_ml(self.current_original_lines[k] if 0 <= k < len(self.current_original_lines) else lines[k]))
+                            ck = pat.get('context_any_of') or []
+                            if not ck or any(t in ctx_tokens for t in ck):
+                                block = self._slice_cwe_pattern_context(lines, i, end_idx, pat)
+                                if block:
+                                    blocks.append(block)
+                                    i = block.end_line
+                                    matched = True
+                                    break
+                if matched:
                     continue
-
+            
             if line.startswith('for') or line.startswith('while'):
                 block = self._slice_loop_block(lines, i, end_idx)
                 if block:
@@ -437,34 +479,20 @@ class HierarchicalSlicer:
                     i = block.end_line
                     continue
             
-            # function-based vulnerable detection removed
-            
-            else:
-                # L4 disabled: skip simple statements
-                pass
-            
             i += 1
         
         return blocks
-
-    def _slice_potential_flaw_context(self, lines: List[str], annotation_idx: int, end_idx: int) -> Optional[CodeSlice]:
-        """Slice context around Juliet POTENTIAL FLAW annotations.
-
-        The convention: the line immediately below the comment is the vulnerable line.
-        We capture a small window around that line for context.
-        """
-        vuln_idx = min(annotation_idx + 1, end_idx)
-        context_start = max(0, vuln_idx - 3)
-        context_end = min(end_idx, vuln_idx + 3)
-
+    
+    def _slice_cwe_pattern_context(self, lines: List[str], start_idx: int, end_idx: int, pat: Dict[str, Any]) -> Optional[CodeSlice]:
+        """Slice context when a CWE regex pattern matches the current line"""
+        context_start = max(0, start_idx - 3)
+        context_end = min(end_idx, start_idx + 3)
+        
         block_lines = lines[context_start:context_end + 1]
         full_code = '\n'.join(block_lines)
-
-        # Use original lines for annotation and vulnerable line capture
-        orig = self.current_original_lines or []
-        annotation = (orig[annotation_idx].strip() if annotation_idx < len(orig) else '')
-        vulnerable_line = (orig[vuln_idx].strip() if vuln_idx < len(orig) else '')
-
+        
+        orig_line = self.current_original_lines[start_idx].strip() if 0 <= start_idx < len(self.current_original_lines) else lines[start_idx].strip()
+        
         block_slice = CodeSlice(
             level=Level.STATEMENT_BLOCK,
             name="vulnerable_context",
@@ -472,16 +500,17 @@ class HierarchicalSlicer:
             start_line=context_start + 1,
             end_line=context_end + 1,
             metadata={
-                'block_type': 'potential_flaw_context',
-                'annotation_line_number': annotation_idx + 1,
-                'annotation': annotation,
-                'vulnerable_line': vulnerable_line,
-                'focus_line_number': vuln_idx + 1,
-                'detected_by': 'comment_potential_flaw'
+                'block_type': 'cwe_pattern_context',
+                'cwe_id': pat.get('cwe_id'),
+                'pattern_id': pat.get('pattern_id'),
+                'function': pat.get('function'),
+                'pattern_type': pat.get('type'),
+                'anchor': pat.get('anchor'),
+                'matched_line': orig_line,
+                'focus_line_number': start_idx + 1,
+                'pattern_regex': pat.get('raw_regex')
             }
         )
-        
-        # Children statements suppressed (L4 disabled)
         block_slice.children = []
         return block_slice
     
@@ -551,43 +580,19 @@ class HierarchicalSlicer:
         
         return block_slice
     
-    # function-based vulnerable context removed
-    
-    def _slice_simple_statement(self, lines: List[str], idx: int) -> Optional[CodeSlice]:
-        """L4: STATEMENT LEVEL"""
-        line = lines[idx].strip()
-        
-        if not line or line in ['{', '}'] or line.startswith('//') or line.startswith('/*'):
-            return None
-        
-        full_code = lines[idx]
-        
-        statement_slice = CodeSlice(
-            level=Level.STATEMENT,
-            name="statement",
-            full_code=full_code,
-            start_line=idx + 1,
-            end_line=idx + 1,
-            metadata={
-                'statement_type': self._classify_statement(line),
-                'tokens': self._tokenize_for_ml(line)
-            }
-        )
-        
-        return statement_slice
-    
     def _slice_statements_in_block(self, lines: List[str], start_idx: int, end_idx: int) -> List[CodeSlice]:
         """Extract statements in block (L4 disabled)"""
-        # L4 (STATEMENT) slicing is disabled; only L0-L3 slices are produced.
         return []
     
     def _tokenize_for_ml(self, code: str, max_tokens: int = 250) -> List[str]:
-        """L5: TOKEN LEVEL"""
+        """L5: TOKEN LEVEL - Simple tokenization, NO normalization"""
         tokens = []
         
-        code = re.sub(r'//.*$', '', code)
-        code = re.sub(r'/\*.*?\*/', '', code)
+        # Remove comments
+        code = re.sub(r'//.*$', '', code, flags=re.MULTILINE)
+        code = re.sub(r'/\*.*?\*/', '', code, flags=re.DOTALL)
         
+        # Tokenize: words, operators, punctuation, strings
         pattern = r'(\w+|[(){}[\];,]|->|\+\+|--|==|!=|<=|>=|&&|\|\||[+\-*/%=<>!&|^~.]|"[^"]*"|\S)'
         raw_tokens = re.findall(pattern, code)
         
@@ -595,90 +600,22 @@ class HierarchicalSlicer:
             if not token_str or token_str.isspace():
                 continue
             
-            normalized = self._normalize_token_for_ml(token_str)
-            tokens.append(normalized)
+            # NO NORMALIZATION - keep original token
+            tokens.append(token_str.strip())
             
             if len(tokens) >= max_tokens:
                 break
         
         return tokens
     
-    def _normalize_token_for_ml(self, token: str) -> str:
-        """Normalize token"""
-        token = token.strip()
-        
-        if token in self.library_functions:
-            return token
-        if token in self.c_keywords:
-            return token
-        if token in self.operators or token in ['(', ')', '{', '}', '[', ']', ';', ',', '.', '->']:
-            return token
-        if token in ['NULL', '0', '1']:
-            return token
-        
-        if token.startswith('"') and token.endswith('"'):
-            return '"FORMAT_STRING"' if '%' in token else '"STRING_LITERAL"'
-        
-        if re.match(r'^[0-9]+(\.[0-9]+)?$', token):
-            return 'NUM_LITERAL'
-        if re.match(r'^0[xX][0-9a-fA-F]+$', token) or re.match(r'^0[0-7]+$', token):
-            return 'NUM_LITERAL'
-        
-        if re.match(r'^[A-Za-z_]\w*$', token):
-            if token.isupper() and '_' in token:
-                return 'MACRO_VAR'
-            elif token[0].isupper():
-                return 'TYPE_VAR'
-            else:
-                return 'VAR'
-        
-        return token
-
-    def extract_tokens_by_line(self, source_code: str) -> List[Dict[str, Any]]:
-        """Extract L5 tokens per non-empty, non-brace code line.
-
-        Comments are removed via preprocessing; tokens are collected per line
-        using the same normalization used in L5.
+    def tokenize_full_code(self, source_code: str, max_tokens: int = 250) -> List[str]:
+        """
+        Tokenize entire source code into simple token list (L5)
+        Like NLP tokenization: ["int", "x", "=", "100", ";", ...]
+        Original tokens, NO normalization
         """
         preprocessed = self._preprocess_code(source_code)
-        lines = preprocessed.splitlines()
-        tokens_result: List[Dict[str, Any]] = []
-        for i, raw in enumerate(lines):
-            stripped = raw.strip()
-            if not stripped or stripped in {'{', '}'}:
-                continue
-            tokens = self._tokenize_for_ml(raw)
-            if tokens:
-                tokens_result.append({
-                    'line': i + 1,
-                    'code': raw,
-                    'tokens': tokens
-                })
-        return tokens_result
-    
-    def build_vocabulary(self, sliced_result: CodeSlice) -> Dict[str, int]:
-        """Build vocabulary"""
-        vocab = {}
-        token_id = 1
-        
-        special_tokens = ['<PAD>', '<UNK>', '<START>', '<END>']
-        for special in special_tokens:
-            vocab[special] = token_id
-            token_id += 1
-        
-        def collect_tokens(node: CodeSlice):
-            nonlocal token_id
-            if 'tokens' in node.metadata:
-                for token in node.metadata['tokens']:
-                    if token not in vocab:
-                        vocab[token] = token_id
-                        token_id += 1
-            
-            for child in node.children:
-                collect_tokens(child)
-        
-        collect_tokens(sliced_result)
-        return vocab
+        return self._tokenize_for_ml(preprocessed, max_tokens)
     
     def _classify_statement(self, statement: str) -> str:
         """Classify statement"""
@@ -695,8 +632,8 @@ class HierarchicalSlicer:
         else:
             return 'expression'
     
-    # Helper methods
     def _extract_includes(self, lines: List[str]) -> List[str]:
+        """Extract #include statements"""
         includes = []
         for line in lines:
             if line.strip().startswith('#include'):
@@ -704,6 +641,7 @@ class HierarchicalSlicer:
         return includes
     
     def _extract_global_variables(self, lines: List[str]) -> List[Dict[str, Any]]:
+        """Extract global variables"""
         global_vars = []
         brace_depth = 0
         
@@ -727,6 +665,7 @@ class HierarchicalSlicer:
         return global_vars
     
     def _is_function_definition(self, line: str, lines: List[str], idx: int) -> bool:
+        """Check if line starts function definition"""
         if not line or line.startswith('#') or line.startswith('//'):
             return False
         if '(' not in line:
@@ -740,6 +679,7 @@ class HierarchicalSlicer:
         return False
     
     def _extract_function_signature(self, lines: List[str], start_idx: int) -> Tuple[str, int]:
+        """Extract complete function signature"""
         signature = lines[start_idx].strip()
         end_idx = start_idx
         
@@ -753,12 +693,14 @@ class HierarchicalSlicer:
         return signature, end_idx
     
     def _extract_function_name(self, signature: str) -> str:
+        """Extract function name"""
         match = re.search(r'(\w+)\s*\(', signature)
         if match:
             return match.group(1)
         return "UNKNOWN_FUNCTION"
     
     def _extract_return_type(self, signature: str) -> str:
+        """Extract return type"""
         before_paren = signature.split('(')[0].strip()
         tokens = before_paren.split()
         if len(tokens) >= 2:
@@ -766,6 +708,7 @@ class HierarchicalSlicer:
         return 'void'
     
     def _extract_parameters(self, signature: str) -> List[Dict[str, str]]:
+        """Extract parameters"""
         params = []
         match = re.search(r'\((.*?)\)', signature)
         if not match:
@@ -804,6 +747,7 @@ class HierarchicalSlicer:
         return params
     
     def _find_block_end(self, lines: List[str], start_idx: int, max_idx: int) -> int:
+        """Find end of code block"""
         line = lines[start_idx].strip()
         
         if '{' not in line:
@@ -820,9 +764,8 @@ class HierarchicalSlicer:
         
         return start_idx
     
-    # function-based vulnerable detection removed
-    
     def _extract_loop_condition(self, header: str, loop_type: str) -> str:
+        """Extract loop condition"""
         if loop_type == 'for':
             match = re.search(r'for\s*\((.*?)\)', header)
             if match:
@@ -834,10 +777,18 @@ class HierarchicalSlicer:
         return ""
     
     def _extract_if_condition(self, header: str) -> str:
+        """Extract if condition"""
         match = re.search(r'if\s*\((.*?)\)', header)
         if match:
             return match.group(1)
         return ""
+    
+    def _extract_call_callee(self, code_line: str) -> Optional[str]:
+        """Extract function name being called"""
+        match = re.search(r'(\w+)\s*\(', code_line)
+        if match:
+            return match.group(1)
+        return None
 
 
 # ========== BATCH PROCESSING ==========
@@ -848,14 +799,18 @@ class BatchProcessor:
     def __init__(self, nested_strategy: str = 'mark_nested'):
         self.slicer = HierarchicalSlicer(nested_strategy=nested_strategy)
         self.results = []
-        self.tokens_results = []
-        self.global_vocab = {}
+        self.global_vocab = {
+            '<PAD>': 1,
+            '<UNK>': 2,
+            '<START>': 3,
+            '<END>': 4
+        }
         self.stats = {
             'total_files': 0,
             'processed_files': 0,
             'failed_files': 0,
             'total_functions': 0,
-            'total_statements': 0,  # L4 disabled
+            'total_statements': 0,
             'total_tokens': 0
         }
     
@@ -873,10 +828,10 @@ class BatchProcessor:
             source_code = file_path.read_text(encoding='utf-8', errors='ignore')
             sliced_result = self.slicer.slice_program(source_code, file_path)
             
-            # Extract tokens per line (L5) for separate export
-            tokens_by_line = self.slicer.extract_tokens_by_line(source_code)
-            token_count = sum(len(entry['tokens']) for entry in tokens_by_line)
-
+            # Extract L5 tokens: simple list from entire file
+            tokens = self.slicer.tokenize_full_code(source_code, max_tokens=250)
+            token_count = len(tokens)
+            
             # Collect statistics
             file_stats = self._collect_file_stats(sliced_result)
             file_stats['token_count'] = token_count
@@ -885,11 +840,8 @@ class BatchProcessor:
             self.stats['total_statements'] += file_stats['statement_count']
             self.stats['total_tokens'] += token_count
             
-            # Build vocabulary for this file from tokens
-            file_vocab = self._build_vocab_from_token_sequences(tokens_by_line)
-            
-            # Merge into global vocab
-            for token in file_vocab.keys():
+            # Build vocabulary
+            for token in tokens:
                 if token not in self.global_vocab:
                     self.global_vocab[token] = len(self.global_vocab) + 1
             
@@ -898,24 +850,13 @@ class BatchProcessor:
                 'file_name': file_path.name,
                 'processed_at': datetime.now().isoformat(),
                 'statistics': file_stats,
-                'sliced_data': sliced_result.to_dict()
+                'sliced_data': sliced_result.to_dict(),
+                'tokens': tokens
             }
             
             print(f"    ✅ Done: {file_stats['function_count']} functions, "
-                  f"{file_stats['statement_count']} statements (L4 disabled), "
-                  f"{file_stats['token_count']} tokens")
-            
-            # Stash tokens for separate export
-            self.tokens_results.append({
-                'file_path': str(file_path),
-                'file_name': file_path.name,
-                'processed_at': datetime.now().isoformat(),
-                'token_statistics': {
-                    'line_entries': len(tokens_by_line),
-                    'token_count': token_count
-                },
-                'tokens_by_line': tokens_by_line
-            })
+                  f"{file_stats['statement_count']} statements, "
+                  f"{token_count} tokens (max 250)")
             
             return result
             
@@ -945,7 +886,7 @@ class BatchProcessor:
             if 'tokens' in node.metadata:
                 stats['token_count'] += len(node.metadata['tokens'])
             
-            if node.metadata.get('block_type') == 'potential_flaw_context':
+            if node.metadata.get('block_type') == 'cwe_pattern_context':
                 stats['vulnerable_function_count'] += 1
             
             for child in node.children:
@@ -1001,52 +942,34 @@ class BatchProcessor:
             json.dump(batch_data, f, indent=2, ensure_ascii=False)
         
         print(f"\n✅ Results exported to: {output_path}")
-
-    def export_tokens(self, output_path: Path):
-        """Export L5 tokens to a separate JSON file."""
+    
+    def export_vocabs(self, output_path: Path):
+        """Export vocabulary only to separate JSON file"""
         data = {
             'batch_info': {
                 'processed_at': datetime.now().isoformat(),
-                'note': 'L5 tokens exported separately; main results contain L0-L3 only.'
+                'note': 'Global vocabulary extracted from all processed files.'
             },
             'statistics': {
                 'total_files': self.stats['total_files'],
                 'processed_files': self.stats['processed_files'],
-                'failed_files': self.stats['failed_files'],
-                'total_tokens': self.stats['total_tokens']
+                'vocabulary_size': len(self.global_vocab)
             },
-            'vocabulary': self.global_vocab,
-            'vocabulary_size': len(self.global_vocab),
-            'files': self.tokens_results
+            'vocabulary': self.global_vocab
         }
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
-        print(f"✅ Tokens exported to: {output_path}")
-
-    def _build_vocab_from_token_sequences(self, tokens_by_line: List[Dict[str, Any]]) -> Dict[str, int]:
-        """Build a per-file vocabulary mapping from token sequences."""
-        vocab: Dict[str, int] = {}
-        next_id = 1
-        # Special tokens first for consistency
-        for special in ['<PAD>', '<UNK>', '<START>', '<END>']:
-            vocab[special] = next_id
-            next_id += 1
-        for entry in tokens_by_line:
-            for tok in entry.get('tokens', []):
-                if tok not in vocab:
-                    vocab[tok] = next_id
-                    next_id += 1
-        return vocab
+        print(f"✅ Vocabulary exported to: {output_path}")
 
 
 # ========== MAIN ==========
 
 def main():
-    """Main entry point - L0-L3 slicing, L5 tokens separate"""
+    """Main entry point"""
     import argparse
     
     parser = argparse.ArgumentParser(
-        description="Hierarchical Code Slicer - Batch Processing (L0-L3 only; tokens separate)"
+        description="Hierarchical Code Slicer - Batch Processing (L0-L3 + L5 original tokens)"
     )
     parser.add_argument(
         "-d", "--directory",
@@ -1057,45 +980,62 @@ def main():
     parser.add_argument(
         "-o", "--output",
         default="batch_sliced_results.json",
-        help="Output JSON file for L0-L3 slices (default: batch_sliced_results.json)"
+        help="Output JSON file (default: batch_sliced_results.json)"
     )
     parser.add_argument(
-        "--tokens-output",
-        default="batch_tokens.json",
-        help="Output JSON file for L5 tokens (default: batch_tokens.json)"
+        "--vocabs-output",
+        default="vocabs.json",
+        help="Output JSON file for vocabulary (default: vocabs.json)"
+    )
+    parser.add_argument(
+        "--use-cwe-dict",
+        type=str,
+        help="Load CWE dict JSON for pattern-based vulnerability detection"
     )
     parser.add_argument(
         "--nested",
         choices=['filter', 'keep_all', 'mark_nested'],
         default='mark_nested',
-        help="Nested function strategy (default: mark_nested for Juliet)"
+        help="Nested function strategy (default: mark_nested)"
     )
     
     args = parser.parse_args()
     
-    # Setup
     directory = Path(args.directory).resolve()
     output_path = Path(args.output)
-    tokens_output_path = Path(args.tokens_output)
+    vocabs_output_path = Path(args.vocabs_output)
     
     print("="*70)
     print("🚀 HIERARCHICAL CODE SLICER - BATCH MODE")
     print("="*70)
     print(f"📂 Directory: {directory}")
     print(f"📝 Output: {output_path}")
-    print(f"📝 Tokens: {tokens_output_path}")
+    print(f"📚 Vocabs: {vocabs_output_path}")
     print(f"⚙️  Strategy: {args.nested}")
-    print(f"✨ Slicing: L0–L3 (L4 disabled), tokens separate; vulnerable by POTENTIAL FLAW comments")
+    print(f"✨ Slicing: L0–L3 (L4 disabled)")
+    print(f"🔤 Tokens: L5 original tokens (max 250 per file)")
+    print(f"🎯 Detection: Pattern-based (CWE dict required)")
     
-    # Process
+    if not args.use_cwe_dict:
+        print(f"\n⚠️  WARNING: No CWE dict provided!")
+        print(f"   Vulnerability detection will NOT work")
+        print(f"   Only basic code slicing will be performed.\n")
+    
     processor = BatchProcessor(nested_strategy=args.nested)
+    if args.use_cwe_dict:
+        try:
+            with open(args.use_cwe_dict, 'r', encoding='utf-8') as f:
+                cwe_dict = json.load(f)
+            processor.slicer.load_cwe_dict(cwe_dict)
+            print(f"📥 Loaded CWE dict: {args.use_cwe_dict}")
+        except Exception as e:
+            print(f"⚠️  Failed to load CWE dict: {e}")
+    
     batch_results = processor.process_directory(directory)
     
-    # Export
     processor.export_results(output_path)
-    processor.export_tokens(tokens_output_path)
+    processor.export_vocabs(vocabs_output_path)
     
-    # Summary
     print("\n" + "="*70)
     print("📊 BATCH PROCESSING SUMMARY")
     print("="*70)
@@ -1108,18 +1048,9 @@ def main():
     print(f"📚 Vocabulary: {len(processor.global_vocab)} unique tokens")
     print("="*70)
     
-    print(f"\n💡 Output structure (main):")
-    print(f"   ├─ batch_info (metadata)")
-    print(f"   ├─ statistics (aggregate stats)")
-    print(f"   ├─ vocabulary (global vocab)")
-    print(f"   └─ files[] (all sliced files)")
-    print(f"       ├─ file_path")
-    print(f"       ├─ statistics")
-    print(f"       └─ sliced_data (L0-L3 hierarchy)")
-    print(f"\n💡 Tokens file:")
-    print(f"   └─ {tokens_output_path}")
-    
-    print(f"\n✨ All done! Check: {output_path} and {tokens_output_path}")
+    print(f"\n💡 Output: {output_path}")
+    print(f"💡 Vocabs: {vocabs_output_path}")
+    print(f"\n✨ All done!")
 
 
 if __name__ == "__main__":

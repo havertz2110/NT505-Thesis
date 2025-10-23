@@ -36,3 +36,10 @@ Tạo block L3 tên vulnerable_context với metadata.block_type = "potential_fl
 annotation_line_number, annotation (nguyên văn comment),
 focus_line_number, vulnerable_line (dòng ngay dưới comment),
 detected_by: "comment_potential_flaw".
+
+
+
+thầy tôi có nói là chúng ta cần 1 cái dict chứa những loại cú pháp... có thể phát sinh lỗi
+
+
+

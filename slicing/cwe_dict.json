@@ -1,0 +1,36 @@
+{
+  "cwe_id": "MIXED",
+  "total_patterns": 2,
+  "patterns": [
+    {
+      "id": "pattern_2",
+      "function": "FOPEN",
+      "regex": "FOPEN\\s*\\(\\w+,\\s*\"[^\"]*\"\\)",
+      "context_keywords": [],
+      "occurrence_count": 5,
+      "example_files": [
+        "CWE23_Relative_Path_Traversal__char_connect_socket_fopen_01.cpp",
+        "CWE23_Relative_Path_Traversal__char_connect_socket_fopen_02.cpp"
+      ],
+      "raw_examples": [
+        "pFile = FOPEN(data, \"wb+\");"
+      ]
+    },
+    {
+      "id": "pattern_1",
+      "function": "socket",
+      "regex": "socket\\s*\\(\\w+,\\s*\\w+,\\s*\\w+\\)",
+      "context_keywords": [
+        "socket"
+      ],
+      "occurrence_count": 2,
+      "example_files": [
+        "CWE23_Relative_Path_Traversal__char_connect_socket_fopen_01.cpp",
+        "CWE23_Relative_Path_Traversal__char_connect_socket_fopen_02.cpp"
+      ],
+      "raw_examples": [
+        "connectSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);"
+      ]
+    }
+  ]
+}
