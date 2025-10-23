@@ -1,17 +1,4 @@
 #!/usr/bin/env python3
-"""
-Hierarchical Code Slicer - Batch Processing Version
-Auto scan folder, process all .c/.cpp files, append to single JSON
-
-Features:
-- Auto scan current directory or specified folder
-- Process multiple files in batch
-- L5 tokens: simple list (max 250) per file, original tokens (NO normalization)
-- Vocabulary exported to separate vocabs.json
-- Pattern-based vulnerability detection (CWE dict)
-- Progress tracking
-"""
-
 import re
 import json
 import sys
@@ -791,7 +778,6 @@ class HierarchicalSlicer:
         return None
 
 
-# ========== BATCH PROCESSING ==========
 
 class BatchProcessor:
     """Batch processor for multiple files"""
@@ -896,17 +882,17 @@ class BatchProcessor:
         return stats
     
     def process_directory(self, directory: Path) -> Dict[str, Any]:
-        """Process all files in directory"""
-        print(f"\n🔍 Scanning directory: {directory}")
+
+        print(f"\n Scanning directory: {directory}")
         
         files = self.find_c_files(directory)
         self.stats['total_files'] = len(files)
         
         if not files:
-            print("  ⚠️  No .c or .cpp files found!")
+            print("   No .c or .cpp files found!")
             return {'results': [], 'statistics': self.stats, 'vocabulary': {}}
         
-        print(f"  📊 Found {len(files)} files\n")
+        print(f"  Found {len(files)} files\n")
         
         self.results = []
         for file_path in files:
@@ -921,7 +907,6 @@ class BatchProcessor:
                 'nested_strategy': self.slicer.nested_strategy
             },
             'statistics': self.stats,
-            'vocabulary': self.global_vocab,
             'results': self.results
         }
     
@@ -933,8 +918,6 @@ class BatchProcessor:
                 'nested_strategy': self.slicer.nested_strategy
             },
             'statistics': self.stats,
-            'vocabulary': self.global_vocab,
-            'vocabulary_size': len(self.global_vocab),
             'files': self.results
         }
         
@@ -944,7 +927,6 @@ class BatchProcessor:
         print(f"\n✅ Results exported to: {output_path}")
     
     def export_vocabs(self, output_path: Path):
-        """Export vocabulary only to separate JSON file"""
         data = {
             'batch_info': {
                 'processed_at': datetime.now().isoformat(),
@@ -954,15 +936,12 @@ class BatchProcessor:
                 'total_files': self.stats['total_files'],
                 'processed_files': self.stats['processed_files'],
                 'vocabulary_size': len(self.global_vocab)
-            },
-            'vocabulary': self.global_vocab
+            }
         }
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
-        print(f"✅ Vocabulary exported to: {output_path}")
+        print(f" Vocabulary exported to: {output_path}")
 
-
-# ========== MAIN ==========
 
 def main():
     """Main entry point"""
@@ -1008,18 +987,16 @@ def main():
     print("="*70)
     print("🚀 HIERARCHICAL CODE SLICER - BATCH MODE")
     print("="*70)
-    print(f"📂 Directory: {directory}")
-    print(f"📝 Output: {output_path}")
-    print(f"📚 Vocabs: {vocabs_output_path}")
-    print(f"⚙️  Strategy: {args.nested}")
-    print(f"✨ Slicing: L0–L3 (L4 disabled)")
-    print(f"🔤 Tokens: L5 original tokens (max 250 per file)")
-    print(f"🎯 Detection: Pattern-based (CWE dict required)")
+    print(f" Directory: {directory}")
+    print(f" Output: {output_path}")
+    print(f" Vocabs: {vocabs_output_path}")
+    print(f"  Strategy: {args.nested}")
+    print(f" Slicing: L0–L3 (L4 disabled)")
+    print(f" Tokens: L5 original tokens (max 250 per file)")
+    print(f" Detection: Pattern-based (CWE dict required)")
     
     if not args.use_cwe_dict:
-        print(f"\n⚠️  WARNING: No CWE dict provided!")
-        print(f"   Vulnerability detection will NOT work")
-        print(f"   Only basic code slicing will be performed.\n")
+        print(f"\n No CWE dict provided!")
     
     processor = BatchProcessor(nested_strategy=args.nested)
     if args.use_cwe_dict:
@@ -1050,8 +1027,6 @@ def main():
     
     print(f"\n💡 Output: {output_path}")
     print(f"💡 Vocabs: {vocabs_output_path}")
-    print(f"\n✨ All done!")
-
 
 if __name__ == "__main__":
     main()
