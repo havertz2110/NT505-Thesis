@@ -727,8 +727,7 @@ class BatchProcessor:
     def export_vocabs(self, output_path: Path):
         data = {
             'batch_info': {
-                'processed_at': datetime.now().isoformat(),
-                'note': 'Global vocabulary from VULNERABLE CODE only'
+                'processed_at': datetime.now().isoformat()
             },
             'statistics': {
                 'total_files': self.stats['total_files'],
